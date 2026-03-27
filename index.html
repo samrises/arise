@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HappySam | The Awakening v33</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Jost', 'sans-serif'] }, colors: { primary: '#6366f1', darkbg: '#0f172a' } } }
+        }
+    </script>
+
+    <style>
+        * { font-family: 'Jost', sans-serif; font-style: normal !important; text-transform: uppercase; }
+        body { background-color: #0f172a; color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        .glass { background: rgba(30, 41, 59, 0.7); border: 2px solid #334155; backdrop-filter: blur(16px); }
+        .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid #1e293b; }
+        
+        .btn-interact { transition: all 0.15s ease; cursor: pointer; position: relative; overflow: hidden; }
+        .btn-interact:active { transform: scale(0.92); box-shadow: 0 0 15px rgba(99, 102, 241, 0.6); }
+        
+        .bar-bg { background: #334155; border-radius: 999px; overflow: hidden; height: 8px; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+        .hp-fill { background: linear-gradient(90deg, #ef4444, #f43f5e); height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        .exp-fill { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .skill-fill { background: linear-gradient(90deg, #8b5cf6, #a855f7); height: 100%; transition: width 0.5s ease; }
+        
+        .nav-active { color: #818cf8 !important; text-shadow: 0 0 10px rgba(129, 140, 248, 0.8); border-bottom: 2px solid #818cf8; }
+        
+        .toast-enter { transform: translateY(0); opacity: 1; }
+        .toast-leave { transform: translateY(-50px); opacity: 0; }
+        button i, button svg { pointer-events: none; }
+        
+        .modal-enter { animation: fadeInScale 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        ::-webkit-scrollbar { height: 4px; width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+        .system-voice { text-shadow: 0 0 8px rgba(129, 140, 248, 0.9); animation: pulseText 4s infinite; }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+        
+        .danger-pulse { animation: redGlow 1s infinite; }
+        @keyframes redGlow { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); } 70% { box-shadow: 0 0 0 20px rgba(225, 29, 72, 0); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
+
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        input[type="date"] { -webkit-appearance: none; appearance: none; min-width: 0; }
+        
+        .solo-glow:focus-within { box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); border-color: #818cf8; outline: none; }
+        .checkbox-custom:checked + label { background-color: #6366f1; border-color: #6366f1; color: white; }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen pb-20 md:pb-0 relative overflow-x-hidden bg-darkbg text-slate-100">
+
+    <audio id="penaltyAlarm" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" preload="auto"></audio>
+    <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 backdrop-blur-md hidden justify-center items-center p-2 md:p-10 cursor-zoom-out" onclick="closeImageZoom()">
+        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-transform duration-300 transform scale-95">
+        <div class="absolute bottom-5 text-slate-400 text-xs font-black tracking-widest"><i data-lucide="zoom-out" class="inline"></i> TAP TO CLOSE</div>
+    </div>
+
+    <div id="tradeModal" class="fixed inset-0 z-[200] bg-slate-900/95 backdrop-blur-md hidden flex-col justify-center items-center p-4">
+        <div class="glass p-6 md:p-8 rounded-[2rem] w-full max-w-2xl modal-enter border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.2)] relative overflow-y-auto max-h-[90vh]">
+            <button onclick="closeTradeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-rose-500 btn-interact"><i data-lucide="x-circle" size="32"></i></button>
+            <h2 class="text-3xl font-black text-indigo-400 mb-2 border-b border-slate-700 pb-2 flex items-center gap-2"><i data-lucide="bar-chart-2"></i> TRADE INTEL</h2>
+            <div id="tradeModalContent" class="space-y-4 mt-4"></div>
+        </div>
+    </div>
+
+    <div id="statusModal" class="fixed inset-0 z-[200] bg-slate-900/90 backdrop-blur-sm hidden flex-col justify-center items-center p-4">
+        <div class="glass p-8 rounded-[2rem] w-full max-w-md modal-enter border-indigo-500 shadow-[0_0_40px_rgba(99,102,241,0.3)] relative overflow-y-auto max-h-[90vh]">
+            <button onclick="closeStatusModal()" class="absolute top-4 right-4 text-slate-400 hover:text-rose-500 btn-interact"><i data-lucide="x-circle" size="32"></i></button>
+            <h2 class="text-3xl font-black text-indigo-400 mb-6 text-center border-b border-slate-700 pb-4">SYSTEM STATUS</h2>
+            <div class="space-y-4 mb-6">
+                <div class="flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700"><span class="text-xs font-bold text-slate-400 tracking-widest flex items-center gap-2"><i data-lucide="check-square" size="16"></i> TOTAL QUESTS DONE</span><span id="statQuests" class="text-2xl font-black text-white tabular-nums">0</span></div>
+                <div class="flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700"><span class="text-xs font-bold text-slate-400 tracking-widest flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE (XAUUSD)</span><span id="statWinRate" class="text-2xl font-black text-emerald-400 tabular-nums">0%</span></div>
+            </div>
+            <div class="border-t border-slate-700 pt-6">
+                <p class="text-[10px] text-slate-400 font-bold mb-3 tracking-widest text-center">SYSTEM BACKUP & SYNC</p>
+                <div class="flex gap-3">
+                    <button onclick="exportSystem()" class="flex-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500 hover:bg-indigo-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-xs"><i data-lucide="download" size="16"></i> EXPORT</button>
+                    <button onclick="document.getElementById('importFile').click()" class="flex-1 bg-amber-500/20 text-amber-500 border border-amber-500 hover:bg-amber-500 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-xs"><i data-lucide="upload" size="16"></i> IMPORT</button>
+                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importSystem(event)">
+                </div>
+            </div>
+            <div class="mt-4"><button onclick="forceDayReset()" class="w-full bg-rose-600/20 text-rose-500 border border-rose-500 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-xs"><i data-lucide="refresh-cw" size="16"></i> FORCE DAY RESET (TEST)</button></div>
+        </div>
+    </div>
+
+    <aside class="hidden md:flex flex-col w-72 bg-slate-900 border-r-2 border-slate-800 p-6 gap-6 sticky top-0 h-screen z-40 shadow-2xl">
+        <div class="font-black text-4xl tracking-tighter text-indigo-500 flex items-center gap-2 drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]"><i data-lucide="cpu" size="32"></i> SYSTEM</div>
+        <nav class="flex flex-col gap-2 overflow-y-auto pr-2">
+            <button onclick="switchTab('tasks')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]" data-tab="tasks"><i data-lucide="crosshair"></i> <span class="font-black">DAILY QUESTS</span></button>
+            <button onclick="switchTab('vault')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-slate-800 transition-colors" data-tab="vault"><i data-lucide="database"></i> <span class="font-black">THE VAULT</span></button>
+            <button onclick="switchTab('trading')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-slate-800 transition-colors" data-tab="trading"><i data-lucide="candlestick-chart"></i> <span class="font-black">MARKET LOG</span></button>
+            <button onclick="switchTab('expenses')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-slate-800 transition-colors" data-tab="expenses"><i data-lucide="wallet"></i> <span class="font-black">WALLET</span></button>
+            <button onclick="switchTab('awakening')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-slate-800 transition-colors" data-tab="awakening"><i data-lucide="flame"></i> <span class="font-black">AWAKENING</span></button>
+            <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-slate-800 transition-colors" data-tab="diary"><i data-lucide="book-open"></i> <span class="font-black">PROTAGONIST</span></button>
+            <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-slate-800 transition-colors" data-tab="history"><i data-lucide="activity"></i> <span class="font-black">ANALYTICS</span></button>
+        </nav>
+        <div class="mt-auto p-4 rounded-2xl bg-slate-800/50 border border-slate-700 text-center space-y-3">
+            <div><p class="text-[10px] text-slate-400 font-bold mb-1 tracking-widest">DAY RESETS IN</p><p class="dayCountdownText font-black text-rose-500 text-lg tracking-tighter tabular-nums drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]">00:00:00</p></div>
+        </div>
+    </aside>
+
+    <nav class="md:hidden fixed bottom-0 w-full bg-slate-900 border-t-2 border-slate-800 z-50 flex overflow-x-auto px-2 py-3 pb-5 gap-2 snap-x shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <button onclick="switchTab('tasks')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-indigo-500 nav-active w-16 snap-center transition-all" data-tab="tasks"><i data-lucide="crosshair" size="20"></i><span class="text-[8px] font-black">QUEST</span></button>
+        <button onclick="switchTab('vault')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-16 snap-center transition-all" data-tab="vault"><i data-lucide="database" size="20"></i><span class="text-[8px] font-black">VAULT</span></button>
+        <button onclick="switchTab('trading')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-16 snap-center transition-all" data-tab="trading"><i data-lucide="candlestick-chart" size="20"></i><span class="text-[8px] font-black">TRADE</span></button>
+        <button onclick="switchTab('expenses')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-16 snap-center transition-all" data-tab="expenses"><i data-lucide="wallet" size="20"></i><span class="text-[8px] font-black">WALLET</span></button>
+        <button onclick="switchTab('awakening')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-16 snap-center transition-all" data-tab="awakening"><i data-lucide="flame" size="20"></i><span class="text-[8px] font-black">AWAKEN</span></button>
+        <button onclick="switchTab('diary')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-16 snap-center transition-all" data-tab="diary"><i data-lucide="book-open" size="20"></i><span class="text-[8px] font-black">DIARY</span></button>
+        <button onclick="switchTab('history')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-16 snap-center transition-all" data-tab="history"><i data-lucide="activity" size="20"></i><span class="text-[8px] font-black">STATS</span></button>
+    </nav>
+
+    <main class="flex-1 p-4 md:p-8 w-full overflow-y-auto">
+        <div class="md:hidden flex gap-2 mb-4">
+            <div class="glass p-3 rounded-2xl text-center flex-1 border-rose-500/30">
+                <p class="text-[8px] text-slate-400 font-bold tracking-widest">DAY RESETS IN</p>
+                <p class="dayCountdownText font-black text-rose-500 text-sm tracking-tighter tabular-nums drop-shadow-[0_0_5px_rgba(244,63,94,0.5)]">00:00:00</p>
+            </div>
+        </div>
+
+        <div onclick="openStatusModal()" class="glass p-5 md:p-6 rounded-[2rem] mb-2 shadow-2xl border-l-8 border-indigo-500 flex flex-col md:flex-row justify-between gap-6 md:items-center relative z-30 cursor-pointer hover:bg-slate-800 transition-colors group">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="h-16 w-16 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl flex items-center justify-center text-3xl font-black shadow-[0_0_20px_rgba(99,102,241,0.6)]">L<span id="playerLvl" class="tabular-nums">1</span></div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center"><h1 class="font-black text-2xl tracking-tighter text-white drop-shadow-md">PLAYER: SOMNATH</h1><i data-lucide="maximize-2" class="text-slate-500 group-hover:text-indigo-400 transition ml-2" size="18"></i></div>
+                    <p class="text-xs font-bold text-orange-400 flex items-center gap-1 mt-1 drop-shadow-[0_0_5px_rgba(251,146,60,0.5)]"><i data-lucide="flame" size="14"></i> <span id="playerStreak" class="tabular-nums">0</span> DAY STREAK (1.5x EXP)</p>
+                </div>
+            </div>
+            <div class="flex-1 w-full md:max-w-md space-y-4" onclick="event.stopPropagation()">
+                <div><div class="flex justify-between text-[10px] font-black"><span class="text-red-400 drop-shadow-[0_0_3px_rgba(248,113,113,0.8)]">HP (HEALTH)</span><span id="hpText" class="tabular-nums">100/100</span></div><div class="bar-bg mt-1"><div id="hpBar" class="hp-fill" style="width: 100%;"></div></div></div>
+                <div><div class="flex justify-between text-[10px] font-black"><span class="text-blue-400 drop-shadow-[0_0_3px_rgba(96,165,250,0.8)]">EXP (EXPERIENCE)</span><span id="expText" class="tabular-nums">0/100</span></div><div class="bar-bg mt-1"><div id="expBar" class="exp-fill" style="width: 0%;"></div></div></div>
+            </div>
+        </div>
+        
+        <div id="systemVoiceBox" class="glass-panel p-5 rounded-2xl mt-6 mb-6 border-indigo-500/30 text-center transition-all bg-slate-900/60 shadow-inner">
+            <p class="text-[10px] font-black text-indigo-400 tracking-widest mb-2 flex justify-center items-center gap-1 opacity-70"><i data-lucide="terminal" size="10"></i> SYSTEM LOG</p>
+            <p id="systemVoice" class="text-sm font-bold text-slate-100 italic system-voice tracking-wide leading-relaxed" style="text-transform: none;">"Arise."</p>
+        </div>
+
+        <section id="tasks" class="tab-content active space-y-8">
+            <div id="pactSection" class="mb-2"></div>
+            <div>
+                <h3 class="text-2xl font-black text-indigo-400 mb-3 flex items-center gap-2 drop-shadow-md"><i data-lucide="check-square"></i> DAILY QUESTS</h3>
+                <div class="glass p-3 md:p-4 rounded-3xl flex flex-col md:flex-row gap-3 shadow-lg relative z-10 border-t-4 border-indigo-500">
+                    <input type="text" id="simpleTaskInp" placeholder="ENTER SIMPLE QUEST..." class="bg-transparent border-2 border-slate-700 bg-slate-800 rounded-xl w-full p-3 outline-none font-black text-lg md:text-xl flex-1 text-white placeholder-slate-500 solo-glow transition-all">
+                    <button onclick="addSimpleTask()" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-black btn-interact w-full md:w-auto hover:bg-indigo-500 flex justify-center items-center gap-2 shadow-[0_0_10px_rgba(99,102,241,0.5)]"><i data-lucide="plus"></i> ADD</button>
+                </div>
+                <div id="simpleTasksList" class="grid gap-3 mt-4"></div>
+            </div>
+            <div>
+                <h3 class="text-2xl font-black text-rose-400 mb-3 flex items-center gap-2 drop-shadow-md"><i data-lucide="swords"></i> RAID BOSS MISSIONS</h3>
+                <p class="text-[10px] text-slate-400 font-bold tracking-widest mb-3 uppercase">THESE STAY UNTIL CLEARED OR ABORTED.</p>
+                <div class="glass p-3 md:p-4 rounded-3xl flex flex-col md:flex-row gap-3 shadow-lg relative z-10 border-t-4 border-rose-500">
+                    <input type="text" id="timedInp" placeholder="ENTER RAID MISSION..." class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-lg flex-1 text-white placeholder-slate-500 solo-glow">
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="number" id="raidTimeVal" placeholder="DUR" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-lg w-20 text-center text-white tabular-nums solo-glow">
+                        <select id="raidTimeUnit" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-rose-400 w-24 solo-glow">
+                            <option value="m">MINS</option><option value="h">HRS</option><option value="d">DAYS</option>
+                        </select>
+                    </div>
+                    <button onclick="addTimedTask()" class="bg-rose-600 text-white px-6 py-3 rounded-xl font-black btn-interact w-full md:w-auto hover:bg-rose-500 flex justify-center items-center gap-2 shadow-[0_0_10px_rgba(225,29,72,0.5)]"><i data-lucide="play-circle"></i> START</button>
+                </div>
+                <div id="timedTasksList" class="grid gap-4 mt-4"></div>
+            </div>
+        </section>
+
+        <section id="vault" class="tab-content hidden space-y-10">
+            <h2 class="text-4xl font-black tracking-tighter text-white mb-2 drop-shadow-lg">THE VAULT</h2>
+            <p class="text-xs font-bold text-slate-400 mb-6 border-b border-slate-700 pb-4">YOUR EVOLUTION PATH, ESCAPE MATRIX, AND SKILL TREE.</p>
+            
+            <div class="space-y-4">
+                <h3 class="text-2xl font-black text-amber-400 flex items-center gap-2"><i data-lucide="map"></i> EVOLUTION PATH</h3>
+                <div class="glass p-4 rounded-3xl flex flex-col md:flex-row gap-3 shadow-lg border-t-4 border-amber-500 relative z-10">
+                    <input type="text" id="rmTitleInp" placeholder="NEW MASTER GOAL (e.g. GET FUNDED)..." class="bg-slate-800 border-2 border-slate-700 rounded-xl flex-1 p-3 outline-none font-black text-lg text-white placeholder-slate-500 solo-glow">
+                    <button onclick="addRoadmap()" class="bg-amber-600 hover:bg-amber-500 text-white px-8 py-3 rounded-xl font-black btn-interact w-full md:w-auto flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(217,119,6,0.5)]"><i data-lucide="map-pin"></i> CREATE PATH</button>
+                </div>
+                <div id="roadmapsContainer" class="grid gap-6 mt-4"></div>
+            </div>
+
+            <div class="space-y-4 border-t border-slate-800 pt-6">
+                <h3 class="text-2xl font-black text-emerald-400 flex items-center gap-2"><i data-lucide="briefcase"></i> ESCAPE MATRIX</h3>
+                <div class="glass p-4 rounded-3xl flex flex-col md:flex-row gap-3 shadow-lg border-t-4 border-emerald-500 relative z-10">
+                    <input type="text" id="jobCompInp" placeholder="COMPANY" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-white w-full md:w-1/3 solo-glow">
+                    <input type="text" id="jobRoleInp" placeholder="ROLE" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-white flex-1 solo-glow">
+                    <select id="jobStatusInp" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-emerald-400 w-full md:w-auto solo-glow">
+                        <option value="APPLIED">APPLIED</option><option value="INTERVIEW">INTERVIEW</option><option value="OFFERED">OFFERED 🎉</option><option value="REJECTED">REJECTED ❌</option>
+                    </select>
+                    <button onclick="addJob()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-black btn-interact w-full md:w-auto shadow-[0_0_10px_rgba(16,185,129,0.5)]">ADD LOG</button>
+                </div>
+                <div id="careerList" class="grid gap-3 mt-4"></div>
+            </div>
+
+            <div class="space-y-4 border-t border-slate-800 pt-6">
+                <h3 class="text-2xl font-black text-purple-400 flex items-center gap-2"><i data-lucide="zap"></i> SKILL TREE</h3>
+                <div class="glass p-4 rounded-3xl flex flex-col md:flex-row gap-3 shadow-lg border-t-4 border-purple-500 relative z-10">
+                    <input type="text" id="newSkillInp" placeholder="ADD NEW SKILL TO LEARN..." class="bg-slate-800 border-2 border-slate-700 rounded-xl flex-1 p-3 outline-none font-black text-lg text-white solo-glow">
+                    <button onclick="addNewSkill()" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-black btn-interact w-full md:w-auto shadow-[0_0_10px_rgba(147,51,234,0.5)]">CREATE</button>
+                </div>
+                <div id="skillsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"></div>
+            </div>
+        </section>
+
+        <section id="trading" class="tab-content hidden space-y-6">
+            <h2 class="text-4xl font-black tracking-tighter text-white mb-2 drop-shadow-lg">MARKET LOG PRO</h2>
+            <div class="flex justify-between items-center bg-slate-800/50 p-4 rounded-[2rem] border border-blue-500/30 shadow-lg">
+                <div><p class="text-[10px] text-slate-400 font-bold tracking-widest">TRADING CAPITAL</p><p class="text-3xl font-black text-blue-400 tabular-nums">₹<span id="tradeCapitalDisplay">0</span></p></div>
+                <button onclick="editTradeCapital()" class="bg-blue-600/20 text-blue-400 border border-blue-500 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl font-black btn-interact text-xs"><i data-lucide="edit-3" size="14" class="inline"></i> UPDATE</button>
+            </div>
+
+            <div id="drawdownAlertBox" class="hidden glass-panel p-4 rounded-xl border-rose-500 danger-pulse mb-4">
+                <p class="font-black text-rose-500 text-xl flex items-center gap-2 justify-center"><i data-lucide="alert-triangle"></i> DRAWDOWN LIMIT HIT! STOP TRADING!</p>
+            </div>
+            
+            <div class="glass p-6 rounded-[2rem] flex flex-col gap-5 shadow-2xl border-t-4 border-blue-500">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <input type="text" id="tIndex" placeholder="ASSET" value="XAUUSD" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-white solo-glow">
+                    <select id="tResult" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-emerald-400 solo-glow">
+                        <option value="WIN">WIN ✅</option><option value="LOSS">LOSS ❌</option>
+                    </select>
+                    <input type="number" id="tEntry" placeholder="ENTRY" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-white tabular-nums solo-glow">
+                    <input type="number" id="tExit" placeholder="EXIT" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-white tabular-nums solo-glow">
+                </div>
+                
+                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700">
+                    <p class="text-xs font-black text-slate-400 mb-3 tracking-widest border-b border-slate-800 pb-2"><i data-lucide="crosshair" size="12" class="inline"></i> SYSTEM SETUP CHECKLIST</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="tradeSetupChecklist">
+                        <label class="flex items-center gap-2 cursor-pointer group"><input type="checkbox" value="5-6 15m Candle Sweep" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">5-6 15M SWEEP</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer group"><input type="checkbox" value="Massive High" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">MASSIVE HIGH</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer group"><input type="checkbox" value="Massive Low" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">MASSIVE LOW</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer group"><input type="checkbox" value="News" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">NEWS IMPACT</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer group"><input type="checkbox" value="Support" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">SUPPORT TRADE</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer group"><input type="checkbox" value="Resistance" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">RESISTANCE</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer group col-span-2 md:col-span-3"><input type="checkbox" value="Big Screen Analysis" class="hidden checkbox-custom peer"><div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-[10px] font-bold text-slate-300 group-hover:text-white transition-colors">BIG SCREEN ANALYSIS</span></label>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <input type="text" id="tLogic" placeholder="ADDITIONAL REMARKS..." class="bg-slate-800 border-2 border-slate-700 rounded-xl p-4 outline-none font-bold text-white w-full solo-glow" style="text-transform: none;">
+                    <input type="number" id="tPnL" placeholder="NET P&L (e.g. 50 or -20)" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black text-white tabular-nums solo-glow">
+                </div>
+                <input type="file" id="tImg" accept="image/*" class="text-xs font-bold w-full text-slate-400 bg-slate-800 p-3 rounded-xl solo-glow cursor-pointer">
+                
+                <button onclick="addTrade()" class="bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-black btn-interact w-full text-xl flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.6)]"><i data-lucide="save"></i> LOG INTEL</button>
+            </div>
+            <p class="text-xs font-bold text-slate-500 mt-4 text-center"><i data-lucide="info" size="12" class="inline"></i> TAP ANY TRADE TO VIEW FULL DETAILS</p>
+            <div id="tradingList" class="grid grid-cols-1 gap-3"></div>
+        </section>
+
+        <section id="awakening" class="tab-content hidden space-y-6">
+            <h2 class="text-4xl font-black tracking-tighter text-white mb-2 drop-shadow-lg text-rose-500">AWAKENING</h2>
+            <p class="text-xs font-bold text-slate-400 mb-6 border-b border-slate-700 pb-4">YOUR PHYSICAL & MENTAL EVOLUTION PROTOCOL.</p>
+            
+            <div class="glass p-6 rounded-[2rem] border-rose-600/50 border-t-4 shadow-xl">
+                <div class="flex justify-between items-start mb-4">
+                    <div><h3 class="text-2xl font-black text-rose-500 flex items-center gap-2 drop-shadow-md"><i data-lucide="shield-alert"></i> IRON WILL</h3><p class="text-[10px] text-slate-300 font-bold mt-1 tracking-widest">MAINTAIN PURITY. RELAPSE = MASSIVE HP PENALTY.</p></div>
+                    <div class="bg-slate-900/80 px-4 py-2 rounded-xl border border-rose-500/30 text-center"><p class="text-[10px] font-black text-slate-500">STREAK</p><p class="text-3xl font-black text-rose-500 tabular-nums drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]"><span id="nofapDays">0</span>D</p></div>
+                </div>
+                <button onclick="triggerRelapse()" class="w-full mt-2 bg-slate-900 border-2 border-rose-900 text-rose-700 hover:bg-rose-900 hover:text-white hover:border-rose-500 py-4 rounded-2xl font-black btn-interact flex justify-center items-center gap-2 transition-all"><i data-lucide="skull"></i> REPORT RELAPSE (-40 HP)</button>
+            </div>
+
+            <div class="glass p-6 rounded-[2rem] border-amber-500/30 border-t-4 shadow-xl">
+                <h3 class="text-2xl font-black text-amber-400 mb-4 flex items-center gap-2"><i data-lucide="dumbbell"></i> DAILY COMBAT</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 text-center">
+                        <p class="text-[10px] font-black text-slate-400 mb-2">PUSHUPS</p>
+                        <div class="flex items-center justify-center gap-2"><input type="number" id="combatPushups" class="w-14 bg-slate-900 border border-amber-500/50 rounded-lg p-2 text-center font-black text-white tabular-nums solo-glow" value="0"><span class="text-slate-500 font-bold text-xs">/ 60</span></div>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 text-center">
+                        <p class="text-[10px] font-black text-slate-400 mb-2">PULLUPS</p>
+                        <div class="flex items-center justify-center gap-2"><input type="number" id="combatPullups" class="w-14 bg-slate-900 border border-amber-500/50 rounded-lg p-2 text-center font-black text-white tabular-nums solo-glow" value="0"><span class="text-slate-500 font-bold text-xs">/ 50</span></div>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 text-center">
+                        <p class="text-[10px] font-black text-slate-400 mb-2">SQUATS</p>
+                        <div class="flex items-center justify-center gap-2"><input type="number" id="combatSquats" class="w-14 bg-slate-900 border border-amber-500/50 rounded-lg p-2 text-center font-black text-white tabular-nums solo-glow" value="0"><span class="text-slate-500 font-bold text-xs">/ 100</span></div>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 text-center">
+                        <p class="text-[10px] font-black text-slate-400 mb-2">CORE (SEC)</p>
+                        <div class="flex items-center justify-center gap-2"><input type="number" id="combatCore" class="w-14 bg-slate-900 border border-amber-500/50 rounded-lg p-2 text-center font-black text-white tabular-nums solo-glow" value="0"><span class="text-slate-500 font-bold text-xs">/ 120</span></div>
+                    </div>
+                </div>
+                <button onclick="saveCombat()" class="w-full mt-4 bg-amber-600/20 text-amber-500 border border-amber-500 hover:bg-amber-600 hover:text-white py-3 rounded-xl font-black btn-interact text-sm">SAVE COMBAT LOG</button>
+            </div>
+
+            <div class="glass p-6 rounded-[2rem] border-indigo-500/30 border-t-4 shadow-xl flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-black text-indigo-400 mb-4 flex items-center gap-2"><i data-lucide="sparkles"></i> LOOKS MAXXING</h3>
+                    <div class="space-y-3" id="looksChecklist"></div>
+                </div>
+                <div class="md:w-1/3 bg-slate-800/50 rounded-2xl p-5 border border-slate-700 flex flex-col justify-center text-center">
+                    <p class="text-[10px] text-slate-400 font-bold tracking-widest mb-1"><i data-lucide="scissors" size="12" class="inline"></i> MAINTENANCE DUE</p>
+                    <p class="text-4xl font-black text-indigo-400 tabular-nums my-2" id="haircutDaysDisplay">0<span class="text-lg text-slate-500">D</span></p>
+                    <p class="text-[10px] text-slate-500 font-bold mb-4">SINCE LAST HAIRCUT / TRIM</p>
+                    <button onclick="resetHaircut()" class="bg-indigo-600 hover:bg-indigo-500 text-white w-full py-2 rounded-xl font-black btn-interact text-xs">LOG NEW HAIRCUT</button>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-[2rem] border-rose-600 border-l-8 shadow-xl bg-gradient-to-r from-rose-900/20 to-transparent">
+                <h3 class="text-xl font-black text-rose-500 mb-4 flex items-center gap-2"><i data-lucide="ban"></i> THE FORBIDDEN PROTOCOL</h3>
+                <p class="text-xs font-bold text-slate-300 mb-4">AVOID THESE AT ALL COSTS TO BUILD YOUR EMPIRE & PHYSIQUE:</p>
+                <div class="space-y-2">
+                    <p class="text-sm font-bold text-slate-200 bg-slate-900/50 p-3 rounded-lg border border-rose-500/20">❌ NO REFINED SUGAR / SWEETS</p>
+                    <p class="text-sm font-bold text-slate-200 bg-slate-900/50 p-3 rounded-lg border border-rose-500/20">❌ NO DEEP FRIED / OILY FAST FOOD</p>
+                    <p class="text-sm font-bold text-slate-200 bg-slate-900/50 p-3 rounded-lg border border-rose-500/20">❌ NO P*RN / PEEKING (EVER)</p>
+                    <p class="text-sm font-bold text-slate-200 bg-slate-900/50 p-3 rounded-lg border border-rose-500/20">❌ NO MINDLESS SCROLLING (UNLESS REWARDED)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="expenses" class="tab-content hidden space-y-6">
+            <h2 class="text-4xl font-black tracking-tighter text-white mb-2 drop-shadow-lg">WALLET & EXPENSES</h2>
+            <div class="glass p-6 rounded-[2rem] flex flex-col md:flex-row justify-between items-center gap-6 border-emerald-500 border-l-8 shadow-xl bg-gradient-to-r from-emerald-900/20 to-transparent">
+                <div>
+                    <p class="text-[10px] text-slate-400 font-bold tracking-widest drop-shadow-md">TOTAL AVAILABLE BALANCE</p>
+                    <p id="balanceContainer" class="text-5xl font-black text-emerald-400 flex items-center gap-3 tabular-nums drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                        ₹<span id="walletBalanceDisplay">0</span>
+                        <button onclick="editBalance()" class="text-slate-500 hover:text-emerald-400 btn-interact mt-2"><i data-lucide="edit-3" size="24"></i></button>
+                    </p>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <input type="number" id="addBalInp" placeholder="ADD ₹" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-black w-full md:w-32 text-center text-white tabular-nums solo-glow">
+                    <button onclick="addBalance()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-black btn-interact shadow-[0_0_10px_rgba(16,185,129,0.5)] whitespace-nowrap">ADD FUND</button>
+                </div>
+            </div>
+            <div class="glass p-4 rounded-3xl flex flex-col md:flex-row gap-4 shadow-lg border-rose-500/30">
+                <input type="text" id="eTitle" placeholder="SPEND ON..." class="bg-slate-800 border-2 border-slate-700 rounded-xl flex-1 p-4 outline-none font-black text-lg text-white solo-glow">
+                <input type="number" id="eAmt" placeholder="₹ AMOUNT" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-4 outline-none font-black text-lg w-full md:w-48 text-white tabular-nums solo-glow">
+                <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-500 text-white px-8 py-4 rounded-2xl font-black btn-interact w-full md:w-auto shadow-[0_0_10px_rgba(225,29,72,0.5)]">DEDUCT</button>
+            </div>
+            <div id="expensesList" class="grid gap-3 mt-4"></div>
+        </section>
+
+        <section id="diary" class="tab-content hidden space-y-4">
+            <h2 class="text-4xl font-black tracking-tighter text-white mb-2 drop-shadow-lg">PROTAGONIST LOG</h2>
+            <div class="glass p-6 rounded-3xl flex flex-col gap-4 shadow-xl border-t-4 border-indigo-500 relative z-10 bg-indigo-900/10">
+                <textarea id="diaryInp" rows="6" placeholder="DEAR DIARY, TODAY I..." class="bg-slate-800 border-2 border-slate-700 rounded-xl p-4 outline-none font-bold text-white w-full resize-none placeholder-slate-500 solo-glow" style="text-transform: none;"></textarea>
+                <button onclick="saveDiary()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-black btn-interact w-full text-xl flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                    <i data-lucide="pen-tool"></i> SAVE LOG
+                </button>
+            </div>
+            <div id="diaryDisplay" class="mt-6 space-y-4"></div>
+        </section>
+
+        <section id="history" class="tab-content hidden space-y-6">
+            <h2 class="text-4xl font-black tracking-tighter text-white mb-4 drop-shadow-lg">SYSTEM ANALYTICS</h2>
+            <div class="glass p-6 rounded-3xl border-t-4 border-emerald-500 shadow-xl bg-slate-800/20">
+                <h3 class="text-xl font-black text-white mb-4">TOTAL QUESTS COMPLETED (LAST 7 DAYS)</h3>
+                <canvas id="historyChart" height="100"></canvas>
+            </div>
+            <div id="historyContainer" class="grid gap-6 mt-6"></div>
+        </section>
+    </main>
+
+    <script>
+        // ==========================================
+        // DATABASE MIGRATION & INIT (V33)
+        // ==========================================
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v32_awakening')) || JSON.parse(localStorage.getItem('happysam_v31_storagefix'));
+        let db = JSON.parse(localStorage.getItem('happysam_v33_full_awakening')) || oldDb || {};
+        
+        if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
+        if (!db.pact) db.pact = { reward: "", penalty: "", state: "locked", missedTasks: 0 };
+        if (!db.skills) db.skills = [];
+        if (!db.career) db.career = [];
+        if (!db.diary) db.diary = {};
+        if (!db.today) db.today = [];
+        if (!db.timed) db.timed = [];
+        if (!db.roadmaps) db.roadmaps = [];
+        if (!db.trading) db.trading = [];
+        if (!db.history) db.history = {};
+        if (!db.wallet) db.wallet = { balance: 0 };
+        if (!db.expenses) db.expenses = [];
+        if (db.tradeCapital === undefined) db.tradeCapital = 0;
+        
+        if (!db.awakening) db.awakening = { noFapStreak: 0, noFapLastDate: "", combat: { pushups: 0, pullups: 0, squats: 0, core: 0 }, looks: { oil: false, water: false, mewing: false, skin: false, posture: false }, lastHaircut: new Date().toLocaleDateString() };
+        
+        // Safety checks for new properties
+        if (db.awakening.combat.squats === undefined) db.awakening.combat.squats = 0;
+        if (db.awakening.combat.core === undefined) db.awakening.combat.core = 0;
+        if (!db.awakening.lastHaircut) db.awakening.lastHaircut = new Date().toLocaleDateString();
+
+        db.wallet.balance = parseFloat(db.wallet.balance) || 0;
+        if (!db.lastDate) db.lastDate = new Date().toLocaleDateString();
+        if (db.savedMonth === undefined) db.savedMonth = new Date().getMonth();
+
+        let timerIntervals = {};
+        let chartInstance = null;
+
+        const soloQuotes = [
+            "You are standing at the bottom of the abyss. The only way out is through sheer, unrelenting force.\nLevel up or remain a secondary character in your own story.",
+            "When you feel like quitting, remember why you started. Every drop of sweat today is a tear your enemies will shed tomorrow.\nArise and conquer.",
+            "The System does not care about your feelings, your fatigue, or your heartbreak. It only reads results.\nPut your head down and execute the protocol.",
+            "Tears and regrets will not build the empire you envision.\nSwallow your pride, endure the pain, and forge a physique that commands respect.",
+            "A monarch does not beg the world for opportunities.\nHe sharpens his skills in the shadows, waiting for the exact moment to strike.",
+            "The 9-to-5 matrix is a prison designed for the weak.\nTo escape, you must grind harder in your free hours than they do in their entire lifetimes.",
+            "Every time you choose discipline over temporary pleasure, your stats level up.\nRelapse is the enemy of greatness; maintain your iron will.",
+            "The market is a battlefield, and your capital is your army.\nWait for the perfect setup and strike with absolute precision.",
+            "Pain is just EXP leaving the body. The heavier the weight, the stronger the shadow.\nKeep pushing until your reflection matches your ambition.",
+            "They laughed at the shadow because it was quiet.\nBut when the shadow swallowed the light, the whole world was forced to bow down.",
+            "Your past is dead, and the people who left you belong to it.\nFocus on building an inescapable aura; let your success be the loudest revenge.",
+            "No one is coming to save you. The system only rewards those who bleed for their goals.\nStand up, hunter, the real boss fight begins now."
+        ];
+
+        const gachaRewards = [
+            {id: 1, text: "Movie Night", days: [6]}, {id: 2, text: "Extra Sleep For Tomorrow", days: [0]},
+            {id: 3, text: "Nostalgia Trip - Ranchi", days: [0]}, {id: 4, text: "Street Food Treat (Worth ₹100)", days: 'all'},
+            {id: 5, text: "Ghumne Jana (Evening Walk/Ride)", days: 'all'}, {id: 6, text: "Gaming / Admiring Her Time", days: 'all'},
+            {id: 7, text: "Reels For Convenience (Mindless scroll)", days: 'all'}, {id: 8, text: "The Model Treat (Grooming Product)", days: 'all'},
+            {id: 9, text: "After 7 PM Chill Night", days: 'all'}, {id: 10, text: "The Clean Cheat (Healthy Dessert/Snack)", days: 'all'}
+        ];
+
+        const gachaPenalties = [
+            "The Brutal Cold (5min Cold Shower)", "Instant Torture (100 Extra Pushups / 50 Burpees)",
+            "Dopamine Detox (24h No Insta/YT)", "Financial Hit (Donate ₹50/₹100)",
+            "The Bland Punish (No Oil/Masala Meal)", "Early Hell (Wake up 4:30 AM & Walk)",
+            "No Music Grind (Work in complete silence)", "Social Isolation (No casual chats today)",
+            "Chart Hell (Backtest 50 XAUUSD Charts manually)"
+        ];
+
+        function save() { 
+            try { localStorage.setItem('happysam_v33_full_awakening', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
+        }
+
+        // ==========================================
+        // EFFECTS & UTILS
+        // ==========================================
+        function toggleDiaryText(id, btn) {
+            let p = document.getElementById(id);
+            if(p.classList.contains('line-clamp-3')) { p.classList.remove('line-clamp-3'); btn.innerHTML = 'SHOW LESS <i data-lucide="chevron-up" size="12" class="inline"></i>'; } 
+            else { p.classList.add('line-clamp-3'); btn.innerHTML = 'READ MORE <i data-lucide="chevron-down" size="12" class="inline"></i>'; }
+            lucide.createIcons();
+        }
+
+        function triggerSiren() {
+            const audio = document.getElementById('penaltyAlarm');
+            if(audio) { audio.currentTime = 0; audio.volume = 1.0; let p = audio.play(); if(p !== undefined) p.catch(e => console.log("Audio blocked.")); }
+            document.body.classList.add('danger-pulse'); setTimeout(() => document.body.classList.remove('danger-pulse'), 3000);
+        }
+        function openImageZoom(tradeId) {
+            const t = db.trading.find(x => x.id == tradeId); if(!t || !t.img) return;
+            const zModal = document.getElementById('imageZoomModal'); const zImg = document.getElementById('zoomedImage');
+            zImg.src = t.img; zModal.classList.remove('hidden'); zModal.classList.add('flex');
+            setTimeout(() => { zImg.classList.remove('scale-95'); zImg.classList.add('scale-100'); }, 10);
+        }
+        function closeImageZoom() {
+            const zModal = document.getElementById('imageZoomModal'); const zImg = document.getElementById('zoomedImage');
+            zImg.classList.remove('scale-100'); zImg.classList.add('scale-95');
+            setTimeout(() => { zModal.classList.add('hidden'); zModal.classList.remove('flex'); }, 200);
+        }
+        function showSystemAlert(title, desc, type="info") {
+            const container = document.getElementById('toastContainer'); const alertBox = document.createElement('div');
+            let colorClasses = "bg-slate-800 border-slate-600"; let icon = "info";
+            if (type === "reward") { colorClasses = "bg-indigo-600 border-indigo-400"; icon = "check-circle"; }
+            else if (type === "penalty") { colorClasses = "bg-rose-600 border-rose-400"; icon = "skull"; }
+            else if (type === "warning") { colorClasses = "bg-orange-600 border-orange-400"; icon = "alert-triangle"; }
+            alertBox.className = `glass-panel ${colorClasses} text-white border-2 p-4 rounded-2xl shadow-2xl flex items-center gap-4 transition-all duration-500 toast-leave w-full md:w-96 mx-auto border-t-4`;
+            alertBox.innerHTML = `<div class="bg-white/20 p-3 rounded-xl flex-shrink-0"><i data-lucide="${icon}"></i></div><div><h4 class="font-black text-sm tracking-widest leading-tight">${title}</h4><p class="text-xs font-bold opacity-90 mt-1">${desc}</p></div>`;
+            container.appendChild(alertBox); lucide.createIcons();
+            requestAnimationFrame(() => { alertBox.classList.remove('toast-leave'); alertBox.classList.add('toast-enter'); });
+            setTimeout(() => { alertBox.classList.remove('toast-enter'); alertBox.classList.add('toast-leave'); setTimeout(() => alertBox.remove(), 500); }, 3500);
+        }
+
+        // ==========================================
+        // SYSTEM CORE
+        // ==========================================
+        function checkLoginStreak() {
+            const today = new Date().toLocaleDateString();
+            if(db.player.lastLogin === today) return; 
+            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            if(db.player.lastLogin === yesterday.toLocaleDateString()) { 
+                db.player.streak++; showSystemAlert("STREAK INCREASED!", `${db.player.streak} Days Strong.`, "info"); 
+                if(db.awakening.noFapLastDate === yesterday.toLocaleDateString()) {
+                    db.awakening.noFapStreak++; db.awakening.noFapLastDate = today; updateStats(25, 0);
+                }
+            } 
+            else if (db.player.lastLogin !== "") { 
+                db.player.streak = 1; showSystemAlert("STREAK BROKEN", "You missed a day.", "warning"); 
+                if(db.awakening.noFapLastDate !== today) { db.awakening.noFapStreak = 0; db.awakening.noFapLastDate = today; }
+            } 
+            else { db.player.streak = 1; db.awakening.noFapLastDate = today; }
+            db.player.lastLogin = today; save();
+        }
+
+        function updateSystemVoice() {
+            const voiceBox = document.getElementById('systemVoice'); const voiceContainer = document.getElementById('systemVoiceBox');
+            let message = soloQuotes[Math.floor(Math.random() * soloQuotes.length)];
+            let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
+
+            if (dailyLosses >= 2) { message = "CRITICAL WARNING: Drawdown Limit Breached! Cease Trading Immediately."; voiceContainer.classList.add('border-rose-500', 'bg-rose-900/30'); }
+            else if (db.player.hp <= 0) { message = "You have fallen. The System demands a penalty to rise again."; voiceContainer.classList.add('border-rose-500', 'bg-rose-900/30'); }
+            else if (db.player.hp < 40) { message = "Weakness is a choice. Stand up."; }
+            
+            voiceBox.innerText = `"${message}"`;
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.d-nav-btn, .m-nav-btn').forEach(b => { b.classList.remove('bg-indigo-600', 'text-white', 'shadow-[0_0_15px_rgba(99,102,241,0.4)]', 'nav-active', 'text-indigo-500'); b.classList.add('text-slate-400'); });
+            let dBtn = Array.from(document.querySelectorAll('.d-nav-btn')).find(b => b.dataset.tab === id); if(dBtn) dBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-[0_0_15px_rgba(99,102,241,0.4)]');
+            let mBtn = Array.from(document.querySelectorAll('.m-nav-btn')).find(b => b.dataset.tab === id); if(mBtn) mBtn.classList.add('nav-active', 'text-indigo-500');
+            document.getElementById(id).classList.remove('hidden'); if(id === 'history') renderChart(); 
+        }
+
+        function updateStats(expChange, hpChange, isPenalty = false) { 
+            let finalExp = expChange;
+            if (expChange > 0 && db.player.streak >= 3) { finalExp = Math.round(expChange * 1.5); }
+            db.player.exp += finalExp; db.player.hp += hpChange; 
+            if(db.player.hp > 100) db.player.hp = 100; 
+            if(db.player.hp <= 0) { showSystemAlert("PENALTY ZONE", "HP HIT 0! LEVEL DOWNGRADED.", "penalty"); db.player.level = Math.max(1, db.player.level - 1); db.player.hp = 100; db.player.exp = 0; isPenalty = true; } 
+            if (isPenalty || hpChange < 0) { triggerSiren(); }
+            
+            let maxExp = db.player.level * 50; 
+            if (db.player.exp >= maxExp) { db.player.level++; db.player.exp -= maxExp; db.player.hp = 100; showSystemAlert("LEVEL UP!", `YOU ARE NOW LEVEL ${db.player.level}`, "reward"); } 
+            else if (db.player.exp < 0) { db.player.exp = 0; }
+            save(); 
+        }
+
+        // ==========================================
+        // GACHA PACT & TASKS
+        // ==========================================
+        function checkPactStatus() { 
+            if(db.pact.state === "triggered") return; 
+            const total = db.today.length; const done = db.today.filter(t=>t.done).length; 
+            if(total > 0 && done === total && db.pact.state !== "unlocked") { db.pact.state = "unlocked"; showSystemAlert("REWARD UNLOCKED!", `GO ENJOY: ${db.pact.reward}`, "reward"); } 
+            else if ((total === 0 || done < total) && db.pact.state === "unlocked") { db.pact.state = "locked"; } 
+        }
+        function clearPenalty() { db.pact.state = "locked"; db.pact.missedTasks = 0; showSystemAlert("PENALTY CLEARED", "You survived the penalty.", "info"); save(); }
+        
+        function addSimpleTask() { const val = document.getElementById('simpleTaskInp').value; if(!val) return; db.today.push({ id: Date.now(), text: val, done: false }); document.getElementById('simpleTaskInp').value = ''; checkPactStatus(); save(); }
+        function toggleSimpleTask(id) { let task = db.today.find(t => t.id == id); if(!task) return; task.done = !task.done; if(task.done) { updateStats(20, 0); } else { updateStats(-20, 0); } checkPactStatus(); save(); }
+        function deleteSimpleTask(id) { 
+            let task = db.today.find(t => t.id == id); if(!task) return; 
+            if(!task.done) { 
+                db.pact.missedTasks++;
+                if(db.pact.missedTasks >= 2 && db.pact.state !== "triggered") { 
+                    db.pact.state = "triggered"; updateStats(0, -20, true); showSystemAlert("PACT BROKEN!", `PENALTY: ${db.pact.penalty}`, "penalty"); 
+                } else { showSystemAlert("WARNING", `Task Missed (${db.pact.missedTasks}/2). Next miss triggers penalty.`, "warning"); }
+            } else { updateStats(-20, 0); } 
+            db.today = db.today.filter(t => t.id != id); checkPactStatus(); save(); 
+        }
+
+        function addTimedTask() { const text = document.getElementById('timedInp').value; const val = parseInt(document.getElementById('raidTimeVal').value) || 0; const unit = document.getElementById('raidTimeUnit').value; if(!text) return; let multiplier = 0; if(unit === 'm') multiplier = 60000; else if(unit === 'h') multiplier = 3600000; else if(unit === 'd') multiplier = 86400000; let endTime = val > 0 ? Date.now() + (val * multiplier) : null; let displayDur = val > 0 ? `${val}${unit.toUpperCase()}` : 'No Limit'; db.timed.push({ id: Date.now(), text: text, durationStr: displayDur, endTime: endTime, status: 'active' }); document.getElementById('timedInp').value = ''; document.getElementById('raidTimeVal').value = ''; save(); }
+        function completeTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; t.status = 'done'; clearInterval(timerIntervals[id]); updateStats(50, 10); showSystemAlert("RAID BOSS CLEARED!", "+50 EXP | +10 HP RECOVERED", "reward"); save(); }
+        function abortTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; if(confirm("ABORTING THIS RAID WILL DEAL 30 HP DAMAGE. PROCEED?")) { t.status = 'aborted'; clearInterval(timerIntervals[id]); updateStats(0, -30, true); showSystemAlert("RAID FAILED", "-30 HP DAMAGE TAKEN!", "penalty"); save(); } }
+        
+        function startTaskTimers() {
+            db.timed.forEach(t => {
+                if(t.status === 'active' && t.endTime) {
+                    if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]);
+                    timerIntervals[t.id] = setInterval(() => {
+                        const el = document.getElementById(`timer_${t.id}`); if(!el) return;
+                        const diff = t.endTime - Date.now();
+                        if(diff <= 0) { el.innerText = "TIME UP ⚠️"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } 
+                        else { 
+                            let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                            if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; 
+                        }
+                    }, 1000);
+                }
+            });
+        }
+
+        // ==========================================
+        // ROADMAP, WALLET, TRADING, OTHERS
+        // ==========================================
+        function addRoadmap() { const t = document.getElementById('rmTitleInp').value; if(!t) return; db.roadmaps.unshift({ id: Date.now(), title: t, steps: [] }); document.getElementById('rmTitleInp').value = ''; showSystemAlert("PATH CREATED", "New Evolution Path has been forged.", "info"); save(); }
+        function addRoadmapStep(rmId) { const t = document.getElementById(`rmStepText_${rmId}`).value; const d = document.getElementById(`rmStepDate_${rmId}`).value; if(!t || !d) { showSystemAlert("MISSING DATA", "Step description and deadline required.", "warning"); return; } let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { rm.steps.push({ id: Date.now(), text: t, date: d, done: false }); save(); } }
+        function toggleRmStep(rmId, stepId) { let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { let step = rm.steps.find(s => s.id == stepId); if(step && !step.done) { step.done = true; updateStats(50, 0); showSystemAlert("MILESTONE REACHED", "+50 EXP GAINED", "reward"); save(); } } }
+        function deleteRoadmap(rmId) { if(confirm("DELETE THIS ENTIRE PATH?")) { db.roadmaps = db.roadmaps.filter(r => r.id != rmId); showSystemAlert("PATH DELETED", "Evolution path erased.", "info"); save(); } }
+
+        function addBalance() { const amt = parseFloat(document.getElementById('addBalInp').value); if(!amt || amt <= 0) return; db.wallet.balance = parseFloat((db.wallet.balance + amt).toFixed(2)); db.expenses.unshift({ id: Date.now(), title: 'FUNDS ADDED', amt: amt, type: 'in', date: new Date().toLocaleDateString() }); document.getElementById('addBalInp').value = ''; showSystemAlert("FUNDS ADDED", `₹${amt} credited.`, "reward"); save(); }
+        function addExpense() { const t = document.getElementById('eTitle').value; const a = parseFloat(document.getElementById('eAmt').value); if(!t || !a || a <= 0) return; db.wallet.balance = parseFloat((db.wallet.balance - a).toFixed(2)); db.expenses.unshift({ id: Date.now(), title: t, amt: a, type: 'out', date: new Date().toLocaleDateString() }); document.getElementById('eTitle').value = ''; document.getElementById('eAmt').value = ''; showSystemAlert("FUNDS DEDUCTED", `₹${a} spent on ${t}.`, "warning"); save(); }
+        function deleteExpense(id) { let e = db.expenses.find(x => x.id == id); if(e) { if(e.type === 'in') { db.wallet.balance = parseFloat((parseFloat(db.wallet.balance) - parseFloat(e.amt)).toFixed(2)); } else { db.wallet.balance = parseFloat((parseFloat(db.wallet.balance) + parseFloat(e.amt)).toFixed(2)); } db.expenses = db.expenses.filter(x => x.id != id); showSystemAlert("LOG REVERTED", `Balance Updated.`, "info"); save(); } }
+        function editBalance() { let newBal = prompt("ENTER EXACT CURRENT BALANCE (₹):", db.wallet.balance); if(newBal !== null && !isNaN(newBal) && newBal.trim() !== "") { db.wallet.balance = parseFloat(Number(newBal).toFixed(2)); showSystemAlert("BALANCE UPDATED", `Wallet override successful.`, "info"); save(); } }
+
+        function editTradeCapital() { let newCap = prompt("ENTER EXACT TRADING CAPITAL (₹):", db.tradeCapital); if(newCap !== null && !isNaN(newCap) && newCap.trim() !== "") { db.tradeCapital = parseFloat(Number(newCap).toFixed(2)); showSystemAlert("CAPITAL UPDATED", "Trading balance updated.", "info"); save(); } }
+        async function addTrade() { 
+            const file = document.getElementById('tImg').files[0]; let imgData = ""; 
+            if (file) { try { imgData = await new Promise((res, reject) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = (event) => { const img = new Image(); img.src = event.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const MAX_WIDTH = 800; const MAX_HEIGHT = 800; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); res(canvas.toDataURL('image/jpeg', 0.6)); }; img.onerror = reject; }; r.onerror = reject; }); } catch(err) { console.log(err); } } 
+            let setups = []; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => setups.push(cb.value));
+            let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
+            const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
+            db.trading.unshift(newTrade);
+            try { localStorage.setItem('happysam_v33_full_awakening', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
+            catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
+        }
+        function deleteTrade(id) { if(confirm("DELETE THIS TRADE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
+        function openTradeModal(id) { 
+            const t = db.trading.find(x => x.id == id); if(!t) return; 
+            let imgHtml = '<p class="text-center text-slate-500 text-xs font-bold mt-4 border-t border-slate-700 pt-4">NO IMAGE ATTACHED</p>'; if (t.img && t.img.length > 20) { imgHtml = `<div class="mt-4 relative group cursor-zoom-in border-t border-slate-700 pt-4" onclick="openImageZoom(${t.id})"><img src="${t.img}" class="w-full rounded-xl border border-slate-700 hover:opacity-80 transition"><div class="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition pointer-events-none"><div class="bg-black/70 p-3 rounded-full text-white"><i data-lucide="zoom-in" size="32"></i></div></div></div>`; } 
+            let setupBadges = ''; if(t.setups && t.setups.length > 0) { setupBadges = `<div class="mt-4"><p class="text-[10px] text-slate-400 font-bold mb-2"><i data-lucide="crosshair" size="10" class="inline"></i> SETUP TRIGGERED:</p><div class="flex flex-wrap gap-2">${t.setups.map(s => `<span class="bg-blue-900/40 text-blue-300 border border-blue-700/50 px-2 py-1 rounded text-[10px] font-black">${s}</span>`).join('')}</div></div>`; }
+            let htmlContent = `<div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700"><div><p class="text-[10px] text-slate-400 font-bold">ASSET</p><p class="text-2xl font-black text-white">${t.index}</p></div><div class="text-right"><p class="text-[10px] text-slate-400 font-bold">RESULT</p><p class="text-2xl font-black ${t.result === 'WIN' ? 'text-emerald-500' : 'text-rose-500'}">${t.result} ${t.pnl ? `(₹${t.pnl})` : ''}</p></div></div><div class="flex justify-between text-sm font-black text-slate-300 px-2 mt-2"><span>ENTRY: ${t.entry || 'N/A'}</span><span>EXIT: ${t.exit || 'N/A'}</span></div><div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mt-4"><p class="text-[10px] text-slate-400 font-bold mb-1"><i data-lucide="brain" class="inline" size="12"></i> TRADE LOGIC</p><p class="text-sm font-bold text-white" style="text-transform: none;">${t.logic}</p></div>${setupBadges}${imgHtml}<p class="text-right text-[10px] text-slate-500 font-black mt-2 mb-4">LOGGED: ${t.date}</p><button onclick="deleteTrade(${t.id})" class="w-full bg-rose-600/20 text-rose-500 border border-rose-500 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-xs"><i data-lucide="trash-2" size="16"></i> DELETE TRADE LOG</button>`;
+            document.getElementById('tradeModalContent').innerHTML = htmlContent; lucide.createIcons(); document.getElementById('tradeModal').classList.remove('hidden'); document.getElementById('tradeModal').classList.add('flex'); 
+        }
+        function closeTradeModal() { document.getElementById('tradeModal').classList.add('hidden'); document.getElementById('tradeModal').classList.remove('flex'); }
+
+        function addJob() { const c = document.getElementById('jobCompInp').value; const r = document.getElementById('jobRoleInp').value; const s = document.getElementById('jobStatusInp').value; if(!c || !r) return; db.career.unshift({ id: Date.now(), comp: c, role: r, status: s, date: new Date().toLocaleDateString() }); document.getElementById('jobCompInp').value = ''; document.getElementById('jobRoleInp').value = ''; save(); }
+        function updateJobStatus(id, s) { let j = db.career.find(x => x.id == id); if(j) { j.status = s; save(); } }
+        function deleteJob(id) { if(confirm("DELETE THIS APPLICATION?")) { db.career = db.career.filter(x => x.id != id); showSystemAlert("JOB LOG DELETED", "Application erased.", "info"); save(); } }
+        function saveDiary() { const text = document.getElementById('diaryInp').value.trim(); if(!text) return; db.diary[new Date().toLocaleDateString()] = text; showSystemAlert("LOG SAVED", "Your story is archived.", "info"); save(); }
+        function addNewSkill() { const name = document.getElementById('newSkillInp').value; if(!name) return; db.skills.push({ id: Date.now(), name: name, level: 1, exp: 0, lastRemark: "NO REMARKS YET" }); document.getElementById('newSkillInp').value = ''; save(); }
+        function trainSkill(id) { const remark = document.getElementById(`skillRemark_${id}`).value; let s = db.skills.find(x => x.id == id); if(!s) return; s.exp += 20; s.lastRemark = remark || "PRACTICED HARD!"; let maxExp = s.level * 100; if(s.exp >= maxExp) { s.level++; s.exp -= maxExp; } save(); }
+        function deleteSkill(id) { if(confirm("DELETE THIS SKILL?")) { db.skills = db.skills.filter(x => x.id != id); showSystemAlert("SKILL DELETED", "Skill removed from tree.", "info"); save(); } }
+
+        function saveCombat() {
+            db.awakening.combat.pushups = parseInt(document.getElementById('combatPushups').value) || 0;
+            db.awakening.combat.pullups = parseInt(document.getElementById('combatPullups').value) || 0;
+            db.awakening.combat.squats = parseInt(document.getElementById('combatSquats').value) || 0;
+            db.awakening.combat.core = parseInt(document.getElementById('combatCore').value) || 0;
+            showSystemAlert("COMBAT SAVED", "Strength protocol updated.", "info"); save();
+        }
+        function toggleLooks(key) { db.awakening.looks[key] = !db.awakening.looks[key]; save(); }
+        function resetHaircut() { db.awakening.lastHaircut = new Date().toLocaleDateString(); showSystemAlert("MAINTENANCE LOGGED", "Haircut timeline reset.", "info"); save(); }
+        function triggerRelapse() { if(confirm("Are you sure you relapsed? This deals -40 HP and breaks your streak.")) { db.awakening.noFapStreak = 0; updateStats(0, -40, true); showSystemAlert("STREAK BROKEN", "Discipline failed. Massive Penalty applied.", "penalty"); save(); } }
+
+        // ==========================================
+        // SYSTEM OVERRIDES & CHARTS
+        // ==========================================
+        function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
+        function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v33.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v33_full_awakening', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
+
+        function renderChart() {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            let labels = []; let data = [];
+            for(let i=6; i>=0; i--) { let d = new Date(); d.setDate(d.getDate() - i); let dStr = d.toLocaleDateString(); labels.push(d.getDate() + "/" + (d.getMonth()+1)); let count = 0; if(dStr === new Date().toLocaleDateString()) { count = db.today.filter(t=>t.done).length + db.timed.filter(t=>t.status==='done').length; } else if (db.history[dStr]) { count = db.history[dStr].filter(t=>t.state==='done').length; } data.push(count); }
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests Completed', data: data, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointBackgroundColor: '#0f172a', pointBorderColor: '#10b981', pointRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } } } });
+        }
+
+        function forceDayReset() { if(confirm("Force Day Reset? Moves tasks to history & shuffles Gacha Pact.")) { db.lastDate = "Test_Reset_" + Date.now(); checkReset(); closeStatusModal(); showSystemAlert("SYSTEM RESET", "Day reset executed.", "info"); } }
+        function updateDayTimer() { const now = new Date(); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); const diff = tomorrow - now; const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); document.querySelectorAll('.dayCountdownText').forEach(el => el.innerText = `${h}:${m}:${s}`); }
+
+        // ==========================================
+        // RENDER DOM
+        // ==========================================
+        function render() {
+            document.getElementById('playerLvl').innerText = db.player.level; document.getElementById('playerStreak').innerText = db.player.streak; document.getElementById('hpText').innerText = db.player.hp + '/100'; document.getElementById('hpBar').style.width = db.player.hp + '%'; 
+            let maxExp = db.player.level * 50; 
+            document.getElementById('expText').innerText = db.player.exp + '/' + maxExp; document.getElementById('expBar').style.width = ((db.player.exp / maxExp) * 100) + '%';
+            
+            document.getElementById('nofapDays').innerText = db.awakening.noFapStreak;
+
+            let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
+            const alertBox = document.getElementById('drawdownAlertBox');
+            if(dailyLosses >= 2) { alertBox.classList.remove('hidden'); if(!alertBox.dataset.alarmPlayed) { triggerSiren(); alertBox.dataset.alarmPlayed = "true"; } } else { alertBox.classList.add('hidden'); alertBox.dataset.alarmPlayed = ""; }
+
+            const pactSec = document.getElementById('pactSection');
+            let pCard = `<div class="glass-panel p-4 rounded-2xl border ${db.pact.state === "triggered" ? 'border-rose-500 bg-rose-900/20' : 'border-transparent opacity-70'} flex-1 shadow-md">
+                <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black ${db.pact.state === "triggered" ? 'text-rose-500' : 'text-slate-500'}">PENALTY (${db.pact.missedTasks}/2 MISSED)</span><i data-lucide="skull" size="14" class="${db.pact.state === "triggered" ? 'text-rose-500' : 'text-slate-400'}"></i></div>
+                <p class="font-black text-md ${db.pact.state === "triggered" ? 'text-rose-500 mb-3' : 'text-slate-300'}">${db.pact.penalty || "NONE"}</p>
+                ${db.pact.state === "triggered" ? `<button onclick="clearPenalty()" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 rounded-lg font-black btn-interact">MARK DONE</button>` : ''}
+            </div>`;
+            let rCard = `<div class="glass-panel p-4 rounded-2xl border ${db.pact.state === "unlocked" ? 'border-amber-500 bg-amber-900/20 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'border-transparent opacity-70'} flex-1 shadow-md">
+                <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black ${db.pact.state === "unlocked" ? 'text-amber-500' : 'text-slate-500'}">REWARD ${db.pact.state === "unlocked" ? 'UNLOCKED' : '(LOCKED)'}</span><i data-lucide="${db.pact.state === "unlocked" ? 'unlock' : 'lock'}" size="14" class="${db.pact.state === "unlocked" ? 'text-amber-500' : 'text-slate-400'}"></i></div>
+                <p class="font-black text-md ${db.pact.state === "unlocked" ? 'text-amber-400' : 'text-slate-300'}">${db.pact.reward || "NONE"}</p>
+            </div>`;
+            pactSec.innerHTML = `<p class="text-[10px] font-black text-slate-400 tracking-widest mb-2"><i data-lucide="dices" size="12" class="inline"></i> THE GACHA PACT (AUTO-ROLL)</p><div class="flex flex-col md:flex-row gap-3">${rCard}${pCard}</div>`;
+
+            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="glass p-4 rounded-3xl flex justify-between items-center group relative z-10 hover:bg-slate-800/80 transition-colors"><div class="flex items-center gap-4"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-4 border-indigo-500 flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.6)]' : ''} transition-all">${t.done ? '<i data-lucide="check" class="text-white" size="24"></i>' : ''}</button><p class="font-black text-lg leading-none ${t.done ? 'opacity-30 line-through text-slate-500' : 'text-white'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-500 hover:text-rose-500 transition ml-2 p-2 btn-interact"><i data-lucide="x-circle" size="24"></i></button></div>`).join('');
+            document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; let contentClass = isDone ? 'opacity-40 border-emerald-900' : (isAborted ? 'opacity-40 border-rose-900 line-through' : 'border-rose-500 shadow-[0_0_10px_rgba(225,29,72,0.3)]'); let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-slate-900 py-1 px-3 rounded-lg text-amber-500 font-black tracking-widest text-sm flex items-center gap-2"><i data-lucide="clock" size="14"></i><span id="timer_${t.id}" class="tabular-nums">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-xs">CLEARED IN ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-rose-500 font-black text-xs">ABORTED</div>` : '')); let buttons = t.status === 'active' ? `<div class="flex flex-col md:flex-row gap-2 mt-4"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500 hover:bg-emerald-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm"><i data-lucide="check-circle" size="18"></i> CLEAR RAID (+50 EXP)</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm"><i data-lucide="x-circle" size="18"></i> ABORT (-30 HP)</button></div>` : ``; return `<div class="glass p-5 rounded-3xl border-l-8 ${contentClass} relative z-10 transition-all hover:bg-slate-800/50"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-xl text-white ${isAborted ? 'text-rose-300 line-through' : ''} ${isDone ? 'text-emerald-300' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; }).join(''); startTaskTimers();
+
+            document.getElementById('roadmapsContainer').innerHTML = db.roadmaps.map(rm => {
+                let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-500"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-500"></i>' : '<i data-lucide="circle" class="text-amber-500"></i>'); let textClass = s.done ? 'text-emerald-400 line-through opacity-50' : (isLocked ? 'text-slate-500' : 'text-white'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-10 w-10 border-4 border-amber-500 flex items-center justify-center rounded-xl text-amber-500 hover:bg-amber-500 hover:text-white transition ml-auto btn-interact shadow-[0_0_10px_rgba(245,158,11,0.4)]"><i data-lucide="check" size="20"></i></button>`; return `<div class="flex items-stretch gap-4 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[11px] w-1 h-[calc(100%-1rem)] bg-slate-700/50 rounded-full"></div>` : ''}<div class="mt-4 bg-slate-900 rounded-full z-10 p-1">${statusIcon}</div><div class="flex-1 bg-slate-800/40 border border-slate-700/50 p-4 rounded-2xl mb-2 flex items-center justify-between shadow-sm overflow-hidden"><div><p class="font-black text-lg ${textClass} break-words break-all">${s.text}</p><p class="text-[10px] font-bold text-slate-400 mt-1"><i data-lucide="calendar" size="10" class="inline"></i> TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
+                return `<div class="glass p-6 rounded-[2rem] border-t-4 border-amber-500 relative group z-10 shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-shadow"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 p-2 md:opacity-0 group-hover:opacity-100 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button><h3 class="text-2xl font-black text-amber-400 mb-6 uppercase flex items-center gap-2"><i data-lucide="flag"></i> ${rm.title}</h3><div class="mb-6 pl-2">${stepsHtml}</div><div class="grid grid-cols-1 md:flex gap-3 border-t border-slate-700 pt-5"><input type="text" id="rmStepText_${rm.id}" placeholder="NEXT MILESTONE..." class="bg-slate-800 border-2 border-slate-700 rounded-xl w-full md:flex-1 p-3 outline-none font-black text-sm text-white solo-glow"><input type="date" id="rmStepDate_${rm.id}" class="bg-slate-800 border-2 border-slate-700 rounded-xl w-full md:w-48 p-3 outline-none font-black text-sm text-slate-400 appearance-none min-w-0 box-border solo-glow"><button onclick="addRoadmapStep(${rm.id})" class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-3 rounded-xl font-black btn-interact text-sm w-full md:w-auto"><i data-lucide="plus" class="inline"></i> ADD</button></div></div>`;
+            }).join('');
+
+            let balEl = document.getElementById('walletBalanceDisplay'); balEl.innerText = db.wallet.balance;
+            if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-emerald-400'); balEl.parentElement.classList.add('text-rose-500'); } else { balEl.parentElement.classList.add('text-emerald-400'); balEl.parentElement.classList.remove('text-rose-500'); }
+            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="glass-panel p-4 rounded-2xl flex justify-between items-center border-l-8 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} group relative transition-all hover:bg-slate-800"><div class="flex flex-col"><span class="font-black text-lg text-slate-200">${e.title}</span><span class="text-[10px] text-slate-500 font-bold">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-2xl ${e.type === 'in' ? 'text-emerald-500' : 'text-rose-500'} tabular-nums">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-500 hover:text-rose-500 p-2 md:opacity-0 group-hover:opacity-100 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`).join('');
+
+            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-blue-400' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-400'; return `<div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row justify-between md:items-center gap-3 border-l-4 border-slate-600 hover:bg-slate-800 transition-colors"><div><h3 class="font-black text-lg text-white">${j.comp}</h3><p class="text-[10px] text-slate-400 font-bold">${j.role} | LOGGED: ${j.date}</p></div><div class="flex items-center gap-2 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="bg-slate-900 border border-slate-700 rounded-xl p-2 outline-none font-black ${sColor} flex-1 md:flex-none"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED 🎉</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED ❌</option></select><button onclick="deleteJob(${j.id})" class="text-slate-500 hover:text-rose-500 p-2 btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
+            
+            document.getElementById('tradeCapitalDisplay').innerText = db.tradeCapital;
+            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="glass-panel p-4 rounded-xl border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer hover:bg-slate-800 transition btn-interact"><div class="flex items-center gap-4"><span class="font-black text-lg text-white">${t.index}</span><span class="text-[10px] bg-slate-800 px-2 py-1 rounded text-slate-400 font-bold hidden md:block">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black ${t.result === 'WIN' ? 'text-emerald-500' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-500"></i></div></div>`).join('');
+            
+            // COMBAT RENDER
+            document.getElementById('combatPushups').value = db.awakening.combat.pushups;
+            document.getElementById('combatPullups').value = db.awakening.combat.pullups;
+            document.getElementById('combatSquats').value = db.awakening.combat.squats;
+            document.getElementById('combatCore').value = db.awakening.combat.core;
+            
+            // HAIRCUT MATH
+            let hDate = new Date(db.awakening.lastHaircut);
+            let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24));
+            let hcDisplay = document.getElementById('haircutDaysDisplay');
+            hcDisplay.innerHTML = `${daysPassed}<span class="text-lg opacity-60">D</span>`;
+            if(daysPassed >= 20) hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-rose-500 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]";
+            else hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-indigo-400";
+            
+            // LOOKS RENDER
+            const looksMap = [
+                {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'},
+                {id: 'mewing', label: 'JAWLINE MEWING / CHEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'},
+                {id: 'posture', label: 'POSTURE CHECK'}
+            ];
+            document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `
+                <label class="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer group hover:bg-slate-800 transition-colors">
+                    <span class="text-xs font-bold text-slate-300 group-hover:text-white">${l.label}</span>
+                    <input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-indigo-500">
+                </label>
+            `).join('');
+
+            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="glass-panel p-5 rounded-2xl border-l-4 border-indigo-500 bg-slate-800/50 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-shadow"><p class="text-[10px] text-indigo-400 font-black mb-2 flex items-center gap-1"><i data-lucide="calendar" size="12"></i> ${date}</p><p id="${safeId}" class="text-sm font-medium text-slate-200 line-clamp-3 transition-all" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-indigo-400 mt-2 flex items-center gap-1 hover:text-indigo-300 btn-interact uppercase">READ MORE <i data-lucide="chevron-down" size="12"></i></button></div>`; }).join('');
+            document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="glass p-6 rounded-[2rem] border-purple-500/30 border-t-4 relative group z-10 shadow-lg hover:shadow-[0_0_15px_rgba(147,51,234,0.2)] transition-shadow"><button onclick="deleteSkill(${s.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 p-2 md:opacity-0 group-hover:opacity-100 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button><div class="flex justify-between items-end mb-4 pr-10"><div><h3 class="font-black text-2xl text-purple-400">${s.name}</h3><p class="text-[10px] font-bold text-slate-400 mt-1">LAST REMARK: <span class="text-slate-200" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-black text-purple-500">LEVEL</p><p class="text-4xl font-black text-white">${s.level}</p></div></div><div class="flex justify-between text-[10px] font-black mb-1"><span class="text-purple-400">SKILL EXP</span><span>${s.exp}/${sMax}</span></div><div class="bar-bg mb-4"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col gap-2"><input type="text" id="skillRemark_${s.id}" placeholder="WHAT DID YOU LEARN?" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-bold text-sm text-white solo-glow" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 shadow-[0_0_10px_rgba(147,51,234,0.5)]"><i data-lucide="dumbbell" size="18"></i> PRACTICE LOG (+20 EXP)</button></div></div>`; }).join('');
+
+            const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); document.getElementById('historyContainer').innerHTML = dates.map(date => { let logArray = []; if(date === db.lastDate) { db.today.forEach(t => logArray.push({text: t.text, state: t.done ? 'done' : 'active'})); db.timed.forEach(t => logArray.push({text: t.text + ` (${t.durationStr})`, state: t.status})); } else { logArray = db.history[date] || []; } if(logArray.length === 0) return ''; return `<div class="glass-panel p-6 rounded-[2rem] border-l-[10px] border-emerald-600 shadow-md"><h3 class="font-black text-xl text-emerald-400 mb-4">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3>${logArray.map(t => `<p class="font-bold text-sm ${t.state==='done' ? 'text-emerald-500' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-500'))} mb-2">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')} ${t.text}</p>`).join('')}</div>`; }).join('');
+
+            lucide.createIcons();
+        }
+
+        function checkReset() {
+            const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
+            if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
+            
+            if (db.lastDate !== currDate) {
+                let unfinSimple = db.today.filter(t => !t.done).length;
+                if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
+                
+                let dailyHistory = [];
+                db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
+                db.timed = db.timed.filter(t => { if(t.status !== 'active') { dailyHistory.push({text: t.text + ` (${t.durationStr})`, state: t.status === 'done' ? 'done' : 'aborted'}); return false; } return true; });
+                if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
+                
+                db.today = []; db.lastDate = currDate; 
+                db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 };
+                db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
+                
+                let availableRewards = gachaRewards.filter(r => r.days === 'all' || r.days.includes(dayOfWeek));
+                let rdmRew = availableRewards[Math.floor(Math.random() * availableRewards.length)].text;
+                let rdmPen = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
+                db.pact = { reward: rdmRew, penalty: rdmPen, state: "locked", missedTasks: 0 };
+                save();
+            }
+        }
+        
+        checkLoginStreak(); checkReset(); render(); updateSystemVoice(); setInterval(checkReset, 60000); setInterval(updateDayTimer, 1000); updateDayTimer();
+    </script>
+</body>
+</html>
