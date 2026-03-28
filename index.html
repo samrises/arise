@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | The Awakening v35</title>
+    <title>HappySam | The Awakening v36</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -375,10 +375,10 @@
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V35 - Curse Execution)
+        // DATABASE MIGRATION & INIT (V36 - The Final Hour)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v34_curse')) || JSON.parse(localStorage.getItem('happysam_v33_4_cleaner'));
-        let db = JSON.parse(localStorage.getItem('happysam_v35_execution')) || oldDb || {};
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v35_execution')) || JSON.parse(localStorage.getItem('happysam_v34_curse'));
+        let db = JSON.parse(localStorage.getItem('happysam_v36_finalhour')) || oldDb || {};
         
         // AUTO-CLEANER
         if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
@@ -440,7 +440,7 @@
         ];
 
         function save() { 
-            try { localStorage.setItem('happysam_v35_execution', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v36_finalhour', JSON.stringify(db)); render(); updateSystemVoice(); } 
             catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
         }
 
@@ -541,7 +541,6 @@
         // GACHA PACT & TASKS
         // ==========================================
         function checkPactStatus() { 
-            // V35: Reward logic handles state independently of curse
             const total = db.today.length; const done = db.today.filter(t=>t.done).length; 
             if(total > 0 && done === total && db.pact.state !== "unlocked") { 
                 db.pact.state = "unlocked"; 
@@ -604,7 +603,7 @@
             let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
-            try { localStorage.setItem('happysam_v35_execution', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v36_finalhour', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
             catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE THIS TRADE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
@@ -629,7 +628,7 @@
         function toggleLooks(key) { db.awakening.looks[key] = !db.awakening.looks[key]; save(); }
         function resetHaircut() { db.awakening.lastHaircut = new Date().toLocaleDateString(); showSystemAlert("MAINTENANCE LOGGED", "Haircut timeline reset.", "info"); save(); }
         
-        // V35 7-DAY CURSE TRIGGER
+        // V36 7-DAY CURSE TRIGGER
         function triggerRelapse() { 
             if(confirm("Are you sure you relapsed? This deals -40 HP and triggers a 7-DAY CURSE.")) { 
                 db.awakening.noFapStreak = 0; 
@@ -641,7 +640,7 @@
                 db.awakening.cursePenalty = cursePens[Math.floor(Math.random() * cursePens.length)];
                 
                 db.pact.penalty = db.awakening.cursePenalty; 
-                db.pact.curseDoneToday = false; // Make it instantly active for today
+                db.pact.curseDoneToday = false; 
                 
                 updateStats(0, -40, true); 
                 showSystemAlert("STREAK BROKEN", `7-Day Curse Activated: ${db.awakening.cursePenalty}`, "penalty"); 
@@ -654,8 +653,8 @@
         // ==========================================
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v35_execution.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v35_execution', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v36_finalhour.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v36_finalhour', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
@@ -670,7 +669,27 @@
                 checkReset(); closeStatusModal(); showSystemAlert("SYSTEM RESET", "Clean Day Reset executed.", "info"); 
             } 
         }
-        function updateDayTimer() { const now = new Date(); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); const diff = tomorrow - now; const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); document.querySelectorAll('.dayCountdownText').forEach(el => el.innerText = `${h}:${m}:${s}`); }
+        
+        // Timer with live button unlock checker
+        function updateDayTimer() { 
+            const now = new Date(); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); const diff = tomorrow - now; 
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); 
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); 
+            const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); 
+            document.querySelectorAll('.dayCountdownText').forEach(el => el.innerText = `${h}:${m}:${s}`); 
+            
+            // Dynamic 11 PM Button Unlock Check
+            if (db.awakening.curseActive && !db.pact.curseDoneToday) {
+                const currentHour = new Date().getHours();
+                if (currentHour === 23 && !window.curseUnlockedThisSession) {
+                    window.curseUnlockedThisSession = true;
+                    render(); 
+                } else if (currentHour !== 23 && window.curseUnlockedThisSession) {
+                    window.curseUnlockedThisSession = false;
+                    render(); 
+                }
+            }
+        }
 
         // ==========================================
         // RENDER DOM
@@ -694,14 +713,24 @@
             
             const pactSec = document.getElementById('pactSection');
             
-            // V35: Penalty Card Visual Logic
+            // V36: Final Hour Curse Logic
+            let isLastHour = new Date().getHours() === 23;
             let isPenaltyActive = (db.pact.state === "triggered") || (db.awakening.curseActive && !db.pact.curseDoneToday);
             let penaltyLabel = db.awakening.curseActive ? `CURSE ACTIVE (${db.awakening.curseDays}D LEFT)` : `PENALTY (${db.pact.missedTasks}/2 MISSED)`;
             
+            let markDoneBtnHtml = '';
+            if (isPenaltyActive) {
+                if (db.awakening.curseActive && !isLastHour) {
+                    markDoneBtnHtml = `<div class="bg-rose-900/40 text-rose-400 text-[10px] text-center py-3 mt-2 rounded-lg font-black border border-rose-500/30 tracking-widest shadow-inner"><i data-lucide="lock" size="12" class="inline"></i> UNLOCKS AT 11:00 PM</div>`;
+                } else {
+                    markDoneBtnHtml = `<button onclick="clearPenalty()" class="w-full mt-2 bg-rose-600 hover:bg-rose-500 text-white text-xs py-3 rounded-lg font-black btn-interact tracking-widest shadow-[0_0_10px_rgba(225,29,72,0.5)]">MARK DONE</button>`;
+                }
+            }
+            
             let pCard = `<div class="glass-panel p-4 rounded-2xl border ${isPenaltyActive ? 'border-rose-500 bg-rose-900/20' : 'border-transparent opacity-70'} flex-1 shadow-md">
                 <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black ${isPenaltyActive ? 'text-rose-500' : 'text-slate-500'}">${penaltyLabel}</span><i data-lucide="skull" size="14" class="${isPenaltyActive ? 'text-rose-500' : 'text-slate-400'}"></i></div>
-                <p class="font-black text-md ${isPenaltyActive ? 'text-rose-500 mb-3' : 'text-slate-300'}">${db.pact.penalty || "NONE"}</p>
-                ${isPenaltyActive ? `<button onclick="clearPenalty()" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 rounded-lg font-black btn-interact">MARK DONE</button>` : ''}
+                <p class="font-black text-md ${isPenaltyActive ? 'text-rose-500' : 'text-slate-300'}">${db.pact.penalty || "NONE"}</p>
+                ${markDoneBtnHtml}
             </div>`;
             
             let isRewardUnlocked = (db.pact.state === "unlocked");
@@ -709,7 +738,7 @@
                 <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black ${isRewardUnlocked ? 'text-amber-500' : 'text-slate-500'}">REWARD ${isRewardUnlocked ? 'UNLOCKED' : '(LOCKED)'}</span><i data-lucide="${isRewardUnlocked ? 'unlock' : 'lock'}" size="14" class="${isRewardUnlocked ? 'text-amber-500' : 'text-slate-400'}"></i></div>
                 <p class="font-black text-md ${isRewardUnlocked ? 'text-amber-400' : 'text-slate-300'}">${db.pact.reward || "NONE"}</p>
             </div>`;
-            pactSec.innerHTML = `<p class="text-[10px] font-black text-slate-400 tracking-widest mb-2"><i data-lucide="dices" size="12" class="inline"></i> THE GACHA PACT (AUTO-ROLL)</p><div class="flex flex-col md:flex-row gap-3">${rCard}${pCard}</div>`;
+            pactSec.innerHTML = `<p class="text-[10px] font-black text-slate-400 tracking-widest mb-2"><i data-lucide="dices" size="12" class="inline"></i> THE GACHA PACT</p><div class="flex flex-col md:flex-row gap-3">${rCard}${pCard}</div>`;
             
             document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="glass p-4 rounded-3xl flex justify-between items-center group relative z-10 hover:bg-slate-800/80 transition-colors"><div class="flex items-center gap-4"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-4 border-indigo-500 flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.6)]' : ''} transition-all">${t.done ? '<i data-lucide="check" class="text-white" size="24"></i>' : ''}</button><p class="font-black text-lg leading-none ${t.done ? 'opacity-30 line-through text-slate-500' : 'text-white'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-500 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="x-circle" size="24"></i></button></div>`).join('');
             document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; let contentClass = isDone ? 'opacity-40 border-emerald-900' : (isAborted ? 'opacity-40 border-rose-900 line-through' : 'border-rose-500 shadow-[0_0_10px_rgba(225,29,72,0.3)]'); let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-slate-900 py-1 px-3 rounded-lg text-amber-500 font-black tracking-widest text-sm flex items-center gap-2"><i data-lucide="clock" size="14"></i><span id="timer_${t.id}" class="tabular-nums">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-xs">CLEARED IN ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-rose-500 font-black text-xs">ABORTED</div>` : '')); let buttons = t.status === 'active' ? `<div class="flex flex-col md:flex-row gap-2 mt-4"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500 hover:bg-emerald-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm"><i data-lucide="check-circle" size="18"></i> CLEAR RAID (+50 EXP)</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm"><i data-lucide="x-circle" size="18"></i> ABORT (-30 HP)</button></div>` : ``; return `<div class="glass p-5 rounded-3xl border-l-8 ${contentClass} relative z-10 transition-all hover:bg-slate-800/50"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-xl text-white ${isAborted ? 'text-rose-300 line-through' : ''} ${isDone ? 'text-emerald-300' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; }).join(''); startTaskTimers();
@@ -783,11 +812,18 @@
 
                 if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
                 
+                // V36: Punish Cowardice if Curse penalty was avoided!
+                if (db.awakening.curseActive && !db.pact.curseDoneToday) {
+                    db.player.hp -= 20;
+                    if(db.player.hp < 0) db.player.hp = 0;
+                    // Note: We don't trigger the audio siren here because the user is probably asleep.
+                }
+
                 db.today = []; db.lastDate = currDate; 
                 db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
                 db.pact.curseDoneToday = false; 
 
-                // V35: 7-DAY CURSE LOGIC
+                // V35/V36: 7-DAY CURSE LOGIC
                 let rdmPen;
                 if (db.awakening.curseActive && db.awakening.curseDays > 0) {
                     db.awakening.curseDays--;
