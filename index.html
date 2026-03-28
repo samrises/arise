@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | The Awakening v33.2</title>
+    <title>HappySam | The Awakening v33.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -370,10 +370,10 @@
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V33.2 - Mobile Fix)
+        // DATABASE MIGRATION & INIT (V33.3 - Awakening Tracker Fix)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v33_1_domain')) || JSON.parse(localStorage.getItem('happysam_v33_full_awakening'));
-        let db = JSON.parse(localStorage.getItem('happysam_v33_2_mobile')) || oldDb || {};
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v33_2_mobile')) || JSON.parse(localStorage.getItem('happysam_v33_1_domain'));
+        let db = JSON.parse(localStorage.getItem('happysam_v33_3_tracker')) || oldDb || {};
         
         if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
         if (!db.pact) db.pact = { reward: "", penalty: "", state: "locked", missedTasks: 0 };
@@ -389,7 +389,6 @@
         if (!db.expenses) db.expenses = [];
         if (db.tradeCapital === undefined) db.tradeCapital = 0;
         
-        // NAN FIX: Date fallback mechanism
         if (!db.awakening) db.awakening = { noFapStreak: 0, noFapLastDate: "", combat: { pushups: 0, pullups: 0, squats: 0, core: 0 }, looks: { oil: false, water: false, mewing: false, skin: false, posture: false }, lastHaircut: new Date().toLocaleDateString() };
         if (!db.awakening.lastHaircut) db.awakening.lastHaircut = new Date().toLocaleDateString();
 
@@ -432,7 +431,7 @@
         ];
 
         function save() { 
-            try { localStorage.setItem('happysam_v33_2_mobile', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v33_3_tracker', JSON.stringify(db)); render(); updateSystemVoice(); } 
             catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
         }
 
@@ -575,7 +574,7 @@
             let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
-            try { localStorage.setItem('happysam_v33_2_mobile', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v33_3_tracker', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
             catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE THIS TRADE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
@@ -606,8 +605,8 @@
         // ==========================================
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v33_2.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v33_2_mobile', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v33_3.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v33_3_tracker', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
@@ -653,13 +652,8 @@
             document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="glass-panel p-4 rounded-xl border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer hover:bg-slate-800 transition btn-interact"><div class="flex items-center gap-4"><span class="font-black text-lg text-white">${t.index}</span><span class="text-[10px] bg-slate-800 px-2 py-1 rounded text-slate-400 font-bold hidden md:block">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black ${t.result === 'WIN' ? 'text-emerald-500' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-500"></i></div></div>`).join('');
             document.getElementById('combatPushups').value = db.awakening.combat.pushups; document.getElementById('combatPullups').value = db.awakening.combat.pullups; document.getElementById('combatSquats').value = db.awakening.combat.squats; document.getElementById('combatCore').value = db.awakening.combat.core;
             
-            // NAN FIX IN RENDER
             let hDate = new Date(db.awakening.lastHaircut); 
-            if (isNaN(hDate.getTime())) {
-                let parts = db.awakening.lastHaircut.split('/');
-                if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]);
-                else hDate = new Date();
-            }
+            if (isNaN(hDate.getTime())) { let parts = db.awakening.lastHaircut.split('/'); if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]); else hDate = new Date(); }
             let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); 
             if (isNaN(daysPassed) || daysPassed < 0) daysPassed = 0;
             
@@ -668,25 +662,77 @@
             const looksMap = [ {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'}, {id: 'mewing', label: 'JAWLINE MEWING / CHEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer group hover:bg-slate-800 transition-colors"><span class="text-xs font-bold text-slate-300 group-hover:text-white">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-indigo-500"></label>`).join('');
             const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="glass-panel p-5 rounded-2xl border-l-4 border-indigo-500 bg-slate-800/50 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-shadow"><p class="text-[10px] text-indigo-400 font-black mb-2 flex items-center gap-1"><i data-lucide="calendar" size="12"></i> ${date}</p><p id="${safeId}" class="text-sm font-medium text-slate-200 line-clamp-3 transition-all" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-indigo-400 mt-2 flex items-center gap-1 hover:text-indigo-300 btn-interact uppercase">READ MORE <i data-lucide="chevron-down" size="12"></i></button></div>`; }).join('');
             document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="glass p-6 rounded-[2rem] border-purple-500/30 border-t-4 relative group z-10 shadow-lg hover:shadow-[0_0_15px_rgba(147,51,234,0.2)] transition-shadow"><button onclick="deleteSkill(${s.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button><div class="flex justify-between items-end mb-4 pr-10"><div><h3 class="font-black text-2xl text-purple-400">${s.name}</h3><p class="text-[10px] font-bold text-slate-400 mt-1">LAST REMARK: <span class="text-slate-200" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-black text-purple-500">LEVEL</p><p class="text-4xl font-black text-white">${s.level}</p></div></div><div class="flex justify-between text-[10px] font-black mb-1"><span class="text-purple-400">SKILL EXP</span><span>${s.exp}/${sMax}</span></div><div class="bar-bg mb-4"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col gap-2"><input type="text" id="skillRemark_${s.id}" placeholder="WHAT DID YOU LEARN?" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-bold text-sm text-white solo-glow" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 shadow-[0_0_10px_rgba(147,51,234,0.5)]"><i data-lucide="dumbbell" size="18"></i> PRACTICE LOG (+20 EXP)</button></div></div>`; }).join('');
-            const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); document.getElementById('historyContainer').innerHTML = dates.map(date => { let logArray = []; if(date === db.lastDate) { db.today.forEach(t => logArray.push({text: t.text, state: t.done ? 'done' : 'active'})); db.timed.forEach(t => logArray.push({text: t.text + ` (${t.durationStr})`, state: t.status})); } else { logArray = db.history[date] || []; } if(logArray.length === 0) return ''; return `<div class="glass-panel p-6 rounded-[2rem] border-l-[10px] border-emerald-600 shadow-md"><h3 class="font-black text-xl text-emerald-400 mb-4">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3>${logArray.map(t => `<p class="font-bold text-sm ${t.state==='done' ? 'text-emerald-500' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-500'))} mb-2">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')} ${t.text}</p>`).join('')}</div>`; }).join('');
+            
+            // HISTORY RENDER (UPDATED TO SHOW TODAY'S AWAKENING STATS DYNAMICALLY)
+            const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); 
+            document.getElementById('historyContainer').innerHTML = dates.map(date => { 
+                let logArray = []; 
+                if(date === db.lastDate) { 
+                    // Add Quests
+                    db.today.forEach(t => logArray.push({text: t.text, state: t.done ? 'done' : 'active'})); 
+                    db.timed.forEach(t => logArray.push({text: t.text + ` (${t.durationStr})`, state: t.status})); 
+                    
+                    // Live Current Combat Stats
+                    let combatStr = `🏋️ COMBAT: ${db.awakening.combat.pushups}PU | ${db.awakening.combat.pullups}PL | ${db.awakening.combat.squats}SQ | ${db.awakening.combat.core}s`;
+                    logArray.push({text: combatStr, state: (db.awakening.combat.pushups>0||db.awakening.combat.pullups>0||db.awakening.combat.squats>0||db.awakening.combat.core>0) ? 'done':'active'});
+                    
+                    // Live Current Looks Stats
+                    let looksArr = [];
+                    if(db.awakening.looks.oil) looksArr.push("WASH");
+                    if(db.awakening.looks.water) looksArr.push("WATER");
+                    if(db.awakening.looks.mewing) looksArr.push("MEWING");
+                    if(db.awakening.looks.skin) looksArr.push("SKIN");
+                    if(db.awakening.looks.posture) looksArr.push("POSTURE");
+                    let looksStr = looksArr.length > 0 ? `✨ LOOKS: ${looksArr.join(', ')}` : `✨ LOOKS: PENDING`;
+                    logArray.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'active'});
+                } else { 
+                    logArray = db.history[date] || []; 
+                } 
+                if(logArray.length === 0) return ''; 
+                return `<div class="glass-panel p-6 rounded-[2rem] border-l-[10px] border-emerald-600 shadow-md"><h3 class="font-black text-xl text-emerald-400 mb-4">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3>${logArray.map(t => `<p class="font-bold text-sm ${t.state==='done' ? 'text-emerald-500' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-500'))} mb-2">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')} ${t.text}</p>`).join('')}</div>`; 
+            }).join('');
             lucide.createIcons();
         }
+
         function checkReset() {
             const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
             if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
+            
             if (db.lastDate !== currDate) {
                 let unfinSimple = db.today.filter(t => !t.done).length; if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
-                let dailyHistory = []; db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
+                
+                let dailyHistory = []; 
+                db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
                 db.timed = db.timed.filter(t => { if(t.status !== 'active') { dailyHistory.push({text: t.text + ` (${t.durationStr})`, state: t.status === 'done' ? 'done' : 'aborted'}); return false; } return true; });
+                
+                // SAVE COMBAT & LOOKS TO HISTORY
+                let combatStr = `🏋️ COMBAT: ${db.awakening.combat.pushups}PU | ${db.awakening.combat.pullups}PL | ${db.awakening.combat.squats}SQ | ${db.awakening.combat.core}s`;
+                dailyHistory.push({text: combatStr, state: (db.awakening.combat.pushups>0||db.awakening.combat.pullups>0||db.awakening.combat.squats>0||db.awakening.combat.core>0) ? 'done':'failed'});
+                
+                let looksArr = [];
+                if(db.awakening.looks.oil) looksArr.push("WASH");
+                if(db.awakening.looks.water) looksArr.push("WATER");
+                if(db.awakening.looks.mewing) looksArr.push("MEWING");
+                if(db.awakening.looks.skin) looksArr.push("SKIN");
+                if(db.awakening.looks.posture) looksArr.push("POSTURE");
+                let looksStr = looksArr.length > 0 ? `✨ LOOKS: ${looksArr.join(', ')}` : `✨ LOOKS: FAILED`;
+                dailyHistory.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'failed'});
+
                 if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
+                
+                // RESET DATA FOR NEXT DAY
                 db.today = []; db.lastDate = currDate; 
                 db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
+                
                 let availableRewards = gachaRewards.filter(r => r.days === 'all' || r.days.includes(dayOfWeek));
                 let rdmRew = availableRewards[Math.floor(Math.random() * availableRewards.length)].text;
                 let rdmPen = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
-                db.pact = { reward: rdmRew, penalty: rdmPen, state: "locked", missedTasks: 0 }; save();
+                db.pact = { reward: rdmRew, penalty: rdmPen, state: "locked", missedTasks: 0 }; 
+                
+                save();
             }
         }
+        
         checkLoginStreak(); checkReset(); render(); updateSystemVoice(); setInterval(checkReset, 60000); setInterval(updateDayTimer, 1000); updateDayTimer();
     </script>
 </body>
