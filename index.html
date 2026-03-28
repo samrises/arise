@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | The Awakening v33</title>
+    <title>HappySam | The Awakening v33.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,13 +12,20 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { fontFamily: { sans: ['Jost', 'sans-serif'] }, colors: { primary: '#6366f1', darkbg: '#0f172a' } } }
+            theme: { extend: { fontFamily: { sans: ['Jost', 'sans-serif'] }, colors: { primary: '#6366f1' } } }
         }
     </script>
 
     <style>
         * { font-family: 'Jost', sans-serif; font-style: normal !important; text-transform: uppercase; }
-        body { background-color: #0f172a; color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        /* UPDATED BACKGROUND: BLACK TO DARK SLATE GRADIENT */
+        body { 
+            background: linear-gradient(135deg, #000000 0%, #111827 100%);
+            min-height: screen;
+            color: #f8fafc; 
+            -webkit-tap-highlight-color: transparent; 
+        }
         
         .glass { background: rgba(30, 41, 59, 0.7); border: 2px solid #334155; backdrop-filter: blur(16px); }
         .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid #1e293b; }
@@ -56,7 +63,7 @@
         .checkbox-custom:checked + label { background-color: #6366f1; border-color: #6366f1; color: white; }
     </style>
 </head>
-<body class="flex flex-col md:flex-row min-h-screen pb-20 md:pb-0 relative overflow-x-hidden bg-darkbg text-slate-100">
+<body class="flex flex-col md:flex-row min-h-screen pb-20 md:pb-0 relative overflow-x-hidden">
 
     <audio id="penaltyAlarm" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" preload="auto"></audio>
     <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
@@ -132,7 +139,7 @@
             <div class="flex items-center gap-4 w-full md:w-auto">
                 <div class="h-16 w-16 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl flex items-center justify-center text-3xl font-black shadow-[0_0_20px_rgba(99,102,241,0.6)]">L<span id="playerLvl" class="tabular-nums">1</span></div>
                 <div class="flex-1">
-                    <div class="flex justify-between items-center"><h1 class="font-black text-2xl tracking-tighter text-white drop-shadow-md">PLAYER: SOMNATH</h1><i data-lucide="maximize-2" class="text-slate-500 group-hover:text-indigo-400 transition ml-2" size="18"></i></div>
+                    <div class="flex justify-between items-center"><h1 class="font-black text-[20px] md:text-2xl tracking-tighter text-white drop-shadow-md">PLAYER: SOMNATH</h1><i data-lucide="maximize-2" class="text-slate-500 group-hover:text-indigo-400 transition ml-2" size="18"></i></div>
                     <p class="text-xs font-bold text-orange-400 flex items-center gap-1 mt-1 drop-shadow-[0_0_5px_rgba(251,146,60,0.5)]"><i data-lucide="flame" size="14"></i> <span id="playerStreak" class="tabular-nums">0</span> DAY STREAK (1.5x EXP)</p>
                 </div>
             </div>
@@ -362,10 +369,10 @@
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V33)
+        // DATABASE MIGRATION & INIT (V33.1)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v32_awakening')) || JSON.parse(localStorage.getItem('happysam_v31_storagefix'));
-        let db = JSON.parse(localStorage.getItem('happysam_v33_full_awakening')) || oldDb || {};
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v33_full_awakening')) || JSON.parse(localStorage.getItem('happysam_v32_awakening'));
+        let db = JSON.parse(localStorage.getItem('happysam_v33_1_domain')) || oldDb || {};
         
         if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
         if (!db.pact) db.pact = { reward: "", penalty: "", state: "locked", missedTasks: 0 };
@@ -380,14 +387,8 @@
         if (!db.wallet) db.wallet = { balance: 0 };
         if (!db.expenses) db.expenses = [];
         if (db.tradeCapital === undefined) db.tradeCapital = 0;
-        
         if (!db.awakening) db.awakening = { noFapStreak: 0, noFapLastDate: "", combat: { pushups: 0, pullups: 0, squats: 0, core: 0 }, looks: { oil: false, water: false, mewing: false, skin: false, posture: false }, lastHaircut: new Date().toLocaleDateString() };
         
-        // Safety checks for new properties
-        if (db.awakening.combat.squats === undefined) db.awakening.combat.squats = 0;
-        if (db.awakening.combat.core === undefined) db.awakening.combat.core = 0;
-        if (!db.awakening.lastHaircut) db.awakening.lastHaircut = new Date().toLocaleDateString();
-
         db.wallet.balance = parseFloat(db.wallet.balance) || 0;
         if (!db.lastDate) db.lastDate = new Date().toLocaleDateString();
         if (db.savedMonth === undefined) db.savedMonth = new Date().getMonth();
@@ -427,7 +428,7 @@
         ];
 
         function save() { 
-            try { localStorage.setItem('happysam_v33_full_awakening', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v33_1_domain', JSON.stringify(db)); render(); updateSystemVoice(); } 
             catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
         }
 
@@ -518,7 +519,6 @@
             if(db.player.hp > 100) db.player.hp = 100; 
             if(db.player.hp <= 0) { showSystemAlert("PENALTY ZONE", "HP HIT 0! LEVEL DOWNGRADED.", "penalty"); db.player.level = Math.max(1, db.player.level - 1); db.player.hp = 100; db.player.exp = 0; isPenalty = true; } 
             if (isPenalty || hpChange < 0) { triggerSiren(); }
-            
             let maxExp = db.player.level * 50; 
             if (db.player.exp >= maxExp) { db.player.level++; db.player.exp -= maxExp; db.player.hp = 100; showSystemAlert("LEVEL UP!", `YOU ARE NOW LEVEL ${db.player.level}`, "reward"); } 
             else if (db.player.exp < 0) { db.player.exp = 0; }
@@ -535,40 +535,21 @@
             else if ((total === 0 || done < total) && db.pact.state === "unlocked") { db.pact.state = "locked"; } 
         }
         function clearPenalty() { db.pact.state = "locked"; db.pact.missedTasks = 0; showSystemAlert("PENALTY CLEARED", "You survived the penalty.", "info"); save(); }
-        
         function addSimpleTask() { const val = document.getElementById('simpleTaskInp').value; if(!val) return; db.today.push({ id: Date.now(), text: val, done: false }); document.getElementById('simpleTaskInp').value = ''; checkPactStatus(); save(); }
         function toggleSimpleTask(id) { let task = db.today.find(t => t.id == id); if(!task) return; task.done = !task.done; if(task.done) { updateStats(20, 0); } else { updateStats(-20, 0); } checkPactStatus(); save(); }
         function deleteSimpleTask(id) { 
             let task = db.today.find(t => t.id == id); if(!task) return; 
             if(!task.done) { 
                 db.pact.missedTasks++;
-                if(db.pact.missedTasks >= 2 && db.pact.state !== "triggered") { 
-                    db.pact.state = "triggered"; updateStats(0, -20, true); showSystemAlert("PACT BROKEN!", `PENALTY: ${db.pact.penalty}`, "penalty"); 
-                } else { showSystemAlert("WARNING", `Task Missed (${db.pact.missedTasks}/2). Next miss triggers penalty.`, "warning"); }
+                if(db.pact.missedTasks >= 2 && db.pact.state !== "triggered") { db.pact.state = "triggered"; updateStats(0, -20, true); showSystemAlert("PACT BROKEN!", `PENALTY: ${db.pact.penalty}`, "penalty"); } 
+                else { showSystemAlert("WARNING", `Task Missed (${db.pact.missedTasks}/2). Next miss triggers penalty.`, "warning"); }
             } else { updateStats(-20, 0); } 
             db.today = db.today.filter(t => t.id != id); checkPactStatus(); save(); 
         }
-
         function addTimedTask() { const text = document.getElementById('timedInp').value; const val = parseInt(document.getElementById('raidTimeVal').value) || 0; const unit = document.getElementById('raidTimeUnit').value; if(!text) return; let multiplier = 0; if(unit === 'm') multiplier = 60000; else if(unit === 'h') multiplier = 3600000; else if(unit === 'd') multiplier = 86400000; let endTime = val > 0 ? Date.now() + (val * multiplier) : null; let displayDur = val > 0 ? `${val}${unit.toUpperCase()}` : 'No Limit'; db.timed.push({ id: Date.now(), text: text, durationStr: displayDur, endTime: endTime, status: 'active' }); document.getElementById('timedInp').value = ''; document.getElementById('raidTimeVal').value = ''; save(); }
         function completeTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; t.status = 'done'; clearInterval(timerIntervals[id]); updateStats(50, 10); showSystemAlert("RAID BOSS CLEARED!", "+50 EXP | +10 HP RECOVERED", "reward"); save(); }
         function abortTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; if(confirm("ABORTING THIS RAID WILL DEAL 30 HP DAMAGE. PROCEED?")) { t.status = 'aborted'; clearInterval(timerIntervals[id]); updateStats(0, -30, true); showSystemAlert("RAID FAILED", "-30 HP DAMAGE TAKEN!", "penalty"); save(); } }
-        
-        function startTaskTimers() {
-            db.timed.forEach(t => {
-                if(t.status === 'active' && t.endTime) {
-                    if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]);
-                    timerIntervals[t.id] = setInterval(() => {
-                        const el = document.getElementById(`timer_${t.id}`); if(!el) return;
-                        const diff = t.endTime - Date.now();
-                        if(diff <= 0) { el.innerText = "TIME UP ⚠️"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } 
-                        else { 
-                            let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
-                            if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; 
-                        }
-                    }, 1000);
-                }
-            });
-        }
+        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP ⚠️"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
 
         // ==========================================
         // ROADMAP, WALLET, TRADING, OTHERS
@@ -577,12 +558,10 @@
         function addRoadmapStep(rmId) { const t = document.getElementById(`rmStepText_${rmId}`).value; const d = document.getElementById(`rmStepDate_${rmId}`).value; if(!t || !d) { showSystemAlert("MISSING DATA", "Step description and deadline required.", "warning"); return; } let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { rm.steps.push({ id: Date.now(), text: t, date: d, done: false }); save(); } }
         function toggleRmStep(rmId, stepId) { let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { let step = rm.steps.find(s => s.id == stepId); if(step && !step.done) { step.done = true; updateStats(50, 0); showSystemAlert("MILESTONE REACHED", "+50 EXP GAINED", "reward"); save(); } } }
         function deleteRoadmap(rmId) { if(confirm("DELETE THIS ENTIRE PATH?")) { db.roadmaps = db.roadmaps.filter(r => r.id != rmId); showSystemAlert("PATH DELETED", "Evolution path erased.", "info"); save(); } }
-
         function addBalance() { const amt = parseFloat(document.getElementById('addBalInp').value); if(!amt || amt <= 0) return; db.wallet.balance = parseFloat((db.wallet.balance + amt).toFixed(2)); db.expenses.unshift({ id: Date.now(), title: 'FUNDS ADDED', amt: amt, type: 'in', date: new Date().toLocaleDateString() }); document.getElementById('addBalInp').value = ''; showSystemAlert("FUNDS ADDED", `₹${amt} credited.`, "reward"); save(); }
         function addExpense() { const t = document.getElementById('eTitle').value; const a = parseFloat(document.getElementById('eAmt').value); if(!t || !a || a <= 0) return; db.wallet.balance = parseFloat((db.wallet.balance - a).toFixed(2)); db.expenses.unshift({ id: Date.now(), title: t, amt: a, type: 'out', date: new Date().toLocaleDateString() }); document.getElementById('eTitle').value = ''; document.getElementById('eAmt').value = ''; showSystemAlert("FUNDS DEDUCTED", `₹${a} spent on ${t}.`, "warning"); save(); }
         function deleteExpense(id) { let e = db.expenses.find(x => x.id == id); if(e) { if(e.type === 'in') { db.wallet.balance = parseFloat((parseFloat(db.wallet.balance) - parseFloat(e.amt)).toFixed(2)); } else { db.wallet.balance = parseFloat((parseFloat(db.wallet.balance) + parseFloat(e.amt)).toFixed(2)); } db.expenses = db.expenses.filter(x => x.id != id); showSystemAlert("LOG REVERTED", `Balance Updated.`, "info"); save(); } }
         function editBalance() { let newBal = prompt("ENTER EXACT CURRENT BALANCE (₹):", db.wallet.balance); if(newBal !== null && !isNaN(newBal) && newBal.trim() !== "") { db.wallet.balance = parseFloat(Number(newBal).toFixed(2)); showSystemAlert("BALANCE UPDATED", `Wallet override successful.`, "info"); save(); } }
-
         function editTradeCapital() { let newCap = prompt("ENTER EXACT TRADING CAPITAL (₹):", db.tradeCapital); if(newCap !== null && !isNaN(newCap) && newCap.trim() !== "") { db.tradeCapital = parseFloat(Number(newCap).toFixed(2)); showSystemAlert("CAPITAL UPDATED", "Trading balance updated.", "info"); save(); } }
         async function addTrade() { 
             const file = document.getElementById('tImg').files[0]; let imgData = ""; 
@@ -591,7 +570,7 @@
             let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
-            try { localStorage.setItem('happysam_v33_full_awakening', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v33_1_domain', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
             catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE THIS TRADE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
@@ -603,22 +582,7 @@
             document.getElementById('tradeModalContent').innerHTML = htmlContent; lucide.createIcons(); document.getElementById('tradeModal').classList.remove('hidden'); document.getElementById('tradeModal').classList.add('flex'); 
         }
         function closeTradeModal() { document.getElementById('tradeModal').classList.add('hidden'); document.getElementById('tradeModal').classList.remove('flex'); }
-
-        function addJob() { const c = document.getElementById('jobCompInp').value; const r = document.getElementById('jobRoleInp').value; const s = document.getElementById('jobStatusInp').value; if(!c || !r) return; db.career.unshift({ id: Date.now(), comp: c, role: r, status: s, date: new Date().toLocaleDateString() }); document.getElementById('jobCompInp').value = ''; document.getElementById('jobRoleInp').value = ''; save(); }
-        function updateJobStatus(id, s) { let j = db.career.find(x => x.id == id); if(j) { j.status = s; save(); } }
-        function deleteJob(id) { if(confirm("DELETE THIS APPLICATION?")) { db.career = db.career.filter(x => x.id != id); showSystemAlert("JOB LOG DELETED", "Application erased.", "info"); save(); } }
-        function saveDiary() { const text = document.getElementById('diaryInp').value.trim(); if(!text) return; db.diary[new Date().toLocaleDateString()] = text; showSystemAlert("LOG SAVED", "Your story is archived.", "info"); save(); }
-        function addNewSkill() { const name = document.getElementById('newSkillInp').value; if(!name) return; db.skills.push({ id: Date.now(), name: name, level: 1, exp: 0, lastRemark: "NO REMARKS YET" }); document.getElementById('newSkillInp').value = ''; save(); }
-        function trainSkill(id) { const remark = document.getElementById(`skillRemark_${id}`).value; let s = db.skills.find(x => x.id == id); if(!s) return; s.exp += 20; s.lastRemark = remark || "PRACTICED HARD!"; let maxExp = s.level * 100; if(s.exp >= maxExp) { s.level++; s.exp -= maxExp; } save(); }
-        function deleteSkill(id) { if(confirm("DELETE THIS SKILL?")) { db.skills = db.skills.filter(x => x.id != id); showSystemAlert("SKILL DELETED", "Skill removed from tree.", "info"); save(); } }
-
-        function saveCombat() {
-            db.awakening.combat.pushups = parseInt(document.getElementById('combatPushups').value) || 0;
-            db.awakening.combat.pullups = parseInt(document.getElementById('combatPullups').value) || 0;
-            db.awakening.combat.squats = parseInt(document.getElementById('combatSquats').value) || 0;
-            db.awakening.combat.core = parseInt(document.getElementById('combatCore').value) || 0;
-            showSystemAlert("COMBAT SAVED", "Strength protocol updated.", "info"); save();
-        }
+        function saveCombat() { db.awakening.combat.pushups = parseInt(document.getElementById('combatPushups').value) || 0; db.awakening.combat.pullups = parseInt(document.getElementById('combatPullups').value) || 0; db.awakening.combat.squats = parseInt(document.getElementById('combatSquats').value) || 0; db.awakening.combat.core = parseInt(document.getElementById('combatCore').value) || 0; showSystemAlert("COMBAT SAVED", "Strength protocol updated.", "info"); save(); }
         function toggleLooks(key) { db.awakening.looks[key] = !db.awakening.looks[key]; save(); }
         function resetHaircut() { db.awakening.lastHaircut = new Date().toLocaleDateString(); showSystemAlert("MAINTENANCE LOGGED", "Haircut timeline reset.", "info"); save(); }
         function triggerRelapse() { if(confirm("Are you sure you relapsed? This deals -40 HP and breaks your streak.")) { db.awakening.noFapStreak = 0; updateStats(0, -40, true); showSystemAlert("STREAK BROKEN", "Discipline failed. Massive Penalty applied.", "penalty"); save(); } }
@@ -629,8 +593,7 @@
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
         function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v33.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v33_full_awakening', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
-
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v33_1_domain', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
@@ -638,7 +601,6 @@
             if(chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests Completed', data: data, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointBackgroundColor: '#0f172a', pointBorderColor: '#10b981', pointRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } } } });
         }
-
         function forceDayReset() { if(confirm("Force Day Reset? Moves tasks to history & shuffles Gacha Pact.")) { db.lastDate = "Test_Reset_" + Date.now(); checkReset(); closeStatusModal(); showSystemAlert("SYSTEM RESET", "Day reset executed.", "info"); } }
         function updateDayTimer() { const now = new Date(); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); const diff = tomorrow - now; const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); document.querySelectorAll('.dayCountdownText').forEach(el => el.innerText = `${h}:${m}:${s}`); }
 
@@ -647,15 +609,11 @@
         // ==========================================
         function render() {
             document.getElementById('playerLvl').innerText = db.player.level; document.getElementById('playerStreak').innerText = db.player.streak; document.getElementById('hpText').innerText = db.player.hp + '/100'; document.getElementById('hpBar').style.width = db.player.hp + '%'; 
-            let maxExp = db.player.level * 50; 
-            document.getElementById('expText').innerText = db.player.exp + '/' + maxExp; document.getElementById('expBar').style.width = ((db.player.exp / maxExp) * 100) + '%';
-            
+            let maxExp = db.player.level * 50; document.getElementById('expText').innerText = db.player.exp + '/' + maxExp; document.getElementById('expBar').style.width = ((db.player.exp / maxExp) * 100) + '%';
             document.getElementById('nofapDays').innerText = db.awakening.noFapStreak;
-
             let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
             const alertBox = document.getElementById('drawdownAlertBox');
             if(dailyLosses >= 2) { alertBox.classList.remove('hidden'); if(!alertBox.dataset.alarmPlayed) { triggerSiren(); alertBox.dataset.alarmPlayed = "true"; } } else { alertBox.classList.add('hidden'); alertBox.dataset.alarmPlayed = ""; }
-
             const pactSec = document.getElementById('pactSection');
             let pCard = `<div class="glass-panel p-4 rounded-2xl border ${db.pact.state === "triggered" ? 'border-rose-500 bg-rose-900/20' : 'border-transparent opacity-70'} flex-1 shadow-md">
                 <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black ${db.pact.state === "triggered" ? 'text-rose-500' : 'text-slate-500'}">PENALTY (${db.pact.missedTasks}/2 MISSED)</span><i data-lucide="skull" size="14" class="${db.pact.state === "triggered" ? 'text-rose-500' : 'text-slate-400'}"></i></div>
@@ -667,84 +625,42 @@
                 <p class="font-black text-md ${db.pact.state === "unlocked" ? 'text-amber-400' : 'text-slate-300'}">${db.pact.reward || "NONE"}</p>
             </div>`;
             pactSec.innerHTML = `<p class="text-[10px] font-black text-slate-400 tracking-widest mb-2"><i data-lucide="dices" size="12" class="inline"></i> THE GACHA PACT (AUTO-ROLL)</p><div class="flex flex-col md:flex-row gap-3">${rCard}${pCard}</div>`;
-
             document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="glass p-4 rounded-3xl flex justify-between items-center group relative z-10 hover:bg-slate-800/80 transition-colors"><div class="flex items-center gap-4"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-4 border-indigo-500 flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.6)]' : ''} transition-all">${t.done ? '<i data-lucide="check" class="text-white" size="24"></i>' : ''}</button><p class="font-black text-lg leading-none ${t.done ? 'opacity-30 line-through text-slate-500' : 'text-white'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-500 hover:text-rose-500 transition ml-2 p-2 btn-interact"><i data-lucide="x-circle" size="24"></i></button></div>`).join('');
             document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; let contentClass = isDone ? 'opacity-40 border-emerald-900' : (isAborted ? 'opacity-40 border-rose-900 line-through' : 'border-rose-500 shadow-[0_0_10px_rgba(225,29,72,0.3)]'); let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-slate-900 py-1 px-3 rounded-lg text-amber-500 font-black tracking-widest text-sm flex items-center gap-2"><i data-lucide="clock" size="14"></i><span id="timer_${t.id}" class="tabular-nums">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-xs">CLEARED IN ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-rose-500 font-black text-xs">ABORTED</div>` : '')); let buttons = t.status === 'active' ? `<div class="flex flex-col md:flex-row gap-2 mt-4"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500 hover:bg-emerald-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm"><i data-lucide="check-circle" size="18"></i> CLEAR RAID (+50 EXP)</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm"><i data-lucide="x-circle" size="18"></i> ABORT (-30 HP)</button></div>` : ``; return `<div class="glass p-5 rounded-3xl border-l-8 ${contentClass} relative z-10 transition-all hover:bg-slate-800/50"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-xl text-white ${isAborted ? 'text-rose-300 line-through' : ''} ${isDone ? 'text-emerald-300' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; }).join(''); startTaskTimers();
-
             document.getElementById('roadmapsContainer').innerHTML = db.roadmaps.map(rm => {
                 let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-500"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-500"></i>' : '<i data-lucide="circle" class="text-amber-500"></i>'); let textClass = s.done ? 'text-emerald-400 line-through opacity-50' : (isLocked ? 'text-slate-500' : 'text-white'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-10 w-10 border-4 border-amber-500 flex items-center justify-center rounded-xl text-amber-500 hover:bg-amber-500 hover:text-white transition ml-auto btn-interact shadow-[0_0_10px_rgba(245,158,11,0.4)]"><i data-lucide="check" size="20"></i></button>`; return `<div class="flex items-stretch gap-4 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[11px] w-1 h-[calc(100%-1rem)] bg-slate-700/50 rounded-full"></div>` : ''}<div class="mt-4 bg-slate-900 rounded-full z-10 p-1">${statusIcon}</div><div class="flex-1 bg-slate-800/40 border border-slate-700/50 p-4 rounded-2xl mb-2 flex items-center justify-between shadow-sm overflow-hidden"><div><p class="font-black text-lg ${textClass} break-words break-all">${s.text}</p><p class="text-[10px] font-bold text-slate-400 mt-1"><i data-lucide="calendar" size="10" class="inline"></i> TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
                 return `<div class="glass p-6 rounded-[2rem] border-t-4 border-amber-500 relative group z-10 shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-shadow"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 p-2 md:opacity-0 group-hover:opacity-100 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button><h3 class="text-2xl font-black text-amber-400 mb-6 uppercase flex items-center gap-2"><i data-lucide="flag"></i> ${rm.title}</h3><div class="mb-6 pl-2">${stepsHtml}</div><div class="grid grid-cols-1 md:flex gap-3 border-t border-slate-700 pt-5"><input type="text" id="rmStepText_${rm.id}" placeholder="NEXT MILESTONE..." class="bg-slate-800 border-2 border-slate-700 rounded-xl w-full md:flex-1 p-3 outline-none font-black text-sm text-white solo-glow"><input type="date" id="rmStepDate_${rm.id}" class="bg-slate-800 border-2 border-slate-700 rounded-xl w-full md:w-48 p-3 outline-none font-black text-sm text-slate-400 appearance-none min-w-0 box-border solo-glow"><button onclick="addRoadmapStep(${rm.id})" class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-3 rounded-xl font-black btn-interact text-sm w-full md:w-auto"><i data-lucide="plus" class="inline"></i> ADD</button></div></div>`;
             }).join('');
-
             let balEl = document.getElementById('walletBalanceDisplay'); balEl.innerText = db.wallet.balance;
             if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-emerald-400'); balEl.parentElement.classList.add('text-rose-500'); } else { balEl.parentElement.classList.add('text-emerald-400'); balEl.parentElement.classList.remove('text-rose-500'); }
             document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="glass-panel p-4 rounded-2xl flex justify-between items-center border-l-8 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} group relative transition-all hover:bg-slate-800"><div class="flex flex-col"><span class="font-black text-lg text-slate-200">${e.title}</span><span class="text-[10px] text-slate-500 font-bold">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-2xl ${e.type === 'in' ? 'text-emerald-500' : 'text-rose-500'} tabular-nums">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-500 hover:text-rose-500 p-2 md:opacity-0 group-hover:opacity-100 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`).join('');
-
             document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-blue-400' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-400'; return `<div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row justify-between md:items-center gap-3 border-l-4 border-slate-600 hover:bg-slate-800 transition-colors"><div><h3 class="font-black text-lg text-white">${j.comp}</h3><p class="text-[10px] text-slate-400 font-bold">${j.role} | LOGGED: ${j.date}</p></div><div class="flex items-center gap-2 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="bg-slate-900 border border-slate-700 rounded-xl p-2 outline-none font-black ${sColor} flex-1 md:flex-none"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED 🎉</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED ❌</option></select><button onclick="deleteJob(${j.id})" class="text-slate-500 hover:text-rose-500 p-2 btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
-            
             document.getElementById('tradeCapitalDisplay').innerText = db.tradeCapital;
             document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="glass-panel p-4 rounded-xl border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer hover:bg-slate-800 transition btn-interact"><div class="flex items-center gap-4"><span class="font-black text-lg text-white">${t.index}</span><span class="text-[10px] bg-slate-800 px-2 py-1 rounded text-slate-400 font-bold hidden md:block">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black ${t.result === 'WIN' ? 'text-emerald-500' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-500"></i></div></div>`).join('');
-            
-            // COMBAT RENDER
-            document.getElementById('combatPushups').value = db.awakening.combat.pushups;
-            document.getElementById('combatPullups').value = db.awakening.combat.pullups;
-            document.getElementById('combatSquats').value = db.awakening.combat.squats;
-            document.getElementById('combatCore').value = db.awakening.combat.core;
-            
-            // HAIRCUT MATH
-            let hDate = new Date(db.awakening.lastHaircut);
-            let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24));
-            let hcDisplay = document.getElementById('haircutDaysDisplay');
-            hcDisplay.innerHTML = `${daysPassed}<span class="text-lg opacity-60">D</span>`;
-            if(daysPassed >= 20) hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-rose-500 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]";
-            else hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-indigo-400";
-            
-            // LOOKS RENDER
-            const looksMap = [
-                {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'},
-                {id: 'mewing', label: 'JAWLINE MEWING / CHEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'},
-                {id: 'posture', label: 'POSTURE CHECK'}
-            ];
-            document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `
-                <label class="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer group hover:bg-slate-800 transition-colors">
-                    <span class="text-xs font-bold text-slate-300 group-hover:text-white">${l.label}</span>
-                    <input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-indigo-500">
-                </label>
-            `).join('');
-
+            document.getElementById('combatPushups').value = db.awakening.combat.pushups; document.getElementById('combatPullups').value = db.awakening.combat.pullups; document.getElementById('combatSquats').value = db.awakening.combat.squats; document.getElementById('combatCore').value = db.awakening.combat.core;
+            let hDate = new Date(db.awakening.lastHaircut); let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}<span class="text-lg opacity-60">D</span>`; if(daysPassed >= 20) hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-rose-500 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]"; else hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-indigo-400";
+            const looksMap = [ {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'}, {id: 'mewing', label: 'JAWLINE MEWING / CHEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer group hover:bg-slate-800 transition-colors"><span class="text-xs font-bold text-slate-300 group-hover:text-white">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-indigo-500"></label>`).join('');
             const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="glass-panel p-5 rounded-2xl border-l-4 border-indigo-500 bg-slate-800/50 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-shadow"><p class="text-[10px] text-indigo-400 font-black mb-2 flex items-center gap-1"><i data-lucide="calendar" size="12"></i> ${date}</p><p id="${safeId}" class="text-sm font-medium text-slate-200 line-clamp-3 transition-all" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-indigo-400 mt-2 flex items-center gap-1 hover:text-indigo-300 btn-interact uppercase">READ MORE <i data-lucide="chevron-down" size="12"></i></button></div>`; }).join('');
             document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="glass p-6 rounded-[2rem] border-purple-500/30 border-t-4 relative group z-10 shadow-lg hover:shadow-[0_0_15px_rgba(147,51,234,0.2)] transition-shadow"><button onclick="deleteSkill(${s.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 p-2 md:opacity-0 group-hover:opacity-100 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button><div class="flex justify-between items-end mb-4 pr-10"><div><h3 class="font-black text-2xl text-purple-400">${s.name}</h3><p class="text-[10px] font-bold text-slate-400 mt-1">LAST REMARK: <span class="text-slate-200" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-black text-purple-500">LEVEL</p><p class="text-4xl font-black text-white">${s.level}</p></div></div><div class="flex justify-between text-[10px] font-black mb-1"><span class="text-purple-400">SKILL EXP</span><span>${s.exp}/${sMax}</span></div><div class="bar-bg mb-4"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col gap-2"><input type="text" id="skillRemark_${s.id}" placeholder="WHAT DID YOU LEARN?" class="bg-slate-800 border-2 border-slate-700 rounded-xl p-3 outline-none font-bold text-sm text-white solo-glow" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-black btn-interact flex justify-center items-center gap-2 shadow-[0_0_10px_rgba(147,51,234,0.5)]"><i data-lucide="dumbbell" size="18"></i> PRACTICE LOG (+20 EXP)</button></div></div>`; }).join('');
-
             const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); document.getElementById('historyContainer').innerHTML = dates.map(date => { let logArray = []; if(date === db.lastDate) { db.today.forEach(t => logArray.push({text: t.text, state: t.done ? 'done' : 'active'})); db.timed.forEach(t => logArray.push({text: t.text + ` (${t.durationStr})`, state: t.status})); } else { logArray = db.history[date] || []; } if(logArray.length === 0) return ''; return `<div class="glass-panel p-6 rounded-[2rem] border-l-[10px] border-emerald-600 shadow-md"><h3 class="font-black text-xl text-emerald-400 mb-4">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3>${logArray.map(t => `<p class="font-bold text-sm ${t.state==='done' ? 'text-emerald-500' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-500'))} mb-2">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')} ${t.text}</p>`).join('')}</div>`; }).join('');
-
             lucide.createIcons();
         }
-
         function checkReset() {
             const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
             if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
-            
             if (db.lastDate !== currDate) {
-                let unfinSimple = db.today.filter(t => !t.done).length;
-                if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
-                
-                let dailyHistory = [];
-                db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
+                let unfinSimple = db.today.filter(t => !t.done).length; if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
+                let dailyHistory = []; db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
                 db.timed = db.timed.filter(t => { if(t.status !== 'active') { dailyHistory.push({text: t.text + ` (${t.durationStr})`, state: t.status === 'done' ? 'done' : 'aborted'}); return false; } return true; });
                 if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
-                
                 db.today = []; db.lastDate = currDate; 
-                db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 };
-                db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
-                
+                db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
                 let availableRewards = gachaRewards.filter(r => r.days === 'all' || r.days.includes(dayOfWeek));
                 let rdmRew = availableRewards[Math.floor(Math.random() * availableRewards.length)].text;
                 let rdmPen = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
-                db.pact = { reward: rdmRew, penalty: rdmPen, state: "locked", missedTasks: 0 };
-                save();
+                db.pact = { reward: rdmRew, penalty: rdmPen, state: "locked", missedTasks: 0 }; save();
             }
         }
-        
         checkLoginStreak(); checkReset(); render(); updateSystemVoice(); setInterval(checkReset, 60000); setInterval(updateDayTimer, 1000); updateDayTimer();
     </script>
 </body>
