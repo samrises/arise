@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | The Awakening v33.4</title>
+    <title>HappySam | The Awakening v34</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -270,10 +270,15 @@
             
             <div class="glass p-6 rounded-[2rem] border-rose-600/50 border-t-4 shadow-xl">
                 <div class="flex justify-between items-start mb-4">
-                    <div><h3 class="text-2xl font-black text-rose-500 flex items-center gap-2 drop-shadow-md"><i data-lucide="shield-alert"></i> IRON WILL</h3><p class="text-[10px] text-slate-300 font-bold mt-1 tracking-widest">MAINTAIN PURITY. RELAPSE = MASSIVE HP PENALTY.</p></div>
+                    <div>
+                        <h3 class="text-2xl font-black text-rose-500 flex items-center gap-2 drop-shadow-md"><i data-lucide="shield-alert"></i> IRON WILL</h3>
+                        <p class="text-[10px] text-slate-300 font-bold mt-1 tracking-widest">MAINTAIN PURITY. RELAPSE = MASSIVE HP PENALTY.</p>
+                        <p class="text-[10px] font-black text-rose-400 mt-2 bg-rose-900/30 inline-block px-2 py-1 rounded border border-rose-500/30">🩸 LAST RELAPSE: <span id="lastRelapseDateDisplay"></span></p>
+                        <p id="curseWarningDisplay" class="text-[10px] font-black text-rose-500 mt-1 animate-pulse hidden">⚠️ 7-DAY CURSE ACTIVE: <span id="curseDaysDisplay"></span> DAYS LEFT</p>
+                    </div>
                     <div class="bg-slate-900/80 px-4 py-2 rounded-xl border border-rose-500/30 text-center"><p class="text-[10px] font-black text-slate-500">STREAK</p><p class="text-3xl font-black text-rose-500 tabular-nums drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]"><span id="nofapDays">0</span>D</p></div>
                 </div>
-                <button onclick="triggerRelapse()" class="w-full mt-2 bg-slate-900 border-2 border-rose-900 text-rose-700 hover:bg-rose-900 hover:text-white hover:border-rose-500 py-4 rounded-2xl font-black btn-interact flex justify-center items-center gap-2 transition-all"><i data-lucide="skull"></i> REPORT RELAPSE (-40 HP)</button>
+                <button onclick="triggerRelapse()" class="w-full mt-2 bg-slate-900 border-2 border-rose-900 text-rose-700 hover:bg-rose-900 hover:text-white hover:border-rose-500 py-4 rounded-2xl font-black btn-interact flex justify-center items-center gap-2 transition-all"><i data-lucide="skull"></i> REPORT RELAPSE (-40 HP & CURSE)</button>
             </div>
 
             <div class="glass p-6 rounded-[2rem] border-amber-500/30 border-t-4 shadow-xl">
@@ -370,19 +375,13 @@
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V33.4 - Auto Cleaner)
+        // DATABASE MIGRATION & INIT (V34 - 7 Day Curse)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v33_3_tracker')) || JSON.parse(localStorage.getItem('happysam_v33_2_mobile'));
-        let db = JSON.parse(localStorage.getItem('happysam_v33_4_cleaner')) || oldDb || {};
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v33_4_cleaner'));
+        let db = JSON.parse(localStorage.getItem('happysam_v34_curse')) || oldDb || {};
         
-        // AUTO-CLEANER: Remove old 'Test_Reset' garbage from history
-        if (db.history) {
-            Object.keys(db.history).forEach(key => {
-                if (key.startsWith("Test_Reset_")) {
-                    delete db.history[key];
-                }
-            });
-        }
+        // AUTO-CLEANER
+        if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
         
         if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
         if (!db.pact) db.pact = { reward: "", penalty: "", state: "locked", missedTasks: 0 };
@@ -398,8 +397,9 @@
         if (!db.expenses) db.expenses = [];
         if (db.tradeCapital === undefined) db.tradeCapital = 0;
         
-        if (!db.awakening) db.awakening = { noFapStreak: 0, noFapLastDate: "", combat: { pushups: 0, pullups: 0, squats: 0, core: 0 }, looks: { oil: false, water: false, mewing: false, skin: false, posture: false }, lastHaircut: new Date().toLocaleDateString() };
-        if (!db.awakening.lastHaircut) db.awakening.lastHaircut = new Date().toLocaleDateString();
+        // V34 CURSE VARS
+        if (!db.awakening) db.awakening = { noFapStreak: 0, noFapLastDate: "", combat: { pushups: 0, pullups: 0, squats: 0, core: 0 }, looks: { oil: false, water: false, mewing: false, skin: false, posture: false }, lastHaircut: new Date().toLocaleDateString(), curseActive: false, curseDays: 0, cursePenalty: "" };
+        if (db.awakening.curseActive === undefined) { db.awakening.curseActive = false; db.awakening.curseDays = 0; db.awakening.cursePenalty = ""; }
 
         db.wallet.balance = parseFloat(db.wallet.balance) || 0;
         if (!db.lastDate) db.lastDate = new Date().toLocaleDateString();
@@ -440,7 +440,7 @@
         ];
 
         function save() { 
-            try { localStorage.setItem('happysam_v33_4_cleaner', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v34_curse', JSON.stringify(db)); render(); updateSystemVoice(); } 
             catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
         }
 
@@ -453,7 +453,6 @@
             else { p.classList.add('line-clamp-3'); btn.innerHTML = 'READ MORE <i data-lucide="chevron-down" size="12" class="inline"></i>'; }
             lucide.createIcons();
         }
-
         function triggerSiren() {
             const audio = document.getElementById('penaltyAlarm');
             if(audio) { audio.currentTime = 0; audio.volume = 1.0; let p = audio.play(); if(p !== undefined) p.catch(e => console.log("Audio blocked.")); }
@@ -512,6 +511,7 @@
             if (dailyLosses >= 2) { message = "CRITICAL WARNING: Drawdown Limit Breached! Cease Trading Immediately."; voiceContainer.classList.add('border-rose-500', 'bg-rose-900/30'); }
             else if (db.player.hp <= 0) { message = "You have fallen. The System demands a penalty to rise again."; voiceContainer.classList.add('border-rose-500', 'bg-rose-900/30'); }
             else if (db.player.hp < 40) { message = "Weakness is a choice. Stand up."; }
+            else if (db.awakening.curseActive) { message = "CURSE ACTIVE. Endure the punishment. Earn your freedom."; voiceContainer.classList.add('border-rose-500', 'bg-rose-900/30'); }
             
             voiceBox.innerText = `"${message}"`;
         }
@@ -583,7 +583,7 @@
             let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
-            try { localStorage.setItem('happysam_v33_4_cleaner', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v34_curse', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived securely.", "info"); render(); updateSystemVoice(); } 
             catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE THIS TRADE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
@@ -607,15 +607,32 @@
         function saveCombat() { db.awakening.combat.pushups = parseInt(document.getElementById('combatPushups').value) || 0; db.awakening.combat.pullups = parseInt(document.getElementById('combatPullups').value) || 0; db.awakening.combat.squats = parseInt(document.getElementById('combatSquats').value) || 0; db.awakening.combat.core = parseInt(document.getElementById('combatCore').value) || 0; showSystemAlert("COMBAT SAVED", "Strength protocol updated.", "info"); save(); }
         function toggleLooks(key) { db.awakening.looks[key] = !db.awakening.looks[key]; save(); }
         function resetHaircut() { db.awakening.lastHaircut = new Date().toLocaleDateString(); showSystemAlert("MAINTENANCE LOGGED", "Haircut timeline reset.", "info"); save(); }
-        function triggerRelapse() { if(confirm("Are you sure you relapsed? This deals -40 HP and breaks your streak.")) { db.awakening.noFapStreak = 0; updateStats(0, -40, true); showSystemAlert("STREAK BROKEN", "Discipline failed. Massive Penalty applied.", "penalty"); save(); } }
+        
+        // V34 7-DAY CURSE TRIGGER
+        function triggerRelapse() { 
+            if(confirm("Are you sure you relapsed? This deals -40 HP and triggers a 7-DAY CURSE.")) { 
+                db.awakening.noFapStreak = 0; 
+                db.awakening.noFapLastDate = new Date().toLocaleDateString();
+                
+                // Roll the curse penalty immediately
+                db.awakening.curseActive = true;
+                db.awakening.curseDays = 7;
+                db.awakening.cursePenalty = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
+                db.pact.penalty = db.awakening.cursePenalty; // Lock it immediately
+                
+                updateStats(0, -40, true); 
+                showSystemAlert("STREAK BROKEN", `7-Day Curse Activated: ${db.awakening.cursePenalty}`, "penalty"); 
+                save(); 
+            } 
+        }
 
         // ==========================================
         // SYSTEM OVERRIDES & CHARTS
         // ==========================================
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v33_4.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v33_4_cleaner', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v34_curse.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v34_curse', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted Backup File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
@@ -639,9 +656,19 @@
             document.getElementById('playerLvl').innerText = db.player.level; document.getElementById('playerStreak').innerText = db.player.streak; document.getElementById('hpText').innerText = db.player.hp + '/100'; document.getElementById('hpBar').style.width = db.player.hp + '%'; 
             let maxExp = db.player.level * 50; document.getElementById('expText').innerText = db.player.exp + '/' + maxExp; document.getElementById('expBar').style.width = ((db.player.exp / maxExp) * 100) + '%';
             document.getElementById('nofapDays').innerText = db.awakening.noFapStreak;
+            
+            // CURSE UI LOGIC
+            document.getElementById('lastRelapseDateDisplay').innerText = db.awakening.noFapLastDate || "NEVER";
+            const curseWarning = document.getElementById('curseWarningDisplay');
+            if (db.awakening.curseActive && db.awakening.curseDays > 0) {
+                curseWarning.classList.remove('hidden');
+                document.getElementById('curseDaysDisplay').innerText = db.awakening.curseDays;
+            } else { curseWarning.classList.add('hidden'); }
+
             let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
             const alertBox = document.getElementById('drawdownAlertBox');
             if(dailyLosses >= 2) { alertBox.classList.remove('hidden'); if(!alertBox.dataset.alarmPlayed) { triggerSiren(); alertBox.dataset.alarmPlayed = "true"; } } else { alertBox.classList.add('hidden'); alertBox.dataset.alarmPlayed = ""; }
+            
             const pactSec = document.getElementById('pactSection');
             let pCard = `<div class="glass-panel p-4 rounded-2xl border ${db.pact.state === "triggered" ? 'border-rose-500 bg-rose-900/20' : 'border-transparent opacity-70'} flex-1 shadow-md">
                 <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-black ${db.pact.state === "triggered" ? 'text-rose-500' : 'text-slate-500'}">PENALTY (${db.pact.missedTasks}/2 MISSED)</span><i data-lucide="skull" size="14" class="${db.pact.state === "triggered" ? 'text-rose-500' : 'text-slate-400'}"></i></div>
@@ -671,7 +698,6 @@
             if (isNaN(hDate.getTime())) { let parts = db.awakening.lastHaircut.split('/'); if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]); else hDate = new Date(); }
             let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); 
             if (isNaN(daysPassed) || daysPassed < 0) daysPassed = 0;
-            
             let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}<span class="text-lg opacity-60">D</span>`; if(daysPassed >= 20) hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-rose-500 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]"; else hcDisplay.className = "text-4xl font-black tabular-nums my-2 text-indigo-400";
             
             const looksMap = [ {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'}, {id: 'mewing', label: 'JAWLINE MEWING / CHEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer group hover:bg-slate-800 transition-colors"><span class="text-xs font-bold text-slate-300 group-hover:text-white">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-indigo-500"></label>`).join('');
@@ -726,12 +752,23 @@
 
                 if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
                 
+                // RESET DATA FOR NEXT DAY
                 db.today = []; db.lastDate = currDate; 
                 db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
                 
+                // V34: 7-DAY CURSE LOGIC
+                let rdmPen;
+                if (db.awakening.curseActive && db.awakening.curseDays > 0) {
+                    db.awakening.curseDays--;
+                    rdmPen = db.awakening.cursePenalty; // Same penalty every day
+                    if (db.awakening.curseDays === 0) { db.awakening.curseActive = false; }
+                } else {
+                    rdmPen = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
+                }
+
                 let availableRewards = gachaRewards.filter(r => r.days === 'all' || r.days.includes(dayOfWeek));
                 let rdmRew = availableRewards[Math.floor(Math.random() * availableRewards.length)].text;
-                let rdmPen = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
+                
                 db.pact = { reward: rdmRew, penalty: rdmPen, state: "locked", missedTasks: 0 }; 
                 
                 save();
