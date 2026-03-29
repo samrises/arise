@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | Ethereal OS v43</title>
+    <title>HappySam | Heavy Armor v44</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Jost:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Jost:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -15,7 +15,7 @@
             theme: { 
                 extend: { 
                     fontFamily: { sans: ['Jost', 'sans-serif'], display: ['Orbitron', 'sans-serif'] }, 
-                    colors: { primary: '#6366f1', darkbg: '#09090b', card: '#121214', cardhover: '#18181b' } 
+                    colors: { primary: '#6366f1', darkbg: '#050505', card: '#0f0f11', cardhover: '#18181b', heavyborder: '#27272a' } 
                 } 
             }
         }
@@ -23,103 +23,102 @@
 
     <style>
         * { font-family: 'Jost', sans-serif; font-style: normal !important; text-transform: uppercase; letter-spacing: 0.5px; box-sizing: border-box; }
+        .hud-text { font-family: 'Orbitron', sans-serif !important; letter-spacing: 1px; }
         
+        /* HEAVY SOLID BACKGROUND */
         body { 
-            background-color: #09090b; 
+            background-color: #050505; 
             color: #f8fafc; 
             -webkit-tap-highlight-color: transparent; 
             overflow-x: hidden;
+            background-image: linear-gradient(#0f0f11 1px, transparent 1px), linear-gradient(90deg, #0f0f11 1px, transparent 1px);
+            background-size: 50px 50px;
         }
 
+        /* SOLID HEAVY BENTO CARDS */
         .bento-card { 
-            background-color: #121214;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            background-color: #0c0c0e;
+            border: 2px solid #27272a;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease-in-out;
         }
         
         .bento-card:hover {
-            background-color: #18181b;
-            border-color: rgba(255, 255, 255, 0.08);
+            border-color: #3f3f46;
             transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), inset 0 2px 0 rgba(255, 255, 255, 0.1);
         }
 
-        /* RAID BOSS CARD THEME */
+        /* HEAVY RAID CARD */
         .raid-card {
-            background: linear-gradient(135deg, #18050a 0%, #121214 100%);
-            border: 1px solid rgba(244, 63, 94, 0.2);
-            border-radius: 24px;
-            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.05), inset 0 0 20px rgba(244, 63, 94, 0.02);
-            position: relative;
-            overflow: hidden;
+            background-color: #120508;
+            border: 2px solid #881337;
+            border-radius: 16px;
+            box-shadow: inset 0 0 20px rgba(225, 29, 72, 0.1);
         }
-        .raid-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: repeating-linear-gradient(45deg, #f43f5e, #f43f5e 10px, transparent 10px, transparent 20px);
-        }
-        .raid-card-active { border-left: 4px solid #f43f5e; }
-        .raid-card-done { border-left: 4px solid #10b981; filter: grayscale(0.5); opacity: 0.7; }
-        .raid-card-failed { border-left: 4px solid #94a3b8; opacity: 0.5; }
+        .raid-card-active { border-left: 6px solid #e11d48; }
+        .raid-card-done { border-left: 6px solid #10b981; filter: grayscale(0.8); opacity: 0.6; border-color: #064e3b; }
+        .raid-card-failed { border-left: 6px solid #475569; opacity: 0.5; border-color: #1e293b; }
 
-        .btn-interact { transition: all 0.2s ease-out; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-interact:active { transform: scale(0.96); }
+        /* SOLID BUTTONS */
+        .btn-interact { 
+            transition: all 0.15s ease-out; 
+            border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: 2px solid transparent;
+            font-weight: 800;
+        }
+        .btn-interact:active { transform: scale(0.95); }
         
-        .bar-bg { background: #27272a; border-radius: 999px; overflow: hidden; height: 4px; width: 100%; margin-top: 8px;}
-        .hp-fill { background: #f43f5e; height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(244,63,94,0.5); }
-        .exp-fill { background: #6366f1; height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
-        .skill-fill { background: #a855f7; height: 100%; transition: width 0.8s ease; }
+        /* CHUNKY BARS */
+        .bar-bg { background: #18181b; border-radius: 8px; overflow: hidden; height: 12px; width: 100%; border: 2px solid #27272a;}
+        .hp-fill { background: #e11d48; height: 100%; transition: width 0.5s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3); }
+        .exp-fill { background: #4f46e5; height: 100%; transition: width 0.5s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3); }
+        .skill-fill { background: #9333ea; height: 100%; transition: width 0.5s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3);}
         
-        .floating-nav { background: rgba(18, 18, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
         .nav-active { color: #f8fafc !important; font-weight: 900; }
-        .nav-active .nav-icon-container { background: #6366f1; color: white; border-radius: 12px; }
+        .nav-active .nav-icon-container { background: #4f46e5; color: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(79,70,229,0.5);}
         
         ::-webkit-scrollbar { display: none; }
 
-        .typewriter-cursor { animation: blink 1s step-end infinite; }
+        /* TYPEWRITER - NOW JOST FONT */
+        .system-voice { font-family: 'Jost', sans-serif !important; color: #818cf8; text-shadow: 0 0 15px rgba(99,102,241,0.5); font-weight: 700; letter-spacing: 1px;}
+        .typewriter-cursor { animation: blink 1s step-end infinite; font-family: 'Jost', sans-serif !important;}
         @keyframes blink { 50% { opacity: 0; } }
-        
-        /* SYSTEM VOICE ORBITRON FIX */
-        .system-voice { font-family: 'Orbitron', sans-serif !important; letter-spacing: 1px; color: #818cf8; text-shadow: 0 0 10px rgba(99,102,241,0.4); }
 
         .tabular-nums { font-variant-numeric: tabular-nums; }
         input[type="date"] { -webkit-appearance: none; appearance: none; min-width: 0; color-scheme: dark; }
         
-        /* VISIBLE PREMIUM INPUTS */
+        /* VISIBLE, HEAVY INPUTS */
         input, select, textarea { 
-            background: rgba(24, 24, 27, 0.6) !important; 
-            border: 1px solid rgba(255, 255, 255, 0.12) !important; /* Visible border */
-            border-radius: 16px !important;
-            transition: all 0.3s ease; 
+            background: #09090b !important; 
+            border: 2px solid #27272a !important; 
+            border-radius: 12px !important;
+            transition: all 0.2s ease; 
             padding: 16px !important;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             width: 100%; 
             color: #f8fafc !important;
         }
-        input:hover, select:hover, textarea:hover {
-            border-color: rgba(255, 255, 255, 0.25) !important;
-            background: rgba(24, 24, 27, 0.8) !important; 
-        }
+        input:hover, select:hover, textarea:hover { border-color: #3f3f46 !important; }
         input:focus, select:focus, textarea:focus { 
             border-color: #6366f1 !important; 
-            background: #27272a !important; 
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+            background: #18181b !important; 
             outline: none; 
         }
         
-        /* RAID INPUT SPECIFIC */
-        .raid-input { border-color: rgba(244, 63, 94, 0.3) !important; background: rgba(244, 63, 94, 0.05) !important; }
-        .raid-input:hover { border-color: rgba(244, 63, 94, 0.5) !important; }
-        .raid-input:focus { border-color: #f43f5e !important; box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2) !important; }
+        /* Raid Inputs */
+        .raid-input { border-color: #881337 !important; background: #050102 !important; color: #fecdd3 !important;}
+        .raid-input:hover { border-color: #be123c !important; }
+        .raid-input:focus { border-color: #f43f5e !important; }
 
-        .checkbox-custom:checked + label { background-color: #f8fafc; color: #09090b; }
-        .checkbox-custom:checked + label span { color: #09090b; }
+        .checkbox-custom:checked + label { background-color: #f8fafc; color: #09090b; border-color: #f8fafc; }
+        .checkbox-custom:checked + label span { color: #09090b; font-weight: 900;}
 
-        .tab-content { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .text-gradient { background: linear-gradient(to right, #ffffff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tab-content { animation: dropIn 0.3s ease-out; }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -127,398 +126,372 @@
     <audio id="penaltyAlarm" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" preload="auto"></audio>
     <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[92%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 backdrop-blur-xl hidden justify-center items-center p-4 cursor-zoom-out" onclick="closeImageZoom()">
-        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain rounded-2xl transition-transform duration-300 transform scale-95 border border-white/10">
+    <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 flex hidden justify-center items-center p-4 cursor-zoom-out" onclick="closeImageZoom()">
+        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain rounded-xl border-4 border-indigo-500">
     </div>
 
-    <div id="tradeModal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex-col justify-center items-center p-4">
+    <div id="tradeModal" class="fixed inset-0 z-[200] bg-black/90 hidden flex-col justify-center items-center p-4">
         <div class="bento-card p-6 md:p-8 w-full max-w-2xl modal-enter relative overflow-y-auto max-h-[90vh]">
-            <button onclick="closeTradeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-full btn-interact"><i data-lucide="x" size="20"></i></button>
-            <h2 class="text-2xl font-black mb-6 border-b border-white/5 pb-4 flex items-center gap-2"><i data-lucide="bar-chart-2"></i> INTEL RECORD</h2>
+            <button onclick="closeTradeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl btn-interact"><i data-lucide="x" size="20"></i></button>
+            <h2 class="text-2xl font-black mb-6 border-b border-slate-800 pb-4 flex items-center gap-2"><i data-lucide="bar-chart-2"></i> INTEL RECORD</h2>
             <div id="tradeModalContent" class="space-y-4 mt-4"></div>
         </div>
     </div>
 
-    <div id="statusModal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex-col justify-center items-center p-4">
+    <div id="statusModal" class="fixed inset-0 z-[200] bg-black/90 hidden flex-col justify-center items-center p-4">
         <div class="bento-card p-6 md:p-8 w-full max-w-md modal-enter relative overflow-y-auto max-h-[90vh]">
-            <button onclick="closeStatusModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-full btn-interact"><i data-lucide="x" size="20"></i></button>
-            <h2 class="text-2xl font-black mb-6 text-center border-b border-white/5 pb-4">SYSTEM ROOT</h2>
+            <button onclick="closeStatusModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl btn-interact"><i data-lucide="x" size="20"></i></button>
+            <h2 class="text-2xl font-black mb-6 text-center border-b border-slate-800 pb-4">SYSTEM ROOT</h2>
             <div class="space-y-4 mb-8">
-                <div class="flex justify-between items-center bg-black/50 p-5 rounded-2xl border border-white/5"><span class="text-xs font-bold text-slate-400 tracking-widest flex items-center gap-2"><i data-lucide="check-square" size="16"></i> TOTAL QUESTS</span><span id="statQuests" class="text-2xl font-black text-white tabular-nums">0</span></div>
-                <div class="flex justify-between items-center bg-black/50 p-5 rounded-2xl border border-white/5"><span class="text-xs font-bold text-slate-400 tracking-widest flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE</span><span id="statWinRate" class="text-2xl font-black text-emerald-400 tabular-nums">0%</span></div>
+                <div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="check-square" size="16"></i> TOTAL QUESTS</span><span id="statQuests" class="text-2xl font-black text-white tabular-nums hud-text">0</span></div>
+                <div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE</span><span id="statWinRate" class="text-2xl font-black text-emerald-400 tabular-nums hud-text">0%</span></div>
             </div>
-            <div class="border-t border-white/5 pt-6">
-                <p class="text-[10px] text-slate-500 font-bold mb-4 tracking-widest text-center">DATA BACKUP</p>
+            <div class="border-t border-slate-800 pt-6">
+                <p class="text-xs text-slate-500 font-bold mb-4 text-center">DATA BACKUP</p>
                 <div class="flex flex-col gap-3">
-                    <button onclick="exportSystem()" class="w-full bg-white/5 text-white hover:bg-white/10 border border-white/10 py-4 rounded-xl font-bold btn-interact text-sm"><i data-lucide="download" size="18" class="inline mr-2"></i> EXPORT DATA</button>
-                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-white/5 text-white hover:bg-white/10 border border-white/10 py-4 rounded-xl font-bold btn-interact text-sm"><i data-lucide="upload" size="18" class="inline mr-2"></i> IMPORT DATA</button>
+                    <button onclick="exportSystem()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-indigo-800"><i data-lucide="download" size="18" class="inline mr-2"></i> EXPORT DATA</button>
+                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-slate-900"><i data-lucide="upload" size="18" class="inline mr-2"></i> IMPORT DATA</button>
                     <input type="file" id="importFile" class="hidden" accept=".json" onchange="importSystem(event)">
                 </div>
             </div>
-            <div class="mt-4"><button onclick="forceDayReset()" class="w-full bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500 hover:text-white py-4 rounded-xl font-bold btn-interact text-sm transition-all"><i data-lucide="refresh-cw" size="18" class="inline mr-2"></i> FORCE DAY RESET</button></div>
+            <div class="mt-6"><button onclick="forceDayReset()" class="w-full bg-rose-600 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-rose-800"><i data-lucide="refresh-cw" size="18" class="inline mr-2"></i> FORCE DAY RESET</button></div>
         </div>
     </div>
 
-    <aside class="hidden md:flex flex-col w-72 p-6 gap-6 sticky top-0 h-screen z-40 bg-[#09090b] border-r border-white/5">
-        <div class="font-black text-3xl tracking-tight flex items-center gap-3 text-white mb-4"><div class="bg-indigo-600 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-500/20"><i data-lucide="hexagon" size="24"></i></div> SYSTEM</div>
-        <nav class="flex flex-col gap-2 overflow-y-auto">
-            <button onclick="switchTab('tasks')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl bg-white/10 text-white transition-all" data-tab="tasks"><i data-lucide="crosshair" size="20"></i> <span class="font-bold text-sm tracking-widest">QUESTS</span></button>
-            <button onclick="switchTab('vault')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-white transition-all" data-tab="vault"><i data-lucide="database" size="20"></i> <span class="font-bold text-sm tracking-widest">VAULT</span></button>
-            <button onclick="switchTab('trading')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-white transition-all" data-tab="trading"><i data-lucide="activity" size="20"></i> <span class="font-bold text-sm tracking-widest">MARKET LOG</span></button>
-            <button onclick="switchTab('expenses')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-white transition-all" data-tab="expenses"><i data-lucide="credit-card" size="20"></i> <span class="font-bold text-sm tracking-widest">WALLET</span></button>
-            <button onclick="switchTab('awakening')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-rose-500/10 hover:text-rose-500 transition-all" data-tab="awakening"><i data-lucide="flame" size="20"></i> <span class="font-bold text-sm tracking-widest">AWAKEN</span></button>
-            <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-white transition-all" data-tab="diary"><i data-lucide="book-open" size="20"></i> <span class="font-bold text-sm tracking-widest">DIARY</span></button>
-            <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-white transition-all" data-tab="history"><i data-lucide="pie-chart" size="20"></i> <span class="font-bold text-sm tracking-widest">STATS</span></button>
+    <aside class="hidden md:flex flex-col w-72 p-6 gap-6 sticky top-0 h-screen z-40 bg-[#050505] border-r-2 border-slate-900">
+        <div class="font-black text-3xl flex items-center gap-3 text-white mb-4"><div class="bg-indigo-600 p-2.5 rounded-xl text-white border-b-4 border-indigo-800"><i data-lucide="hexagon" size="24"></i></div> SYSTEM</div>
+        <nav class="flex flex-col gap-3 overflow-y-auto">
+            <button onclick="switchTab('tasks')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl bg-slate-800 text-white border-2 border-slate-700 transition-all font-black" data-tab="tasks"><i data-lucide="crosshair" size="20"></i> <span>QUESTS</span></button>
+            <button onclick="switchTab('vault')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="vault"><i data-lucide="database" size="20"></i> <span>VAULT</span></button>
+            <button onclick="switchTab('trading')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="trading"><i data-lucide="activity" size="20"></i> <span>MARKET LOG</span></button>
+            <button onclick="switchTab('expenses')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="expenses"><i data-lucide="credit-card" size="20"></i> <span>WALLET</span></button>
+            <button onclick="switchTab('awakening')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-rose-950 hover:text-rose-500 transition-all border-2 border-transparent font-black" data-tab="awakening"><i data-lucide="flame" size="20"></i> <span>AWAKEN</span></button>
+            <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="diary"><i data-lucide="book-open" size="20"></i> <span>DIARY</span></button>
+            <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="history"><i data-lucide="pie-chart" size="20"></i> <span>STATS</span></button>
         </nav>
         <div class="mt-auto bento-card p-5 text-center">
-            <p class="text-[10px] text-slate-500 font-bold tracking-widest mb-1">DAY RESETS IN</p>
-            <p class="dayCountdownText font-black text-rose-500 text-xl tracking-widest tabular-nums mt-1">00:00:00</p>
+            <p class="text-xs text-slate-500 font-bold mb-1">DAY RESETS IN</p>
+            <p class="dayCountdownText font-black text-rose-500 text-xl tabular-nums mt-1 hud-text">00:00:00</p>
         </div>
     </aside>
 
-    <div class="md:hidden fixed bottom-6 left-4 right-4 z-50 pointer-events-none flex justify-center">
-        <nav class="floating-nav rounded-full flex overflow-x-auto px-3 py-3 gap-2 w-full max-w-sm pointer-events-auto snap-x no-scrollbar">
-            <button onclick="switchTab('tasks')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 nav-active w-[14%] snap-center" data-tab="tasks"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="crosshair" size="20"></i></div></button>
-            <button onclick="switchTab('vault')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-[14%] snap-center" data-tab="vault"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="database" size="20"></i></div></button>
-            <button onclick="switchTab('trading')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-[14%] snap-center" data-tab="trading"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="activity" size="20"></i></div></button>
-            <button onclick="switchTab('expenses')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-[14%] snap-center" data-tab="expenses"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="credit-card" size="20"></i></div></button>
-            <button onclick="switchTab('awakening')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-[14%] snap-center" data-tab="awakening"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="flame" size="20"></i></div></button>
-            <button onclick="switchTab('diary')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-[14%] snap-center" data-tab="diary"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="book-open" size="20"></i></div></button>
-            <button onclick="switchTab('history')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-400 w-[14%] snap-center" data-tab="history"><div class="nav-icon-container p-2.5 transition-colors"><i data-lucide="pie-chart" size="20"></i></div></button>
+    <div class="md:hidden fixed bottom-4 left-4 right-4 z-50 pointer-events-none flex justify-center">
+        <nav class="bg-[#0c0c0e] border-2 border-slate-800 rounded-2xl flex overflow-x-auto p-2 gap-2 w-full pointer-events-auto snap-x no-scrollbar shadow-[0_10px_30px_rgba(0,0,0,0.9)]">
+            <button onclick="switchTab('tasks')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 nav-active w-[13.5%] h-12 snap-center rounded-xl" data-tab="tasks"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="crosshair" size="22"></i></div></button>
+            <button onclick="switchTab('vault')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="vault"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="database" size="22"></i></div></button>
+            <button onclick="switchTab('trading')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="trading"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="activity" size="22"></i></div></button>
+            <button onclick="switchTab('expenses')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="expenses"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="credit-card" size="22"></i></div></button>
+            <button onclick="switchTab('awakening')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="awakening"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="flame" size="22"></i></div></button>
+            <button onclick="switchTab('diary')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="diary"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="book-open" size="22"></i></div></button>
+            <button onclick="switchTab('history')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="history"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="pie-chart" size="22"></i></div></button>
         </nav>
     </div>
 
-    <main class="flex-1 p-4 md:p-8 w-full overflow-y-auto z-10 pb-32 md:pb-8">
+    <main class="flex-1 p-4 md:p-8 w-full overflow-y-auto z-10 pb-32 md:pb-8 flex flex-col gap-6">
         
-        <div class="md:hidden flex mb-6">
-            <div class="bento-card p-4 text-center w-full flex justify-between items-center px-6">
-                <p class="text-[10px] text-slate-400 font-bold tracking-widest">DAY RESETS IN</p>
-                <p class="dayCountdownText font-black text-rose-500 text-sm tracking-widest tabular-nums">00:00:00</p>
+        <div class="md:hidden">
+            <div class="bento-card p-4 flex justify-between items-center px-6">
+                <p class="text-xs text-slate-400 font-bold">DAY RESETS IN</p>
+                <p class="dayCountdownText font-black text-rose-500 text-base tabular-nums hud-text">00:00:00</p>
             </div>
         </div>
 
-        <div onclick="openStatusModal()" class="bento-card p-6 md:p-8 mb-8 flex flex-col md:flex-row justify-between gap-8 md:items-center cursor-pointer relative overflow-hidden group">
-            <div class="flex items-center gap-6 w-full md:w-auto">
-                <div class="h-20 w-20 bg-indigo-600 rounded-[20px] flex items-center justify-center text-4xl font-black text-white shadow-[0_10px_20px_rgba(99,102,241,0.3)]">
-                    <span class="text-indigo-200 mr-1 text-base" style="font-family: 'Orbitron', sans-serif;">L</span><span id="playerLvl" class="tabular-nums" style="font-family: 'Orbitron', sans-serif;">1</span>
+        <div onclick="openStatusModal()" class="bento-card p-6 md:p-8 flex flex-col lg:flex-row justify-between gap-6 lg:items-center cursor-pointer border-l-4 border-indigo-500">
+            <div class="flex items-center gap-5 w-full lg:w-auto">
+                <div class="h-20 w-20 bg-indigo-600 rounded-xl flex items-center justify-center text-4xl font-black text-white border-b-4 border-indigo-800 hud-text flex-shrink-0">
+                    <span class="text-indigo-200 mr-1 text-sm">L</span><span id="playerLvl" class="tabular-nums">1</span>
                 </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-center"><h1 class="font-black text-3xl md:text-4xl text-white tracking-tight">SOMNATH</h1><i data-lucide="more-vertical" class="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity ml-2" size="20"></i></div>
-                    <div class="inline-flex items-center gap-2 mt-3 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
-                        <i data-lucide="zap" size="14" class="text-amber-400"></i> 
-                        <span class="text-xs font-bold text-slate-300">STREAK: <span id="playerStreak" class="text-white font-black text-sm tabular-nums">0</span> DAYS</span>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-center"><h1 class="font-black text-2xl md:text-3xl text-white truncate">SOMNATH</h1></div>
+                    <div class="inline-flex flex-wrap items-center gap-2 mt-2">
+                        <span class="bg-amber-500 text-black px-2 py-1 rounded font-black text-xs flex items-center gap-1"><i data-lucide="zap" size="12"></i> STREAK: <span id="playerStreak" class="tabular-nums">0</span></span>
+                        <span class="bg-slate-800 text-slate-300 px-2 py-1 rounded font-bold text-xs border border-slate-700">1.5X EXP</span>
                     </div>
                 </div>
             </div>
-            <div class="flex-1 w-full md:max-w-[300px] space-y-5" onclick="event.stopPropagation()">
+            <div class="w-full lg:w-96 flex flex-col gap-4">
                 <div>
-                    <div class="flex justify-between text-[10px] font-bold tracking-widest mb-2 text-slate-400"><span>HEALTH</span><span id="hpText" class="tabular-nums text-white">100/100</span></div>
+                    <div class="flex justify-between text-xs font-bold mb-1 text-slate-400"><span>HEALTH</span><span id="hpText" class="tabular-nums text-white hud-text">100/100</span></div>
                     <div class="bar-bg"><div id="hpBar" class="hp-fill" style="width: 100%;"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-[10px] font-bold tracking-widest mb-2 text-slate-400"><span>EXPERIENCE</span><span id="expText" class="tabular-nums text-white">0/100</span></div>
+                    <div class="flex justify-between text-xs font-bold mb-1 text-slate-400"><span>EXPERIENCE</span><span id="expText" class="tabular-nums text-white hud-text">0/100</span></div>
                     <div class="bar-bg"><div id="expBar" class="exp-fill" style="width: 0%;"></div></div>
                 </div>
             </div>
         </div>
         
-        <div id="systemVoiceBox" class="flex flex-col items-center justify-center p-6 md:p-8 mt-4 mb-10 text-center transition-all">
-            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full mb-4 animate-pulse shadow-[0_0_10px_#6366f1]"></div>
-            <p id="systemVoice" class="text-lg md:text-xl font-medium text-slate-200 tracking-wide leading-relaxed italic system-voice" style="text-transform: none;">
-                "Arise."
+        <div id="systemVoiceBox" class="bento-card p-6 md:p-8 text-center flex flex-col items-center justify-center">
+            <p class="text-xs font-bold text-indigo-500 mb-3 flex items-center gap-2"><i data-lucide="terminal" size="14"></i> SYSTEM LOG</p>
+            <p id="systemVoice" class="text-lg md:text-xl font-bold text-white leading-relaxed system-voice">
+                "Arise."<span class="text-indigo-500 typewriter-cursor">|</span>
             </p>
         </div>
 
-        <section id="tasks" class="tab-content active space-y-10">
-            <div id="pactSection" class="mb-8"></div>
+        <section id="tasks" class="tab-content active flex flex-col gap-6">
+            <div id="pactSection"></div>
             
-            <div class="bento-card p-6 md:p-8">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <h3 class="text-xl font-black text-white flex items-center gap-2"><i data-lucide="check-square" size="20" class="text-indigo-500"></i> DAILY QUESTS</h3>
-                </div>
+            <div class="bento-card p-6 md:p-8 flex flex-col gap-6">
+                <h3 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="check-square" size="24" class="text-indigo-500"></i> DAILY QUESTS</h3>
                 <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="simpleTaskInp" placeholder="What needs to be done?" class="w-full text-base font-medium" style="text-transform: none;">
-                    <button onclick="addSimpleTask()" class="bg-white text-black px-8 py-4 font-black btn-interact w-full md:w-auto text-sm tracking-widest hover:bg-slate-200 shadow-[0_5px_15px_rgba(255,255,255,0.15)]">ADD QUEST</button>
+                    <input type="text" id="simpleTaskInp" placeholder="What needs to be done?" style="text-transform: none;">
+                    <button onclick="addSimpleTask()" class="bg-indigo-600 text-white px-10 py-4 font-black btn-interact w-full md:w-auto border-b-4 border-indigo-800 flex-shrink-0">ADD</button>
                 </div>
-                <div id="simpleTasksList" class="flex flex-col gap-3 mt-6"></div>
+                <div id="simpleTasksList" class="flex flex-col gap-3"></div>
             </div>
 
-            <div class="raid-card p-6 md:p-8">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h3 class="text-xl font-black text-rose-500 flex items-center gap-2"><i data-lucide="crosshair" size="20"></i> RAID MISSIONS</h3>
-                        <p class="text-[10px] text-rose-400/70 font-bold tracking-widest mt-1">DANGER ZONE. ABORT = HP LOSS.</p>
-                    </div>
+            <div class="raid-card p-6 md:p-8 flex flex-col gap-6">
+                <div>
+                    <h3 class="text-2xl font-black text-rose-500 flex items-center gap-2"><i data-lucide="swords" size="24"></i> RAID MISSIONS</h3>
+                    <p class="text-xs text-rose-400 font-bold mt-1 opacity-80">PERSISTENT HAZARD. ABORT = HP LOSS.</p>
                 </div>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="timedInp" placeholder="Target Objective..." class="w-full text-base font-medium raid-input" style="text-transform: none;">
-                    <div class="flex gap-3 w-full md:w-auto">
-                        <input type="number" id="raidTimeVal" placeholder="DUR" class="w-full md:w-24 text-center tabular-nums raid-input text-rose-100">
-                        <select id="raidTimeUnit" class="w-full md:w-28 text-rose-400 raid-input cursor-pointer">
+                <div class="flex flex-col lg:flex-row gap-3">
+                    <input type="text" id="timedInp" placeholder="Raid objective..." class="raid-input flex-1" style="text-transform: none;">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                        <input type="number" id="raidTimeVal" placeholder="TIME" class="raid-input w-full sm:w-32 text-center tabular-nums">
+                        <select id="raidTimeUnit" class="raid-input w-full sm:w-32 text-center cursor-pointer">
                             <option value="m">MINS</option><option value="h">HRS</option><option value="d">DAYS</option>
                         </select>
+                        <button onclick="addTimedTask()" class="bg-rose-600 text-white px-8 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-rose-800 flex-shrink-0">START</button>
                     </div>
-                    <button onclick="addTimedTask()" class="bg-rose-600 text-white px-8 py-4 font-black btn-interact w-full md:w-auto text-sm tracking-widest hover:bg-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.4)]">INITIATE</button>
                 </div>
-                <div id="timedTasksList" class="grid gap-4 mt-6"></div>
+                <div id="timedTasksList" class="flex flex-col gap-4 mt-2"></div>
             </div>
         </section>
 
-        <section id="vault" class="tab-content hidden space-y-8">
-            <div class="mb-8">
-                <h2 class="text-4xl font-black tracking-tight text-white mb-2">THE VAULT</h2>
-                <p class="text-sm font-bold text-slate-500 tracking-widest">EVOLUTION. ESCAPE. SKILLS.</p>
-            </div>
+        <section id="vault" class="tab-content hidden flex flex-col gap-6">
+            <h2 class="text-4xl font-black text-white">THE VAULT</h2>
             
-            <div class="bento-card p-6 md:p-8">
-                <h3 class="text-xl font-black text-white flex items-center gap-2 mb-6"><i data-lucide="map" size="20" class="text-amber-500"></i> EVOLUTION PATH</h3>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="rmTitleInp" placeholder="New Master Goal..." class="w-full text-sm font-medium" style="text-transform: none;">
-                    <button onclick="addRoadmap()" class="bg-amber-500 text-black hover:bg-amber-400 px-8 py-4 font-black btn-interact w-full md:w-auto tracking-widest text-sm">CREATE PATH</button>
+            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-amber-500">
+                <h3 class="text-2xl font-black text-amber-400 flex items-center gap-2"><i data-lucide="map" size="24"></i> EVOLUTION PATH</h3>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="rmTitleInp" placeholder="New Master Goal..." style="text-transform: none;">
+                    <button onclick="addRoadmap()" class="bg-amber-500 text-black hover:bg-amber-400 px-10 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-amber-700 flex-shrink-0">CREATE</button>
                 </div>
-                <div id="roadmapsContainer" class="flex flex-col gap-6 mt-8"></div>
+                <div id="roadmapsContainer" class="flex flex-col gap-6"></div>
             </div>
 
-            <div class="bento-card p-6 md:p-8">
-                <h3 class="text-xl font-black text-white flex items-center gap-2 mb-6"><i data-lucide="briefcase" size="20" class="text-emerald-500"></i> ESCAPE MATRIX</h3>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="jobCompInp" placeholder="Company Name" class="w-full md:w-1/3 text-sm font-medium" style="text-transform: none;">
-                    <input type="text" id="jobRoleInp" placeholder="Role/Position" class="w-full flex-1 text-sm font-medium" style="text-transform: none;">
-                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                        <select id="jobStatusInp" class="w-full sm:w-auto text-emerald-400 font-bold">
+            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-emerald-500">
+                <h3 class="text-2xl font-black text-emerald-400 flex items-center gap-2"><i data-lucide="briefcase" size="24"></i> ESCAPE MATRIX</h3>
+                <div class="flex flex-col lg:flex-row gap-3">
+                    <input type="text" id="jobCompInp" placeholder="Company Name" class="w-full lg:w-1/3" style="text-transform: none;">
+                    <input type="text" id="jobRoleInp" placeholder="Role/Position" class="w-full lg:flex-1" style="text-transform: none;">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                        <select id="jobStatusInp" class="w-full sm:w-40 text-emerald-400 font-bold">
                             <option value="APPLIED">APPLIED</option><option value="INTERVIEW">INTERVIEW</option><option value="OFFERED">OFFERED</option><option value="REJECTED">REJECTED</option>
                         </select>
-                        <button onclick="addJob()" class="bg-white text-black hover:bg-slate-200 px-8 py-4 font-black btn-interact w-full sm:w-auto tracking-widest text-sm">LOG</button>
+                        <button onclick="addJob()" class="bg-emerald-500 text-black hover:bg-emerald-400 px-8 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-emerald-700 flex-shrink-0">LOG</button>
                     </div>
                 </div>
-                <div id="careerList" class="flex flex-col gap-3 mt-6"></div>
+                <div id="careerList" class="flex flex-col gap-3"></div>
             </div>
 
-            <div class="bento-card p-6 md:p-8">
-                <h3 class="text-xl font-black text-white flex items-center gap-2 mb-6"><i data-lucide="zap" size="20" class="text-purple-500"></i> SKILL TREE</h3>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="newSkillInp" placeholder="Add new skill to learn..." class="w-full text-sm font-medium" style="text-transform: none;">
-                    <button onclick="addNewSkill()" class="bg-purple-600 text-white hover:bg-purple-500 px-8 py-4 font-black btn-interact w-full md:w-auto tracking-widest text-sm">CREATE SKILL</button>
+            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-purple-500">
+                <h3 class="text-2xl font-black text-purple-400 flex items-center gap-2"><i data-lucide="zap" size="24"></i> SKILL TREE</h3>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="newSkillInp" placeholder="Add new skill..." style="text-transform: none;">
+                    <button onclick="addNewSkill()" class="bg-purple-600 text-white hover:bg-purple-500 px-10 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-purple-800 flex-shrink-0">LEARN</button>
                 </div>
-                <div id="skillsContainer" class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8"></div>
+                <div id="skillsContainer" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
             </div>
         </section>
 
-        <section id="trading" class="tab-content hidden space-y-8">
-            <div class="mb-8">
-                <h2 class="text-4xl font-black tracking-tight text-white mb-2">MARKET LOG</h2>
-                <p class="text-sm font-bold text-slate-500 tracking-widest">TRADE RECORD & ANALYSIS.</p>
-            </div>
+        <section id="trading" class="tab-content hidden flex flex-col gap-6">
+            <h2 class="text-4xl font-black text-white">MARKET LOG</h2>
             
-            <div class="bento-card p-8 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none"></div>
-                <div class="w-full md:w-auto text-center md:text-left relative z-10">
-                    <p class="text-[10px] text-slate-400 font-bold tracking-widest mb-2">TRADING CAPITAL</p>
-                    <p class="text-5xl font-black text-white tabular-nums tracking-tight">₹<span id="tradeCapitalDisplay">0</span></p>
+            <div class="bento-card p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4 items-start md:items-center border-l-4 border-indigo-500">
+                <div>
+                    <p class="text-xs text-slate-400 font-bold mb-1">TRADING CAPITAL</p>
+                    <p class="text-5xl font-black text-white tabular-nums hud-text">₹<span id="tradeCapitalDisplay">0</span></p>
                 </div>
-                <button onclick="editTradeCapital()" class="w-full md:w-auto bg-white/5 border border-white/10 text-white hover:bg-white/10 px-8 py-4 rounded-xl font-bold btn-interact text-sm transition-colors tracking-widest relative z-10"><i data-lucide="edit-3" size="16" class="inline mr-2"></i> EDIT BALANCE</button>
+                <button onclick="editTradeCapital()" class="w-full md:w-auto bg-slate-800 border-2 border-slate-700 text-white hover:bg-slate-700 px-8 py-4 font-black btn-interact text-sm flex-shrink-0">EDIT BAL</button>
             </div>
 
-            <div id="drawdownAlertBox" class="hidden bento-card p-6 border-l-4 border-rose-500 bg-rose-500/5">
-                <p class="font-black text-rose-500 text-sm flex items-center gap-3 justify-center tracking-widest"><i data-lucide="alert-triangle" size="20"></i> DRAWDOWN LIMIT REACHED. STOP TRADING.</p>
+            <div id="drawdownAlertBox" class="hidden bento-card p-6 border-2 border-rose-500 bg-rose-950/30 danger-pulse">
+                <p class="font-black text-rose-500 text-lg flex items-center justify-center gap-2"><i data-lucide="alert-triangle" size="24"></i> DRAWDOWN LIMIT. STOP TRADING.</p>
             </div>
             
             <div class="bento-card p-6 md:p-8 flex flex-col gap-6">
-                <h3 class="text-lg font-black text-white flex items-center gap-2"><i data-lucide="plus-circle" size="20" class="text-indigo-500"></i> NEW LOG</h3>
+                <h3 class="text-xl font-black text-white flex items-center gap-2"><i data-lucide="plus-circle" size="20" class="text-indigo-500"></i> NEW INTEL</h3>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <input type="text" id="tIndex" placeholder="ASSET" value="XAUUSD" class="text-center font-bold">
-                    <select id="tResult" class="text-center font-bold text-slate-200">
-                        <option value="WIN">WIN ✅</option><option value="LOSS">LOSS ❌</option>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <input type="text" id="tIndex" placeholder="ASSET" value="XAUUSD" class="text-center font-black text-lg">
+                    <select id="tResult" class="text-center font-black text-lg text-emerald-400 cursor-pointer">
+                        <option value="WIN">WIN ✅</option><option value="LOSS" class="text-rose-500">LOSS ❌</option>
                     </select>
-                    <input type="number" id="tEntry" placeholder="ENTRY" class="text-center tabular-nums">
-                    <input type="number" id="tExit" placeholder="EXIT" class="text-center tabular-nums">
+                    <input type="number" id="tEntry" placeholder="ENTRY" class="text-center tabular-nums font-black text-lg">
+                    <input type="number" id="tExit" placeholder="EXIT" class="text-center tabular-nums font-black text-lg">
                 </div>
                 
-                <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
-                    <p class="text-[10px] font-bold text-slate-400 mb-4 tracking-widest"><i data-lucide="crosshair" size="12" class="inline mr-1"></i> SETUP CHECKLIST</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6" id="tradeSetupChecklist">
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="5-6 15m Candle Sweep" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">5-6 15M SWEEP</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Massive High" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE HIGH</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Massive Low" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE LOW</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="News" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">NEWS IMPACT</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Support" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">SUPPORT TRADE</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Resistance" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">RESISTANCE</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group col-span-1 sm:col-span-2 md:col-span-3"><input type="checkbox" value="Big Screen Analysis" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded-full border border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all"><i data-lucide="check" size="14" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">BIG SCREEN ANALYSIS</span></label>
+                <div class="bg-[#050505] p-5 rounded-2xl border-2 border-slate-800">
+                    <p class="text-xs font-bold text-indigo-400 mb-4 border-b border-slate-800 pb-2"><i data-lucide="crosshair" size="14" class="inline mr-1"></i> CHECKLIST</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="tradeSetupChecklist">
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="5-6 15m Candle Sweep" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">5-6 15M SWEEP</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Massive High" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE HIGH</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Massive Low" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE LOW</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="News" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">NEWS IMPACT</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Support" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">SUPPORT TRADE</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Resistance" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">RESISTANCE</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group col-span-1 sm:col-span-2 md:col-span-3 p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Big Screen Analysis" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">BIG SCREEN ANALYSIS</span></label>
                     </div>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="tLogic" placeholder="Trade logic / remarks..." class="flex-1 font-medium" style="text-transform: none;">
+                    <input type="text" id="tLogic" placeholder="Trade logic / Remarks..." class="flex-1 font-medium" style="text-transform: none;">
                     <input type="number" id="tPnL" placeholder="NET P&L (₹)" class="w-full md:w-48 font-black text-center tabular-nums">
                 </div>
                 
                 <div class="relative w-full">
                     <input type="file" id="tImg" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <div class="bg-black/20 border border-white/5 rounded-xl p-4 flex items-center justify-center gap-2 text-xs font-bold text-slate-400 group transition-colors hover:bg-white/5">
-                        <i data-lucide="image" size="18" class="group-hover:text-white transition-colors"></i> 
+                    <div class="bg-slate-900 border-2 border-slate-800 rounded-xl p-4 flex items-center justify-center gap-2 text-sm font-bold text-slate-400 group transition-colors hover:bg-slate-800">
+                        <i data-lucide="image" size="20" class="group-hover:text-white transition-colors"></i> 
                         <span class="group-hover:text-white transition-colors" id="fileLabel">ATTACH SCREENSHOT (OPTIONAL)</span>
                     </div>
                 </div>
                 
-                <button onclick="addTrade()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact text-sm tracking-widest mt-2 shadow-[0_4px_15px_rgba(99,102,241,0.3)]"><i data-lucide="save" size="18"></i> ARCHIVE INTEL</button>
+                <button onclick="addTrade()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact text-lg border-b-4 border-indigo-800"><i data-lucide="save" size="20"></i> ARCHIVE INTEL</button>
             </div>
             
-            <div id="tradingList" class="flex flex-col gap-4 mt-8"></div>
+            <div id="tradingList" class="flex flex-col gap-4 mt-4"></div>
         </section>
 
-        <section id="awakening" class="tab-content hidden space-y-8">
-            <div class="mb-8">
-                <h2 class="text-4xl font-black tracking-tight text-white mb-2">AWAKENING</h2>
-                <p class="text-sm font-bold text-slate-500 tracking-widest">PHYSICAL & MENTAL PROTOCOL.</p>
-            </div>
+        <section id="awakening" class="tab-content hidden flex flex-col gap-6">
+            <h2 class="text-4xl font-black text-white">AWAKENING</h2>
             
-            <div class="bento-card p-6 md:p-8 relative overflow-hidden">
-                <div class="absolute -left-20 -top-20 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-8 relative z-10">
+            <div class="bento-card p-6 md:p-8 border-t-4 border-rose-600">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
                     <div class="w-full md:w-auto">
-                        <h3 class="text-2xl font-black text-white flex items-center gap-2 mb-2"><i data-lucide="shield-alert" size="24" class="text-rose-500"></i> IRON WILL</h3>
-                        <p class="text-xs text-slate-400 font-bold tracking-widest">MAINTAIN PURITY. RELAPSE = PENALTY.</p>
+                        <h3 class="text-3xl font-black text-white flex items-center gap-3"><i data-lucide="shield-alert" size="28" class="text-rose-500"></i> IRON WILL</h3>
+                        <p class="text-sm text-slate-400 font-bold mt-1">MAINTAIN PURITY. RELAPSE = PENALTY.</p>
                         
-                        <div class="flex items-center gap-3 mt-4">
-                            <div class="bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-rose-500"></div>
-                                <span class="text-[10px] font-bold text-slate-300">LAST RELAPSE: <span id="lastRelapseDateDisplay" class="text-white"></span></span>
-                            </div>
+                        <div class="flex flex-wrap items-center gap-3 mt-4">
+                            <span class="bg-slate-900 px-3 py-1.5 rounded-lg border-2 border-slate-800 text-xs font-bold text-slate-300 flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-rose-500"></div> LAST RELAPSE: <span id="lastRelapseDateDisplay" class="text-white"></span>
+                            </span>
                         </div>
 
-                        <div id="curseWarningDisplay" class="mt-3 hidden">
-                            <div class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-lg text-xs font-black tracking-widest flex items-center gap-2">
-                                <i data-lucide="alert-triangle" size="14"></i> CURSE ACTIVE: <span id="curseDaysDisplay" class="text-base text-white mx-1"></span> DAYS LEFT
+                        <div id="curseWarningDisplay" class="mt-4 hidden">
+                            <div class="bg-rose-600 text-white border-b-4 border-rose-800 px-4 py-3 rounded-xl text-sm font-black flex items-center gap-2">
+                                <i data-lucide="alert-triangle" size="18"></i> CURSE ACTIVE: <span id="curseDaysDisplay" class="text-xl mx-1 hud-text"></span> DAYS LEFT
                             </div>
                         </div>
                     </div>
-                    <div class="w-full md:w-auto flex flex-col items-center justify-center bg-black/40 p-6 rounded-2xl border border-white/5">
-                        <p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">CURRENT STREAK</p>
-                        <p class="text-5xl font-black text-white tabular-nums tracking-tight"><span id="nofapDays">0</span><span class="text-xl text-rose-500 ml-1">D</span></p>
+                    <div class="w-full md:w-auto bg-[#050505] p-6 rounded-2xl border-2 border-slate-800 text-center flex-shrink-0">
+                        <p class="text-xs font-bold text-slate-500 mb-1">STREAK</p>
+                        <p class="text-5xl font-black text-white tabular-nums hud-text"><span id="nofapDays">0</span><span class="text-2xl text-rose-500 ml-1">D</span></p>
                     </div>
                 </div>
-                <button onclick="triggerRelapse()" class="w-full bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 transition-all tracking-widest text-sm relative z-10"><i data-lucide="skull" size="18"></i> REPORT RELAPSE (-40 HP)</button>
+                <button onclick="triggerRelapse()" class="w-full bg-slate-900 border-2 border-slate-800 text-rose-500 hover:bg-rose-600 hover:text-white py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2"><i data-lucide="skull" size="20"></i> REPORT RELAPSE (-40 HP)</button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bento-card p-6 md:p-8 lg:col-span-2 flex flex-col">
-                    <h3 class="text-xl font-black text-white mb-6 flex items-center gap-2"><i data-lucide="dumbbell" size="20" class="text-amber-400"></i> COMBAT LOG</h3>
+                <div class="bento-card p-6 md:p-8 lg:col-span-2 flex flex-col gap-6 border-t-4 border-amber-500">
+                    <h3 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="dumbbell" size="24" class="text-amber-500"></i> COMBAT LOG</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
-                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center gap-2">
-                            <p class="text-[10px] font-bold text-slate-500 tracking-widest">PUSHUPS</p>
-                            <div class="flex items-center justify-center w-full px-2"><input type="number" id="combatPushups" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0" value="0"></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
+                            <p class="text-xs font-bold text-slate-500">PUSHUPS</p>
+                            <input type="number" id="combatPushups" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
                             <p class="text-[10px] font-bold text-slate-600">TARGET: 60</p>
                         </div>
-                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center gap-2">
-                            <p class="text-[10px] font-bold text-slate-500 tracking-widest">PULLUPS</p>
-                            <div class="flex items-center justify-center w-full px-2"><input type="number" id="combatPullups" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0" value="0"></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
+                            <p class="text-xs font-bold text-slate-500">PULLUPS</p>
+                            <input type="number" id="combatPullups" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
                             <p class="text-[10px] font-bold text-slate-600">TARGET: 50</p>
                         </div>
-                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center gap-2">
-                            <p class="text-[10px] font-bold text-slate-500 tracking-widest">SQUATS</p>
-                            <div class="flex items-center justify-center w-full px-2"><input type="number" id="combatSquats" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0" value="0"></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
+                            <p class="text-xs font-bold text-slate-500">SQUATS</p>
+                            <input type="number" id="combatSquats" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
                             <p class="text-[10px] font-bold text-slate-600">TARGET: 100</p>
                         </div>
-                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center gap-2">
-                            <p class="text-[10px] font-bold text-slate-500 tracking-widest">CORE (S)</p>
-                            <div class="flex items-center justify-center w-full px-2"><input type="number" id="combatCore" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0" value="0"></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
+                            <p class="text-xs font-bold text-slate-500">CORE (S)</p>
+                            <input type="number" id="combatCore" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
                             <p class="text-[10px] font-bold text-slate-600">TARGET: 120s</p>
                         </div>
                     </div>
-                    <button onclick="saveCombat()" class="w-full mt-6 bg-white text-black hover:bg-slate-200 py-4 rounded-xl font-black btn-interact text-sm tracking-widest transition-colors">SAVE COMBAT</button>
+                    <button onclick="saveCombat()" class="w-full bg-amber-500 text-black hover:bg-amber-400 py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-amber-700">SAVE COMBAT</button>
                 </div>
 
-                <div class="bento-card p-6 md:p-8 flex flex-col justify-center items-center text-center">
-                    <div class="bg-white/5 p-3 rounded-full mb-4"><i data-lucide="scissors" size="20" class="text-slate-300"></i></div>
-                    <p class="text-[10px] text-slate-400 font-bold tracking-widest mb-2">MAINTENANCE</p>
-                    <p class="text-6xl font-black text-white tabular-nums my-2 tracking-tight" id="haircutDaysDisplay">0</p>
-                    <p class="text-[10px] text-slate-500 font-bold mb-8 tracking-widest">DAYS SINCE HAIRCUT</p>
-                    <button onclick="resetHaircut()" class="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white py-4 rounded-xl font-bold btn-interact text-xs transition-colors tracking-widest">LOG HAIRCUT</button>
+                <div class="bento-card p-6 md:p-8 flex flex-col justify-center items-center text-center border-t-4 border-cyan-500">
+                    <div class="bg-cyan-500/10 p-4 rounded-2xl mb-4"><i data-lucide="scissors" size="24" class="text-cyan-500"></i></div>
+                    <p class="text-6xl font-black text-white tabular-nums my-2 hud-text" id="haircutDaysDisplay">0</p>
+                    <p class="text-xs text-slate-400 font-bold mb-6">DAYS SINCE HAIRCUT</p>
+                    <button onclick="resetHaircut()" class="w-full bg-slate-800 border-2 border-slate-700 hover:bg-cyan-600 hover:border-cyan-600 text-white py-4 rounded-xl font-black btn-interact text-sm transition-colors">LOG HAIRCUT</button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bento-card p-6 md:p-8">
-                    <h3 class="text-xl font-black text-white mb-6 flex items-center gap-2"><i data-lucide="sparkles" size="20" class="text-indigo-400"></i> LOOKS PROTOCOL</h3>
-                    <div class="space-y-2" id="looksChecklist"></div>
+                <div class="bento-card p-6 md:p-8 flex flex-col gap-6">
+                    <h3 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="sparkles" size="24" class="text-indigo-400"></i> LOOKS PROTOCOL</h3>
+                    <div class="flex flex-col gap-3" id="looksChecklist"></div>
                 </div>
                 
-                <div class="bento-card p-6 md:p-8 bg-rose-500/5 border-rose-500/20">
-                    <h3 class="text-xl font-black text-rose-500 mb-6 flex items-center gap-2"><i data-lucide="ban" size="20"></i> FORBIDDEN</h3>
-                    <div class="space-y-3">
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5 flex items-center gap-4"><div class="bg-rose-500/20 p-1.5 rounded"><i data-lucide="x" size="14" class="text-rose-500"></i></div><p class="text-xs font-bold text-slate-300 tracking-wide">NO REFINED SUGAR</p></div>
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5 flex items-center gap-4"><div class="bg-rose-500/20 p-1.5 rounded"><i data-lucide="x" size="14" class="text-rose-500"></i></div><p class="text-xs font-bold text-slate-300 tracking-wide">NO DEEP FRIED FOOD</p></div>
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5 flex items-center gap-4"><div class="bg-rose-500/20 p-1.5 rounded"><i data-lucide="x" size="14" class="text-rose-500"></i></div><p class="text-xs font-bold text-slate-300 tracking-wide">NO P*RN / PEEKING</p></div>
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5 flex items-center gap-4"><div class="bg-rose-500/20 p-1.5 rounded"><i data-lucide="x" size="14" class="text-rose-500"></i></div><p class="text-xs font-bold text-slate-300 tracking-wide">NO MINDLESS SCROLL</p></div>
+                <div class="bento-card p-6 md:p-8 border-2 border-rose-900 bg-rose-950/10 flex flex-col gap-6">
+                    <h3 class="text-2xl font-black text-rose-500 flex items-center gap-2"><i data-lucide="ban" size="24"></i> FORBIDDEN</h3>
+                    <div class="flex flex-col gap-3">
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO REFINED SUGAR</p></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO DEEP FRIED FOOD</p></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO P*RN / PEEKING</p></div>
+                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO MINDLESS SCROLL</p></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="expenses" class="tab-content hidden space-y-6">
-            <div class="mb-8">
-                <h2 class="text-4xl font-black tracking-tight text-white mb-2">WALLET</h2>
-                <p class="text-sm font-bold text-slate-500 tracking-widest">FINANCIAL CONTROL.</p>
-            </div>
-
-            <div class="bento-card p-8 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-                <div class="absolute left-0 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
-                <div class="w-full md:w-auto text-center md:text-left relative z-10">
-                    <p class="text-[10px] text-emerald-400 font-bold tracking-widest mb-3">AVAILABLE BALANCE</p>
-                    <div class="flex items-center justify-center md:justify-start gap-4">
-                        <p id="balanceContainer" class="text-5xl md:text-6xl font-black text-white tabular-nums tracking-tight">₹<span id="walletBalanceDisplay">0</span></p>
-                        <button onclick="editBalance()" class="text-slate-500 hover:text-emerald-400 btn-interact bg-white/5 p-3 rounded-full border border-white/5 transition-colors"><i data-lucide="edit-3" size="18"></i></button>
+        <section id="expenses" class="tab-content hidden flex flex-col gap-6">
+            <h2 class="text-4xl font-black text-white">WALLET</h2>
+            
+            <div class="bento-card p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-l-4 border-emerald-500">
+                <div class="w-full md:w-auto">
+                    <p class="text-xs text-slate-400 font-bold mb-2">AVAILABLE BALANCE</p>
+                    <div class="flex items-center gap-4">
+                        <p id="balanceContainer" class="text-5xl md:text-6xl font-black text-white tabular-nums hud-text">₹<span id="walletBalanceDisplay">0</span></p>
+                        <button onclick="editBalance()" class="text-slate-500 hover:text-white btn-interact bg-slate-800 p-3 rounded-xl border-2 border-slate-700 flex-shrink-0"><i data-lucide="edit-3" size="20"></i></button>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto relative z-10 mt-6 md:mt-0">
-                    <input type="number" id="addBalInp" placeholder="ADD ₹" class="p-4 font-black w-full sm:w-40 text-center text-lg">
-                    <button onclick="addBalance()" class="bg-emerald-500 hover:bg-emerald-400 text-black px-8 py-4 rounded-xl font-black btn-interact shadow-[0_5px_15px_rgba(16,185,129,0.2)] tracking-widest text-sm transition-colors w-full sm:w-auto">DEPOSIT</button>
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <input type="number" id="addBalInp" placeholder="ADD ₹" class="p-4 font-black w-full sm:w-40 text-center text-xl">
+                    <button onclick="addBalance()" class="bg-emerald-500 hover:bg-emerald-400 text-black px-8 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-700 w-full sm:w-auto flex-shrink-0">DEPOSIT</button>
                 </div>
             </div>
-            <div class="bento-card p-4 flex flex-col md:flex-row gap-3">
-                <input type="text" id="eTitle" placeholder="Spend Reason..." class="flex-1 p-4 font-medium text-sm" style="text-transform:none;">
-                <input type="number" id="eAmt" placeholder="₹ AMOUNT" class="w-full md:w-48 p-4 font-black text-rose-400 text-base tabular-nums text-center">
-                <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-500 text-white px-10 py-4 rounded-xl font-black btn-interact w-full md:w-auto tracking-widest text-sm shadow-[0_5px_15px_rgba(225,29,72,0.3)] transition-colors">DEDUCT</button>
+            
+            <div class="bento-card p-4 md:p-6 flex flex-col md:flex-row gap-3">
+                <input type="text" id="eTitle" placeholder="Spend Reason..." class="flex-1 p-4 font-bold text-base" style="text-transform:none;">
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <input type="number" id="eAmt" placeholder="₹ AMOUNT" class="w-full sm:w-48 p-4 font-black text-rose-400 text-lg tabular-nums text-center">
+                    <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-500 text-white px-10 py-4 rounded-xl font-black btn-interact w-full sm:w-auto border-b-4 border-rose-800 flex-shrink-0">DEDUCT</button>
+                </div>
             </div>
-            <div id="expensesList" class="flex flex-col gap-3 mt-6"></div>
+            <div id="expensesList" class="flex flex-col gap-3 mt-4"></div>
         </section>
 
-        <section id="diary" class="tab-content hidden space-y-6">
-            <div class="mb-8">
-                <h2 class="text-4xl font-black tracking-tight text-white mb-2">PROTAGONIST LOG</h2>
-                <p class="text-sm font-bold text-slate-500 tracking-widest">DOCUMENT THE JOURNEY.</p>
-            </div>
-            <div class="bento-card p-6 md:p-8">
+        <section id="diary" class="tab-content hidden flex flex-col gap-6">
+            <h2 class="text-4xl font-black text-white">PROTAGONIST LOG</h2>
+            <div class="bento-card p-6 md:p-8 flex flex-col gap-4 border-t-4 border-indigo-500">
                 <textarea id="diaryInp" rows="6" placeholder="What happened today?" class="w-full font-medium text-base text-white resize-none leading-relaxed" style="text-transform: none;"></textarea>
-                <div class="flex justify-end mt-4">
-                    <button onclick="saveDiary()" class="bg-white hover:bg-slate-200 text-black px-8 py-4 rounded-xl font-black btn-interact w-full md:w-auto text-sm flex justify-center items-center gap-2 shadow-[0_5px_15px_rgba(255,255,255,0.1)] tracking-widest">
-                        <i data-lucide="save" size="18"></i> SAVE ENTRY
-                    </button>
-                </div>
+                <button onclick="saveDiary()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact w-full text-base flex justify-center items-center gap-2 border-b-4 border-indigo-800">
+                    <i data-lucide="save" size="20"></i> SAVE ENTRY
+                </button>
             </div>
-            <div id="diaryDisplay" class="mt-8 space-y-6"></div>
+            <div id="diaryDisplay" class="flex flex-col gap-4 mt-4"></div>
         </section>
 
-        <section id="history" class="tab-content hidden space-y-8">
-            <div class="mb-8">
-                <h2 class="text-4xl font-black tracking-tight text-white mb-2">ANALYTICS</h2>
-                <p class="text-sm font-bold text-slate-500 tracking-widest">PERFORMANCE DATA.</p>
-            </div>
-            <div class="bento-card p-6 md:p-8">
-                <h3 class="text-xs font-bold text-slate-400 mb-6 tracking-widest">QUEST COMPLETION (LAST 7 DAYS)</h3>
+        <section id="history" class="tab-content hidden flex flex-col gap-6">
+            <h2 class="text-4xl font-black text-white">ANALYTICS</h2>
+            <div class="bento-card p-6 md:p-8 border-t-4 border-cyan-500">
+                <h3 class="text-sm font-black text-slate-400 mb-6">QUEST COMPLETION (LAST 7 DAYS)</h3>
                 <canvas id="historyChart" height="100"></canvas>
             </div>
-            <div id="historyContainer" class="flex flex-col gap-6 mt-8"></div>
+            <div id="historyContainer" class="flex flex-col gap-6 mt-4"></div>
         </section>
     </main>
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V43 - Raid Boss Update)
+        // DATABASE MIGRATION & INIT (V44 - Heavy Armor)
         // ==========================================
         let oldDb = JSON.parse(localStorage.getItem('happysam_v42_ethereal')) || JSON.parse(localStorage.getItem('happysam_v41_blood'));
-        let db = JSON.parse(localStorage.getItem('happysam_v43_raid')) || oldDb || {};
+        let db = JSON.parse(localStorage.getItem('happysam_v44_heavy')) || oldDb || {};
         
         if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
         
@@ -596,11 +569,11 @@
             let availableRewards = gachaRewards.filter(r => r.days === 'all' || r.days.includes(dayOfWeek));
             db.pact.reward = availableRewards[Math.floor(Math.random() * availableRewards.length)].text;
             db.pact.penalty = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
-            localStorage.setItem('happysam_v43_raid', JSON.stringify(db));
+            localStorage.setItem('happysam_v44_heavy', JSON.stringify(db));
         }
 
         function save() { 
-            try { localStorage.setItem('happysam_v43_raid', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v44_heavy', JSON.stringify(db)); render(); updateSystemVoice(); } 
             catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
         }
 
@@ -630,13 +603,13 @@
 
         function showSystemAlert(title, desc, type="info") {
             const container = document.getElementById('toastContainer'); const alertBox = document.createElement('div');
-            let icon = "info"; let iconColor = "text-indigo-400"; let bgGlow = "shadow-lg shadow-indigo-500/10 border-indigo-500/20";
-            if (type === "reward") { icon = "check-circle"; iconColor = "text-emerald-400"; bgGlow = "shadow-lg shadow-emerald-500/10 border-emerald-500/20"; }
-            else if (type === "penalty") { icon = "skull"; iconColor = "text-rose-500"; bgGlow = "shadow-lg shadow-rose-500/10 border-rose-500/20"; }
-            else if (type === "warning") { icon = "alert-triangle"; iconColor = "text-amber-400"; bgGlow = "shadow-lg shadow-amber-500/10 border-amber-500/20"; }
+            let icon = "info"; let iconColor = "text-indigo-400"; let bgGlow = "border-indigo-500 shadow-lg";
+            if (type === "reward") { icon = "check-circle"; iconColor = "text-emerald-400"; bgGlow = "border-emerald-500 shadow-lg"; }
+            else if (type === "penalty") { icon = "skull"; iconColor = "text-rose-500"; bgGlow = "border-rose-500 shadow-lg"; }
+            else if (type === "warning") { icon = "alert-triangle"; iconColor = "text-amber-400"; bgGlow = "border-amber-500 shadow-lg"; }
             
-            alertBox.className = `bg-[#18181b] text-white border p-4 rounded-2xl flex items-center gap-4 transition-all duration-500 toast-leave w-full md:w-96 mx-auto ${bgGlow}`;
-            alertBox.innerHTML = `<div class="bg-white/5 p-2.5 rounded-xl flex-shrink-0"><i data-lucide="${icon}" class="${iconColor}" size="20"></i></div><div><h4 class="font-bold text-sm tracking-wide leading-tight text-white">${title}</h4><p class="text-xs text-slate-400 mt-1" style="text-transform:none;">${desc}</p></div>`;
+            alertBox.className = `bg-[#0c0c0e] text-white border-2 border-l-4 p-4 rounded-xl flex items-center gap-4 transition-all duration-500 toast-leave w-full md:w-96 mx-auto ${bgGlow}`;
+            alertBox.innerHTML = `<div class="bg-black p-3 rounded-lg flex-shrink-0 border-2 border-slate-800"><i data-lucide="${icon}" class="${iconColor}" size="24"></i></div><div><h4 class="font-black text-sm uppercase leading-tight text-white">${title}</h4><p class="text-xs font-bold text-slate-400 mt-1" style="text-transform:none;">${desc}</p></div>`;
             container.appendChild(alertBox); lucide.createIcons();
             requestAnimationFrame(() => { alertBox.classList.remove('toast-leave'); alertBox.classList.add('toast-enter'); });
             setTimeout(() => { alertBox.classList.remove('toast-enter'); alertBox.classList.add('toast-leave'); setTimeout(() => alertBox.remove(), 500); }, 3500);
@@ -700,24 +673,26 @@
             
             // Desktop Nav
             document.querySelectorAll('.d-nav-btn').forEach(b => { 
-                b.classList.remove('bg-white/10', 'text-white'); 
-                b.classList.add('text-slate-500'); 
+                b.classList.remove('bg-slate-800', 'text-white', 'border-slate-700'); 
+                b.classList.add('text-slate-500', 'border-transparent'); 
             });
             let dBtn = Array.from(document.querySelectorAll('.d-nav-btn')).find(b => b.dataset.tab === id); 
-            if(dBtn) { dBtn.classList.remove('text-slate-500'); dBtn.classList.add('bg-white/10', 'text-white'); }
+            if(dBtn) { dBtn.classList.remove('text-slate-500', 'border-transparent'); dBtn.classList.add('bg-slate-800', 'text-white', 'border-slate-700'); }
             
             // Mobile Nav
             document.querySelectorAll('.m-nav-btn').forEach(b => { 
-                b.classList.remove('nav-active');
+                b.classList.remove('nav-active', 'bg-slate-800', 'border-slate-700');
+                b.classList.add('border-transparent');
                 let iconContainer = b.querySelector('.nav-icon-container');
-                if(iconContainer) { iconContainer.style.background = 'transparent'; iconContainer.style.color = '#94a3b8'; }
+                if(iconContainer) { iconContainer.classList.remove('text-white'); iconContainer.classList.add('text-slate-500'); }
             });
             
             let mBtn = Array.from(document.querySelectorAll('.m-nav-btn')).find(b => b.dataset.tab === id); 
             if(mBtn) { 
-                mBtn.classList.add('nav-active');
+                mBtn.classList.remove('border-transparent');
+                mBtn.classList.add('nav-active', 'bg-slate-800', 'border-slate-700');
                 let iconContainer = mBtn.querySelector('.nav-icon-container');
-                if(iconContainer) { iconContainer.style.background = '#f8fafc'; iconContainer.style.color = '#09090b'; }
+                if(iconContainer) { iconContainer.classList.remove('text-slate-500'); iconContainer.classList.add('text-white'); }
             }
             
             document.getElementById(id).classList.remove('hidden'); 
@@ -768,7 +743,7 @@
         function addTimedTask() { const text = document.getElementById('timedInp').value; const val = parseInt(document.getElementById('raidTimeVal').value) || 0; const unit = document.getElementById('raidTimeUnit').value; if(!text) return; let multiplier = 0; if(unit === 'm') multiplier = 60000; else if(unit === 'h') multiplier = 3600000; else if(unit === 'd') multiplier = 86400000; let endTime = val > 0 ? Date.now() + (val * multiplier) : null; let displayDur = val > 0 ? `${val}${unit.toUpperCase()}` : 'No Limit'; db.timed.push({ id: Date.now(), text: text, durationStr: displayDur, endTime: endTime, status: 'active' }); document.getElementById('timedInp').value = ''; document.getElementById('raidTimeVal').value = ''; save(); }
         function completeTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; t.status = 'done'; clearInterval(timerIntervals[id]); updateStats(50, 10); showSystemAlert("RAID CLEARED!", "+50 EXP | +10 HP", "reward"); save(); }
         function abortTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; if(confirm("ABORT RAID? THIS DEALS 30 HP DAMAGE.")) { t.status = 'aborted'; clearInterval(timerIntervals[id]); updateStats(0, -30, true); showSystemAlert("RAID FAILED", "-30 HP DAMAGE!", "penalty"); save(); } }
-        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
+        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-rose-500'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
 
         function addRoadmap() { const t = document.getElementById('rmTitleInp').value; if(!t) return; db.roadmaps.unshift({ id: Date.now(), title: t, steps: [] }); document.getElementById('rmTitleInp').value = ''; showSystemAlert("PATH CREATED", "New Path forged.", "info"); save(); }
         function addRoadmapStep(rmId) { const t = document.getElementById(`rmStepText_${rmId}`).value; const d = document.getElementById(`rmStepDate_${rmId}`).value; if(!t || !d) { showSystemAlert("MISSING DATA", "Step desc and date required.", "warning"); return; } let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { rm.steps.push({ id: Date.now(), text: t, date: d, done: false }); save(); } }
@@ -789,18 +764,18 @@
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
             try { 
-                localStorage.setItem('happysam_v43_raid', JSON.stringify(db)); 
+                localStorage.setItem('happysam_v44_heavy', JSON.stringify(db)); 
                 document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; fileInput.value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); 
                 const fileLabel = document.getElementById('fileLabel'); if(fileLabel) { fileLabel.innerText = "ATTACH SCREENSHOT (OPTIONAL)"; fileLabel.classList.remove('text-emerald-400'); }
                 showSystemAlert("MARKET LOGGED", "Trade intel archived.", "info"); render(); updateSystemVoice(); 
-            } catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
+            } catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
         function openTradeModal(id) { 
             const t = db.trading.find(x => x.id == id); if(!t) return; 
-            let imgHtml = '<p class="text-center text-slate-500 text-xs font-bold mt-4 border-t border-white/5 pt-4">NO IMAGE ATTACHED</p>'; if (t.img && t.img.length > 20) { imgHtml = `<div class="mt-4 relative group cursor-zoom-in border-t border-white/5 pt-4" onclick="openImageZoom(${t.id})"><img src="${t.img}" class="w-full rounded-2xl border border-white/10 hover:opacity-80 transition shadow-sm"><div class="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition pointer-events-none"><div class="bg-black/60 backdrop-blur-md p-4 rounded-full text-white shadow-lg"><i data-lucide="zoom-in" size="24"></i></div></div></div>`; } 
-            let setupBadges = ''; if(t.setups && t.setups.length > 0) { setupBadges = `<div class="mt-4"><p class="text-[10px] text-slate-400 font-bold mb-2 tracking-widest">SETUP TRIGGERED:</p><div class="flex flex-wrap gap-2">${t.setups.map(s => `<span class="bg-white/10 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wide">${s}</span>`).join('')}</div></div>`; }
-            let htmlContent = `<div class="flex justify-between items-center bg-black/40 p-5 rounded-2xl border border-white/5"><div><p class="text-[10px] text-slate-400 font-bold tracking-widest">ASSET</p><p class="text-2xl font-black text-white">${t.index}</p></div><div class="text-right"><p class="text-[10px] text-slate-400 font-bold tracking-widest">RESULT</p><p class="text-2xl font-black ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result} ${t.pnl ? `[₹${t.pnl}]` : ''}</p></div></div><div class="flex justify-between text-xs font-bold text-slate-400 px-2 mt-4 font-mono"><span>ENT: ${t.entry || 'N/A'}</span><span>EXT: ${t.exit || 'N/A'}</span></div><div class="bg-black/40 p-5 rounded-2xl border border-white/5 mt-4"><p class="text-[10px] text-slate-400 font-bold mb-2 tracking-widest"><i data-lucide="brain" class="inline" size="14"></i> TRADE LOGIC</p><p class="text-sm font-medium text-white leading-relaxed" style="text-transform: none;">${t.logic}</p></div>${setupBadges}${imgHtml}<p class="text-right text-[10px] text-slate-500 font-bold mt-6 mb-2 tracking-widest">LOGGED: ${t.date}</p><button onclick="deleteTrade(${t.id})" class="w-full bg-rose-500/10 hover:bg-rose-600 text-rose-500 hover:text-white py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-sm transition-all tracking-widest"><i data-lucide="trash-2" size="18"></i> DELETE RECORD</button>`;
+            let imgHtml = '<p class="text-center text-slate-600 text-xs font-bold mt-4 border-t-2 border-slate-800 pt-4">NO IMAGE ATTACHED</p>'; if (t.img && t.img.length > 20) { imgHtml = `<div class="mt-4 relative group cursor-zoom-in border-t-2 border-slate-800 pt-4" onclick="openImageZoom(${t.id})"><img src="${t.img}" class="w-full rounded-xl border-2 border-slate-800 hover:border-indigo-500 transition"><div class="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition pointer-events-none"><div class="bg-black/80 p-4 rounded-xl text-white shadow-lg"><i data-lucide="zoom-in" size="24"></i></div></div></div>`; } 
+            let setupBadges = ''; if(t.setups && t.setups.length > 0) { setupBadges = `<div class="mt-4"><p class="text-[10px] text-slate-500 font-bold mb-2 tracking-widest">SETUP TRIGGERED:</p><div class="flex flex-wrap gap-2">${t.setups.map(s => `<span class="bg-slate-800 text-slate-300 border-2 border-slate-700 px-3 py-1.5 rounded-lg text-[10px] font-black">${s}</span>`).join('')}</div></div>`; }
+            let htmlContent = `<div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><div><p class="text-[10px] text-slate-500 font-bold tracking-widest">ASSET</p><p class="text-2xl font-black text-white hud-text">${t.index}</p></div><div class="text-right"><p class="text-[10px] text-slate-500 font-bold tracking-widest">RESULT</p><p class="text-2xl font-black hud-text ${t.result === 'WIN' ? 'text-emerald-500' : 'text-rose-500'}">${t.result} ${t.pnl ? `[₹${t.pnl}]` : ''}</p></div></div><div class="flex justify-between text-xs font-black text-slate-400 px-2 mt-4 font-mono"><span>ENT: ${t.entry || 'N/A'}</span><span>EXT: ${t.exit || 'N/A'}</span></div><div class="bg-black p-5 rounded-xl border-2 border-slate-800 mt-4"><p class="text-[10px] text-indigo-400 font-bold mb-3 tracking-widest"><i data-lucide="brain" class="inline" size="14"></i> TRADE LOGIC</p><p class="text-sm font-bold text-slate-300 leading-relaxed" style="text-transform: none;">${t.logic}</p></div>${setupBadges}${imgHtml}<p class="text-right text-[10px] text-slate-600 font-black mt-6 mb-2 tracking-widest">LOGGED: ${t.date}</p><button onclick="deleteTrade(${t.id})" class="w-full bg-rose-950 hover:bg-rose-600 text-rose-500 hover:text-white py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm transition-all border-b-4 border-rose-800"><i data-lucide="trash-2" size="18"></i> DELETE RECORD</button>`;
             document.getElementById('tradeModalContent').innerHTML = htmlContent; lucide.createIcons(); document.getElementById('tradeModal').classList.remove('hidden'); document.getElementById('tradeModal').classList.add('flex'); 
         }
         function closeTradeModal() { document.getElementById('tradeModal').classList.add('hidden'); document.getElementById('tradeModal').classList.remove('flex'); }
@@ -836,19 +811,16 @@
             } 
         }
 
-        // ==========================================
-        // SYSTEM OVERRIDES & CHARTS
-        // ==========================================
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v43_raid.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v43_raid', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v44_heavy.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v44_heavy', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
             for(let i=6; i>=0; i--) { let d = new Date(); d.setDate(d.getDate() - i); let dStr = d.toLocaleDateString(); labels.push(d.getDate() + "/" + (d.getMonth()+1)); let count = 0; if(dStr === new Date().toLocaleDateString()) { count = db.today.filter(t=>t.done).length + db.timed.filter(t=>t.status==='done').length; } else if (db.history[dStr]) { count = db.history[dStr].filter(t=>t.state==='done').length; } data.push(count); }
             if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#09090b', pointBorderColor: '#ffffff', pointRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a1a1aa', stepSize: 1, font: {family: 'Jost', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: {family: 'Jost', weight: 'bold'} } } } } });
+            chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderWidth: 4, tension: 0.4, fill: true, pointBackgroundColor: '#09090b', pointBorderColor: '#6366f1', pointRadius: 6 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#18181b' }, ticks: { color: '#a1a1aa', stepSize: 1, font: {family: 'Orbitron', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: {family: 'Orbitron', weight: 'bold'} } } } } });
         }
         function forceDayReset() { 
             if(confirm("Force Day Reset?")) { 
@@ -894,60 +866,64 @@
             
             let isLastHour = new Date().getHours() === 23;
             let isPenaltyActive = (db.pact.state === "triggered") || (db.awakening.curseActive && !db.pact.curseDoneToday);
-            let penaltyLabel = db.awakening.curseActive ? `CURSE ACTIVE (${db.awakening.curseDays}D LEFT)` : `PENALTY (${db.pact.missedTasks}/2 MISSED)`;
+            let penaltyLabel = db.awakening.curseActive ? `CURSE ACTIVE [${db.awakening.curseDays}D LEFT]` : `PENALTY [${db.pact.missedTasks}/2 MISSED]`;
             
             let markDoneBtnHtml = '';
             if (isPenaltyActive) {
                 if (db.awakening.curseActive && !isLastHour) {
-                    markDoneBtnHtml = `<div class="bg-rose-500/10 text-rose-500 text-[10px] text-center py-4 mt-5 rounded-xl font-bold border border-rose-500/20 tracking-widest"><i data-lucide="lock" size="14" class="inline mb-0.5 mr-1"></i> LOCKED TILL 23:00</div>`;
+                    markDoneBtnHtml = `<div class="bg-rose-950 text-rose-500 text-xs text-center py-4 mt-5 rounded-xl font-black border-2 border-rose-900"><i data-lucide="lock" size="16" class="inline mb-0.5 mr-1"></i> LOCKED TILL 23:00</div>`;
                 } else {
-                    markDoneBtnHtml = `<button onclick="clearPenalty()" class="w-full mt-5 bg-rose-600 hover:bg-rose-500 text-white text-xs py-4 rounded-xl font-black btn-interact tracking-widest">ENDURE & CLEAR</button>`;
+                    markDoneBtnHtml = `<button onclick="clearPenalty()" class="w-full mt-5 bg-rose-600 hover:bg-rose-500 text-white text-sm py-4 rounded-xl font-black btn-interact border-b-4 border-rose-800">ENDURE & CLEAR</button>`;
                 }
             }
             
-            let pCard = `<div class="bento-card p-6 md:p-8 border-t-2 ${isPenaltyActive ? 'border-rose-500 bg-rose-500/5' : 'border-white/5 opacity-70'} flex-1 transition-all">
-                <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold tracking-widest ${isPenaltyActive ? 'text-rose-500' : 'text-slate-500'}">${penaltyLabel}</span><i data-lucide="skull" size="20" class="${isPenaltyActive ? 'text-rose-500' : 'text-slate-600'}"></i></div>
-                <p class="font-black text-base md:text-lg leading-snug ${isPenaltyActive ? 'text-white' : 'text-slate-400'}">${db.pact.penalty || "NONE"}</p>
+            let pCard = `<div class="bento-card p-6 md:p-8 ${isPenaltyActive ? 'border-rose-600 bg-[#0f0508]' : 'opacity-50'} flex-1 flex flex-col justify-between transition-all">
+                <div>
+                    <div class="flex justify-between items-center mb-4"><span class="text-xs font-black tracking-widest ${isPenaltyActive ? 'text-rose-500' : 'text-slate-500'}">${penaltyLabel}</span><i data-lucide="skull" size="24" class="${isPenaltyActive ? 'text-rose-500' : 'text-slate-600'}"></i></div>
+                    <p class="font-black text-lg md:text-xl leading-snug ${isPenaltyActive ? 'text-white' : 'text-slate-500'}">${db.pact.penalty || "NONE"}</p>
+                </div>
                 ${markDoneBtnHtml}
             </div>`;
             
             let isRewardUnlocked = (db.pact.state === "unlocked");
-            let rCard = `<div class="bento-card p-6 md:p-8 border-t-2 ${isRewardUnlocked ? 'border-emerald-400 bg-emerald-500/5' : 'border-white/5 opacity-70'} flex-1 transition-all">
-                <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold tracking-widest ${isRewardUnlocked ? 'text-emerald-400' : 'text-slate-500'}">REWARD ${isRewardUnlocked ? 'UNLOCKED' : '(LOCKED)'}</span><i data-lucide="${isRewardUnlocked ? 'unlock' : 'lock'}" size="20" class="${isRewardUnlocked ? 'text-emerald-400' : 'text-slate-600'}"></i></div>
-                <p class="font-black text-base md:text-lg leading-snug ${isRewardUnlocked ? 'text-white' : 'text-slate-400'}">${db.pact.reward || "NONE"}</p>
+            let rCard = `<div class="bento-card p-6 md:p-8 ${isRewardUnlocked ? 'border-emerald-500 bg-[#050f0a]' : 'opacity-50'} flex-1 flex flex-col justify-between transition-all">
+                <div>
+                    <div class="flex justify-between items-center mb-4"><span class="text-xs font-black tracking-widest ${isRewardUnlocked ? 'text-emerald-400' : 'text-slate-500'}">REWARD ${isRewardUnlocked ? 'UNLOCKED' : '[LOCKED]'}</span><i data-lucide="${isRewardUnlocked ? 'unlock' : 'lock'}" size="24" class="${isRewardUnlocked ? 'text-emerald-400' : 'text-slate-600'}"></i></div>
+                    <p class="font-black text-lg md:text-xl leading-snug ${isRewardUnlocked ? 'text-white' : 'text-slate-500'}">${db.pact.reward || "NONE"}</p>
+                </div>
             </div>`;
-            pactSec.innerHTML = `<p class="text-xs font-bold text-slate-500 tracking-widest mb-4"><i data-lucide="dices" size="14" class="inline"></i> THE PACT</p><div class="flex flex-col md:flex-row gap-5">${rCard}${pCard}</div>`;
+            pactSec.innerHTML = `<p class="text-xs font-bold text-slate-500 tracking-widest mb-4"><i data-lucide="dices" size="14" class="inline"></i> THE PACT</p><div class="flex flex-col md:flex-row gap-6">${rCard}${pCard}</div>`;
             
-            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="bento-card p-4 md:p-5 flex justify-between items-center group relative z-10"><div class="flex items-center gap-4 w-full"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border border-white/20 bg-transparent flex-shrink-0 flex items-center justify-center rounded-full btn-interact ${t.done ? 'bg-indigo-600 border-indigo-600 text-white' : 'text-transparent'} transition-all">${t.done ? '<i data-lucide="check" size="20"></i>' : ''}</button><p class="font-bold text-sm md:text-base leading-snug flex-1 ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-slate-200'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact flex-shrink-0"><i data-lucide="x" size="20"></i></button></div>`).join('');
+            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="bento-card p-4 md:p-5 flex justify-between items-center group relative z-10"><div class="flex items-center gap-4 w-full"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-2 border-slate-700 bg-black flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-600 border-indigo-500 text-white' : 'text-transparent'} transition-all">${t.done ? '<i data-lucide="check" size="20"></i>' : ''}</button><p class="font-bold text-base md:text-lg leading-snug flex-1 ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact flex-shrink-0"><i data-lucide="x" size="24"></i></button></div>`).join('');
             document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { 
                 let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; 
                 let contentClass = isDone ? 'raid-card-done' : (isAborted ? 'raid-card-failed' : 'raid-card-active'); 
-                let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-rose-500/10 py-2 px-4 rounded-xl text-rose-500 font-black tracking-widest text-xs flex items-center gap-2 border border-rose-500/30"><i data-lucide="target" size="14" class="animate-pulse"></i><span id="timer_${t.id}" class="tabular-nums">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-bold text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-slate-500 font-bold text-[10px] tracking-widest">ABORTED</div>` : '')); 
-                let buttons = t.status === 'active' ? `<div class="flex flex-col md:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500 hover:text-black py-3.5 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-xs transition-colors tracking-widest"><i data-lucide="check" size="18"></i> CLEAR RAID</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-transparent border border-rose-500/30 text-rose-500 hover:bg-rose-600 hover:text-white hover:border-rose-600 py-3.5 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-xs transition-colors tracking-widest"><i data-lucide="x" size="18"></i> ABORT RAID</button></div>` : ``; 
-                return `<div class="raid-card p-6 md:p-8 ${contentClass} transition-all"><div class="flex justify-between items-start mb-2"><h3 class="font-bold text-sm md:text-base tracking-wide text-white ${isAborted ? 'text-slate-500 line-through' : ''} ${isDone ? 'text-emerald-400' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; 
+                let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-black py-2 px-4 rounded-xl text-rose-500 font-black tracking-widest text-sm flex items-center gap-2 border-2 border-rose-900/50"><i data-lucide="target" size="16" class="animate-pulse"></i><span id="timer_${t.id}" class="tabular-nums hud-text">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-slate-500 font-black text-[10px] tracking-widest">ABORTED</div>` : '')); 
+                let buttons = t.status === 'active' ? `<div class="flex flex-col sm:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600 text-white hover:bg-emerald-500 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-800 flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="check" size="20"></i> CLEAR</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black border-2 border-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-500 hover:border-rose-900 py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="x" size="20"></i> ABORT</button></div>` : ``; 
+                return `<div class="raid-card p-6 md:p-8 ${contentClass} transition-all"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-base md:text-lg tracking-wide text-white ${isAborted ? 'text-slate-500 line-through' : ''} ${isDone ? 'text-emerald-400' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; 
             }).join(''); startTaskTimers();
 
             document.getElementById('roadmapsContainer').innerHTML = db.roadmaps.map(rm => {
-                let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-400" size="20"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-600" size="20"></i>' : '<i data-lucide="circle" class="text-amber-400" size="20"></i>'); let textClass = s.done ? 'text-slate-500 line-through opacity-50' : (isLocked ? 'text-slate-600' : 'text-slate-200'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-10 w-10 bg-white text-black flex items-center justify-center rounded-xl hover:bg-slate-200 transition-all ml-auto btn-interact"><i data-lucide="check" size="20"></i></button>`; return `<div class="flex items-stretch gap-5 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[11px] w-[2px] h-[calc(100%-1.5rem)] bg-white/5"></div>` : ''}<div class="mt-4 z-10 rounded-full flex items-center justify-center h-6 w-6 bg-black">${statusIcon}</div><div class="flex-1 bg-black/40 border border-white/5 p-5 rounded-2xl mb-4 flex items-center justify-between"><div><p class="font-bold text-sm ${textClass}">${s.text}</p><p class="text-[10px] font-bold text-amber-500 mt-2 tracking-widest opacity-80">TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
-                return `<div class="bento-card p-6 md:p-8 border-t-2 border-amber-500 relative group z-10"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="20"></i></button><h3 class="text-xl font-black text-amber-400 mb-8 flex items-center gap-3"><i data-lucide="flag" size="24"></i> ${rm.title}</h3><div class="mb-8 pl-2">${stepsHtml}</div><div class="flex flex-col md:flex-row gap-3 border-t border-white/5 pt-6"><input type="text" id="rmStepText_${rm.id}" placeholder="Next Milestone..." class="w-full md:flex-1 text-sm font-medium" style="text-transform:none;"><input type="date" id="rmStepDate_${rm.id}" class="w-full md:w-48 text-sm font-medium text-slate-300"><button onclick="addRoadmapStep(${rm.id})" class="bg-white text-black px-8 py-4 rounded-xl font-black btn-interact text-xs w-full md:w-auto tracking-widest">ADD</button></div></div>`;
+                let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-400" size="24"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-700" size="20"></i>' : '<i data-lucide="circle" class="text-amber-500" size="20"></i>'); let textClass = s.done ? 'text-slate-600 line-through' : (isLocked ? 'text-slate-500' : 'text-white'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-12 w-12 bg-amber-500 text-black flex items-center justify-center rounded-xl hover:bg-white transition-all ml-auto btn-interact border-b-4 border-amber-700"><i data-lucide="check" size="24"></i></button>`; return `<div class="flex items-stretch gap-5 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[11px] w-1 h-[calc(100%-1.5rem)] bg-slate-800"></div>` : ''}<div class="mt-4 z-10 rounded-full flex items-center justify-center h-6 w-6 bg-[#0c0c0e]">${statusIcon}</div><div class="flex-1 bg-black border-2 border-slate-800 p-5 rounded-2xl mb-4 flex items-center justify-between"><div><p class="font-black text-sm md:text-base ${textClass}">${s.text}</p><p class="text-[10px] font-bold text-amber-500 mt-2 tracking-widest">TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
+                return `<div class="bento-card p-6 md:p-8 border-t-4 border-amber-500 relative group z-10"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="24"></i></button><h3 class="text-2xl font-black text-amber-400 mb-8 flex items-center gap-3"><i data-lucide="flag" size="28"></i> ${rm.title}</h3><div class="mb-8 pl-2">${stepsHtml}</div><div class="flex flex-col sm:flex-row gap-3 border-t-2 border-slate-800 pt-6"><input type="text" id="rmStepText_${rm.id}" placeholder="Next Milestone..." class="w-full sm:flex-1" style="text-transform:none;"><input type="date" id="rmStepDate_${rm.id}" class="w-full sm:w-48"><button onclick="addRoadmapStep(${rm.id})" class="bg-amber-500 text-black px-8 py-4 rounded-xl font-black btn-interact text-sm w-full sm:w-auto border-b-4 border-amber-700">ADD</button></div></div>`;
             }).join('');
             let balEl = document.getElementById('walletBalanceDisplay'); balEl.innerText = db.wallet.balance;
             if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-white'); balEl.parentElement.classList.add('text-rose-500'); } else { balEl.parentElement.classList.add('text-white'); balEl.parentElement.classList.remove('text-rose-500'); }
-            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="bento-card p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} group relative transition-all hover:bg-[#18181b]"><div class="flex flex-col"><span class="font-bold text-sm text-white">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl ${e.type === 'in' ? 'text-emerald-400' : 'text-rose-400'} tabular-nums">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`).join('');
-            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-white' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-400'; return `<div class="bento-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 transition-colors"><div class="flex-1"><h3 class="font-bold text-sm text-white">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="font-bold text-xs ${sColor} flex-1 md:flex-none tracking-widest cursor-pointer border border-white/5"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
+            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="bento-card p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} transition-all"><div class="flex flex-col"><span class="font-black text-base text-white">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-2xl ${e.type === 'in' ? 'text-emerald-400' : 'text-rose-500'} tabular-nums hud-text">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="24"></i></button></div></div>`).join('');
+            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-white' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-500'; return `<div class="bento-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 transition-colors"><div class="flex-1"><h3 class="font-black text-base text-white">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="w-full sm:w-auto font-black text-sm ${sColor} cursor-pointer"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="w-full sm:w-auto text-slate-600 hover:text-rose-500 p-3 bg-black border-2 border-slate-800 rounded-xl transition btn-interact flex items-center justify-center"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
             document.getElementById('tradeCapitalDisplay').innerText = db.tradeCapital;
-            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="bento-card p-5 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer transition-colors"><div class="flex items-center gap-4"><span class="font-bold text-sm text-white">${t.index}</span><span class="text-[10px] bg-white/5 px-3 py-1.5 rounded-lg text-slate-400 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-base ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="20"></i></div></div>`).join('');
+            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="bento-card p-6 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer transition-colors"><div class="flex items-center gap-4"><span class="font-black text-base text-white">${t.index}</span><span class="text-[10px] bg-black px-3 py-1.5 rounded-lg border-2 border-slate-800 text-slate-400 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="24"></i></div></div>`).join('');
             document.getElementById('combatPushups').value = db.awakening.combat.pushups; document.getElementById('combatPullups').value = db.awakening.combat.pullups; document.getElementById('combatSquats').value = db.awakening.combat.squats; document.getElementById('combatCore').value = db.awakening.combat.core;
             
             let hDate = new Date(db.awakening.lastHaircut); 
             if (isNaN(hDate.getTime())) { let parts = db.awakening.lastHaircut.split('/'); if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]); else hDate = new Date(); }
             let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); 
             if (isNaN(daysPassed) || daysPassed < 0) daysPassed = 0;
-            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-6xl font-black tabular-nums my-4 text-rose-500"; else hcDisplay.className = "text-6xl font-black tabular-nums my-4 text-white";
+            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-rose-500 hud-text"; else hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-white hud-text";
             
-            const looksMap = [ {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L)'}, {id: 'mewing', label: 'JAWLINE MEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-black/30 p-4 rounded-xl border border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors tracking-widest">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-white cursor-pointer rounded"></label>`).join('');
-            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="bento-card p-6 md:p-8 border-t-2 border-indigo-500 transition-all"><p class="text-[10px] text-slate-400 font-bold mb-4 flex items-center gap-2 tracking-widest"><i data-lucide="calendar" size="14" class="text-indigo-400"></i> ${date}</p><p id="${safeId}" class="text-sm font-medium text-slate-200 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-indigo-400 mt-5 flex items-center gap-1 hover:text-white btn-interact tracking-widest">READ MORE <i data-lucide="chevron-down" size="12"></i></button></div>`; }).join('');
-            document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="bento-card p-6 md:p-8 border-t-2 border-purple-500 relative group z-10"><button onclick="deleteSkill(${s.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="20"></i></button><div class="flex justify-between items-end mb-6 pr-8"><div><h3 class="font-black text-xl text-white tracking-tight">${s.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-2 tracking-widest">LATEST: <span class="text-white" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">LEVEL</p><p class="text-4xl font-black text-purple-400">${s.level}</p></div></div><div class="flex justify-between text-[10px] font-bold mb-2 tracking-widest"><span class="text-slate-400">EXPERIENCE</span><span class="text-white">${s.exp}/${sMax}</span></div><div class="bar-bg mb-6"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col gap-3"><input type="text" id="skillRemark_${s.id}" placeholder="Log Progress..." class="rounded-xl p-4 font-medium text-sm text-white" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full bg-white hover:bg-slate-200 text-black py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 transition-colors tracking-widest text-xs shadow-[0_5px_15px_rgba(255,255,255,0.2)]"><i data-lucide="zap" size="16"></i> GRIND (+20)</button></div></div>`; }).join('');
+            const looksMap = [ {id: 'oil', label: 'FACE WASH (AM/PM)'}, {id: 'water', label: 'HYDRATION (4L)'}, {id: 'mewing', label: 'JAWLINE MEWING'}, {id: 'skin', label: 'SKINCARE'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-black p-5 rounded-xl border-2 border-slate-800 hover:border-slate-600 transition-colors cursor-pointer group"><span class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-6 h-6 accent-indigo-600 cursor-pointer rounded"></label>`).join('');
+            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="bento-card p-6 md:p-8 border-t-4 border-indigo-500 transition-all"><p class="text-[10px] text-indigo-400 font-bold mb-4 flex items-center gap-2 tracking-widest"><i data-lucide="calendar" size="16"></i> ${date}</p><p id="${safeId}" class="text-base font-bold text-slate-200 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-white mt-5 flex items-center gap-2 bg-slate-800 px-5 py-3 rounded-xl border-2 border-slate-700 btn-interact tracking-widest">READ MORE <i data-lucide="chevron-down" size="14"></i></button></div>`; }).join('');
+            document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="bento-card p-6 md:p-8 border-t-4 border-purple-500 relative group z-10"><button onclick="deleteSkill(${s.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="24"></i></button><div class="flex justify-between items-end mb-6 pr-10"><div><h3 class="font-black text-2xl text-white">${s.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-2 tracking-widest">LATEST: <span class="text-white" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">LEVEL</p><p class="text-5xl font-black text-purple-400 hud-text">${s.level}</p></div></div><div class="flex justify-between text-xs font-bold mb-2 text-slate-400"><span>EXPERIENCE</span><span>${s.exp}/${sMax}</span></div><div class="bar-bg mb-6"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col sm:flex-row gap-3"><input type="text" id="skillRemark_${s.id}" placeholder="Log Progress..." class="w-full sm:flex-1" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full sm:w-auto bg-white text-black px-8 py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-slate-300">GRIND</button></div></div>`; }).join('');
             
             const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); 
             document.getElementById('historyContainer').innerHTML = dates.map(date => { 
@@ -967,7 +943,7 @@
                     logArray.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'active'});
                 } else { logArray = db.history[date] || []; } 
                 if(logArray.length === 0) return ''; 
-                return `<div class="bento-card p-6 md:p-8 border-l-4 border-white"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-3">${logArray.map(t => `<p class="font-bold text-xs tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug">${t.text}</span></p>`).join('')}</div></div>`; 
+                return `<div class="bento-card p-6 md:p-8 border-l-4 border-slate-500"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-4">${logArray.map(t => `<p class="font-bold text-sm tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px]">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug">${t.text}</span></p>`).join('')}</div></div>`; 
             }).join('');
             lucide.createIcons();
         }
