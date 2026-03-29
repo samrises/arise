@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | The Karma Engine v45</title>
+    <title>HappySam | The Karma Engine v46</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Jost:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script>
@@ -77,15 +78,11 @@
         .checkbox-custom:checked + label span { color: #09090b; font-weight: 900;}
         .tab-content { animation: dropIn 0.3s ease-out; }
         @keyframes dropIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* KARMA CARDS */
-        .karma-reward { border-left: 4px solid #10b981; background: #020617; }
-        .karma-penalty { border-left: 4px solid #e11d48; background: #1a0505; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 
-    <audio id="penaltyAlarm" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" preload="auto"></audio>
+    <div id="penaltyAlarmPlayer" class="hidden"></div>
     <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[92%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 flex hidden justify-center items-center p-4 cursor-zoom-out" onclick="closeImageZoom()">
@@ -158,7 +155,7 @@
             </div>
         </div>
 
-        <div onclick="openStatusModal()" class="bento-card p-6 md:p-8 flex flex-col lg:flex-row justify-between gap-6 lg:items-center cursor-pointer border-l-4 border-indigo-500">
+        <div onclick="openStatusModal()" class="bento-card p-6 md:p-8 flex flex-col lg:flex-row justify-between gap-6 lg:items-center cursor-pointer border-l-4 border-indigo-500 hover:bg-slate-900/50">
             <div class="flex items-center gap-5 w-full lg:w-auto">
                 <div class="h-20 w-20 bg-indigo-600 rounded-xl flex items-center justify-center text-4xl font-black text-white border-b-4 border-indigo-800 hud-text flex-shrink-0">
                     <span class="text-indigo-200 mr-1 text-sm">L</span><span id="playerLvl" class="tabular-nums">1</span>
@@ -186,13 +183,13 @@
         <div id="systemVoiceBox" class="bento-card p-6 md:p-8 text-center flex flex-col items-center justify-center">
             <p class="text-xs font-bold text-indigo-500 mb-3 flex items-center gap-2"><i data-lucide="terminal" size="14"></i> SYSTEM LOG</p>
             <p id="systemVoice" class="text-lg md:text-xl font-bold text-white leading-relaxed system-voice">
-                "Arise."<span class="text-indigo-500 typewriter-cursor ml-1">|</span>
+                "Arise."<span class="text-indigo-500 typewriter-cursor">|</span>
             </p>
         </div>
 
         <section id="tasks" class="tab-content active flex flex-col gap-6">
             
-            <div id="karmaEngineSection" class="flex flex-col gap-4 w-full"></div>
+            <div id="karmaSection"></div>
             
             <div class="bento-card p-6 md:p-8 flex flex-col gap-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -276,7 +273,7 @@
                 <p class="font-black text-rose-500 text-lg flex items-center justify-center gap-2"><i data-lucide="alert-triangle" size="24"></i> DRAWDOWN LIMIT. STOP TRADING.</p>
             </div>
             
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-indigo-500">
+            <div class="bento-card p-6 md:p-8 flex flex-col gap-6">
                 <h3 class="text-xl font-black text-white flex items-center gap-2"><i data-lucide="plus-circle" size="20" class="text-indigo-500"></i> NEW INTEL</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -421,13 +418,13 @@
                     <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-500 text-white px-10 py-4 rounded-xl font-black btn-interact w-full sm:w-auto border-b-4 border-rose-800 flex-shrink-0">DEDUCT</button>
                 </div>
             </div>
-            <div id="expensesList" class="flex flex-col gap-3 mt-2"></div>
+            <div id="expensesList" class="flex flex-col gap-3 mt-4"></div>
         </section>
 
         <section id="diary" class="tab-content hidden flex flex-col gap-6">
             <h2 class="text-4xl font-black text-white">PROTAGONIST LOG</h2>
             <div class="bento-card p-6 md:p-8 flex flex-col gap-4 border-t-4 border-indigo-500">
-                <textarea id="diaryInp" rows="6" placeholder="What happened today?" class="w-full font-bold text-base text-white resize-none leading-relaxed" style="text-transform: none;"></textarea>
+                <textarea id="diaryInp" rows="6" placeholder="What happened today?" class="w-full font-medium text-base text-white resize-none leading-relaxed" style="text-transform: none;"></textarea>
                 <button onclick="saveDiary()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact w-full text-base flex justify-center items-center gap-2 border-b-4 border-indigo-800 mt-2">
                     <i data-lucide="save" size="20"></i> SAVE ENTRY
                 </button>
@@ -446,23 +443,27 @@
     </main>
 
     <script>
+        // YT ALARM SYSTEM
+        let ytPlayer;
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('penaltyAlarmPlayer', {
+                height: '0', width: '0', videoId: 'bgl6re32FO0',
+                playerVars: { 'autoplay': 0, 'controls': 0 },
+            });
+        }
+
         // ==========================================
-        // DATABASE MIGRATION & INIT (V45 - The Karma Engine)
+        // DATABASE MIGRATION & INIT (V46)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v44_heavy')) || JSON.parse(localStorage.getItem('happysam_v43_raid'));
-        let db = JSON.parse(localStorage.getItem('happysam_v45_karma')) || oldDb || {};
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v45_karma')) || JSON.parse(localStorage.getItem('happysam_v44_heavy'));
+        let db = JSON.parse(localStorage.getItem('happysam_v46_final')) || oldDb || {};
         
-        // AUTO-CLEANER
         if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
         
         if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
-        
-        // NEW KARMA ENGINE ARRAYS
         if (!db.activeRewards) db.activeRewards = [];
         if (!db.activePenalties) db.activePenalties = [];
-        
-        // Remove old pact system if exists
-        if (db.pact) { delete db.pact; }
+        if (db.pact) { delete db.pact; } // Delete old pact logic entirely
         
         if (!db.skills) db.skills = [];
         if (!db.career) db.career = [];
@@ -500,8 +501,19 @@
             "No one is coming to save you. The system only rewards those who bleed for their goals."
         ];
 
-        // --- NEW 40+ ARSENAL (REWARDS & PENALTIES) ---
-        
+        const curseQuotes = [
+            "You chose the comfort of the abyss. Now crawl your way out.",
+            "The System records every failure. Wash it away with sweat.",
+            "A broken vow demands a heavy toll. Endure the curse.",
+            "Discipline abandoned. Suffering initiated.",
+            "This pain is merely the interest on the debt of your weakness.",
+            "You wanted to be a Monarch? Act like one and face punishment.",
+            "The shadow of your relapse hangs over you. Survive it.",
+            "No pity for the weak. Only the crucible remains.",
+            "Your desires betrayed you. Let the curse forge your mind anew.",
+            "7 Days of Hell. It’s the only way to cleanse the weakness."
+        ];
+
         const karmaRewards = [
             {id: 1, text: "30 min guilt-free gaming", type: "small", days: "all"},
             {id: 2, text: "20 min reels (strict timer)", type: "small", days: "all"},
@@ -568,14 +580,14 @@
             {id: 27, text: "24h dopamine detox", type: "extreme"},
             {id: 28, text: "10h deep work marathon", type: "extreme"},
             {id: 29, text: "Full day strict productivity tracking", type: "big"},
-            {id: 30, text: "Life audit (10-year brutal reality write)", type: "extreme"},
+            {id: 30, text: "Life audit (brutal reality write)", type: "extreme"},
             {id: 31, text: "Financial Hit (Donate ₹100)", type: "big"},
             {id: 32, text: "Chart Hell (Backtest 50 Charts)", type: "extreme"}
         ];
 
         function save() { 
-            try { localStorage.setItem('happysam_v45_karma', JSON.stringify(db)); render(); updateSystemVoice(); } 
-            catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
+            try { localStorage.setItem('happysam_v46_final', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs.", "penalty"); }
         }
 
         function toggleDiaryText(id, btn) {
@@ -586,8 +598,14 @@
         }
         
         function triggerSiren() {
-            const audio = document.getElementById('penaltyAlarm');
-            if(audio) { audio.currentTime = 0; audio.volume = 1.0; let p = audio.play(); if(p !== undefined) p.catch(e => console.log("Audio blocked.")); }
+            try {
+                if(ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.seekTo(0); ytPlayer.playVideo();
+                    setTimeout(() => { ytPlayer.pauseVideo(); }, 8000);
+                }
+            } catch(e) { console.log("YT Player not ready."); }
+            document.body.classList.add('danger-pulse'); 
+            setTimeout(() => document.body.classList.remove('danger-pulse'), 3000);
         }
 
         function openImageZoom(tradeId) {
@@ -616,7 +634,6 @@
             setTimeout(() => { alertBox.classList.remove('toast-enter'); alertBox.classList.add('toast-leave'); setTimeout(() => alertBox.remove(), 500); }, 3500);
         }
 
-        let typewriterTimeout;
         function typeWriterEffect(text, elementId) {
             const el = document.getElementById(elementId);
             el.innerHTML = ''; let i = 0; clearTimeout(typewriterTimeout);
@@ -625,8 +642,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const fileInput = document.getElementById('tImg');
-            const fileLabel = document.getElementById('fileLabel');
+            const fileInput = document.getElementById('tImg'); const fileLabel = document.getElementById('fileLabel');
             if(fileInput && fileLabel) {
                 fileInput.addEventListener('change', function(e) {
                     if(e.target.files.length > 0) { fileLabel.innerText = "IMAGE ATTACHED ✅"; fileLabel.classList.add('text-emerald-400'); } 
@@ -635,9 +651,6 @@
             }
         });
 
-        // ==========================================
-        // SYSTEM CORE
-        // ==========================================
         function checkLoginStreak() {
             const today = new Date().toLocaleDateString();
             if(db.player.lastLogin === today) return; 
@@ -668,7 +681,6 @@
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             
-            // Desktop Nav
             document.querySelectorAll('.d-nav-btn').forEach(b => { 
                 b.classList.remove('bg-slate-800', 'text-white', 'border-slate-700'); 
                 b.classList.add('text-slate-500', 'border-transparent'); 
@@ -676,7 +688,6 @@
             let dBtn = Array.from(document.querySelectorAll('.d-nav-btn')).find(b => b.dataset.tab === id); 
             if(dBtn) { dBtn.classList.remove('text-slate-500', 'border-transparent'); dBtn.classList.add('bg-slate-800', 'text-white', 'border-slate-700'); }
             
-            // Mobile Nav
             document.querySelectorAll('.m-nav-btn').forEach(b => { 
                 b.classList.remove('nav-active', 'bg-slate-800', 'border-slate-700');
                 b.classList.add('border-transparent');
@@ -710,18 +721,18 @@
         }
 
         // ==========================================
-        // NEW KARMA ENGINE FUNCTIONS
+        // THE KARMA BUTTON LOGIC
         // ==========================================
         function claimReward(id) {
             db.activeRewards = db.activeRewards.filter(r => r.id != id);
-            updateStats(10, 5); // Small bonus for claiming
+            updateStats(10, 5); 
             showSystemAlert("REWARD CLAIMED", "Enjoy your reward. Back to grind tomorrow.", "reward");
             save();
         }
 
         function markPenaltyDone(id) {
             db.activePenalties = db.activePenalties.filter(p => p.id != id);
-            updateStats(20, 0); // EXP for surviving penalty
+            updateStats(20, 0); 
             showSystemAlert("PENALTY CLEARED", "Debt paid. Do not fail again.", "info");
             save();
         }
@@ -733,7 +744,7 @@
         function addTimedTask() { const text = document.getElementById('timedInp').value; const val = parseInt(document.getElementById('raidTimeVal').value) || 0; const unit = document.getElementById('raidTimeUnit').value; if(!text) return; let multiplier = 0; if(unit === 'm') multiplier = 60000; else if(unit === 'h') multiplier = 3600000; else if(unit === 'd') multiplier = 86400000; let endTime = val > 0 ? Date.now() + (val * multiplier) : null; let displayDur = val > 0 ? `${val}${unit.toUpperCase()}` : 'No Limit'; db.timed.push({ id: Date.now(), text: text, durationStr: displayDur, endTime: endTime, status: 'active' }); document.getElementById('timedInp').value = ''; document.getElementById('raidTimeVal').value = ''; save(); }
         function completeTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; t.status = 'done'; clearInterval(timerIntervals[id]); updateStats(50, 10); showSystemAlert("RAID CLEARED!", "+50 EXP | +10 HP", "reward"); save(); }
         function abortTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; if(confirm("ABORT RAID? THIS DEALS 30 HP DAMAGE.")) { t.status = 'aborted'; clearInterval(timerIntervals[id]); updateStats(0, -30, true); showSystemAlert("RAID FAILED", "-30 HP DAMAGE!", "penalty"); save(); } }
-        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-rose-500'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
+        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
 
         function addRoadmap() { const t = document.getElementById('rmTitleInp').value; if(!t) return; db.roadmaps.unshift({ id: Date.now(), title: t, steps: [] }); document.getElementById('rmTitleInp').value = ''; showSystemAlert("PATH CREATED", "New Path forged.", "info"); save(); }
         function addRoadmapStep(rmId) { const t = document.getElementById(`rmStepText_${rmId}`).value; const d = document.getElementById(`rmStepDate_${rmId}`).value; if(!t || !d) { showSystemAlert("MISSING DATA", "Step desc and date required.", "warning"); return; } let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { rm.steps.push({ id: Date.now(), text: t, date: d, done: false }); save(); } }
@@ -754,11 +765,11 @@
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
             try { 
-                localStorage.setItem('happysam_v45_karma', JSON.stringify(db)); 
+                localStorage.setItem('happysam_v46_final', JSON.stringify(db)); 
                 document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; fileInput.value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); 
                 const fileLabel = document.getElementById('fileLabel'); if(fileLabel) { fileLabel.innerText = "ATTACH SCREENSHOT (OPTIONAL)"; fileLabel.classList.remove('text-emerald-400'); }
                 showSystemAlert("MARKET LOGGED", "Trade intel archived.", "info"); render(); updateSystemVoice(); 
-            } catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
+            } catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
         function openTradeModal(id) { 
@@ -787,7 +798,6 @@
                 db.awakening.noFapStreak = 0; 
                 db.awakening.noFapLastDate = new Date().toLocaleDateString();
                 
-                // Add 2 Extreme Penalties instantly
                 let extremePens = karmaPenalties.filter(p => p.type === 'extreme');
                 for(let i=0; i<2; i++) {
                     let rdm = extremePens[Math.floor(Math.random() * extremePens.length)];
@@ -802,8 +812,8 @@
 
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v45_karma.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v45_karma', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v46_final.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v46_final', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
@@ -811,6 +821,81 @@
             if(chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderWidth: 4, tension: 0.4, fill: true, pointBackgroundColor: '#09090b', pointBorderColor: '#6366f1', pointRadius: 6 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#18181b' }, ticks: { color: '#a1a1aa', stepSize: 1, font: {family: 'Orbitron', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: {family: 'Orbitron', weight: 'bold'} } } } } });
         }
+        
+        // ==========================================
+        // V46 KARMA EVALUATOR (DAY RESET)
+        // ==========================================
+        function checkReset() {
+            const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
+            if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
+            
+            if (db.lastDate !== currDate) {
+                let totalTasks = db.today.length + db.timed.length;
+                let completedTasks = db.today.filter(t => t.done).length + db.timed.filter(t => t.status === 'done').length;
+                let scorePercent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+
+                let unfinSimple = db.today.filter(t => !t.done).length; if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
+                
+                let dailyHistory = []; 
+                db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
+                db.timed = db.timed.filter(t => { if(t.status !== 'active') { dailyHistory.push({text: t.text + ` (${t.durationStr})`, state: t.status === 'done' ? 'done' : 'aborted'}); return false; } return true; });
+                
+                let combatStr = `COMBAT: ${db.awakening.combat.pushups}PU | ${db.awakening.combat.pullups}PL | ${db.awakening.combat.squats}SQ | ${db.awakening.combat.core}s`;
+                dailyHistory.push({text: combatStr, state: (db.awakening.combat.pushups>0||db.awakening.combat.pullups>0||db.awakening.combat.squats>0||db.awakening.combat.core>0) ? 'done':'failed'});
+                
+                let looksArr = [];
+                if(db.awakening.looks.oil) looksArr.push("WASH");
+                if(db.awakening.looks.water) looksArr.push("WATER");
+                if(db.awakening.looks.mewing) looksArr.push("MEWING");
+                if(db.awakening.looks.skin) looksArr.push("SKIN");
+                if(db.awakening.looks.posture) looksArr.push("POSTURE");
+                let looksStr = looksArr.length > 0 ? `LOOKS: ${looksArr.join(', ')}` : `LOOKS: FAILED`;
+                dailyHistory.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'failed'});
+
+                if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
+                
+                // ⚙️ V46 THE KARMA LOGIC
+                db.activeRewards = []; // Unclaimed rewards expire!
+                
+                if (totalTasks > 0) {
+                    if (scorePercent >= 80) {
+                        let numRewards = scorePercent === 100 ? 5 : 4; 
+                        let availableNormals = karmaRewards.filter(r => r.type === "small" || r.type === "big");
+                        
+                        for(let i=0; i<numRewards; i++) {
+                            let rdm = availableNormals[Math.floor(Math.random() * availableNormals.length)];
+                            db.activeRewards.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
+                        }
+
+                        if (db.player.streak >= 3) {
+                            let availableKings = karmaRewards.filter(r => r.type === "king" && (r.days === "all" || r.days.includes(dayOfWeek)));
+                            if(availableKings.length > 0) {
+                                let rdmKing = availableKings[Math.floor(Math.random() * availableKings.length)];
+                                db.activeRewards.push({ id: Date.now() + 100, text: rdmKing.text, type: "king" });
+                            }
+                        }
+                    } else {
+                        let numPenalties = scorePercent <= 50 ? 5 : 4; 
+                        let availableSmallBig = karmaPenalties.filter(p => p.type === "small" || p.type === "big");
+                        let availableExtreme = karmaPenalties.filter(p => p.type === "extreme");
+
+                        for(let i=0; i<numPenalties; i++) {
+                            let isExtreme = Math.random() < 0.2 && scorePercent <= 50; 
+                            let pool = isExtreme ? availableExtreme : availableSmallBig;
+                            let rdm = pool[Math.floor(Math.random() * pool.length)];
+                            // Push to existing array (They stack!)
+                            db.activePenalties.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
+                        }
+                    }
+                }
+
+                db.today = []; db.lastDate = currDate; 
+                db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
+                
+                save();
+            }
+        }
+
         function forceDayReset() { 
             if(confirm("Force Day Reset? Will calculate 80% Law and update Karma.")) { 
                 let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
@@ -846,44 +931,44 @@
             let karmaHtml = '';
             
             if(db.activeRewards.length === 0 && db.activePenalties.length === 0) {
-                karmaHtml = `<div class="bento-card p-6 text-center border-slate-800 opacity-60"><p class="font-bold text-slate-500 tracking-widest"><i data-lucide="scale" size="18" class="inline mr-2"></i> NO KARMA PENDING. COMPLETE TASKS TODAY TO UNLOCK TOMORROW.</p></div>`;
+                karmaHtml = `<div class="bento-card p-6 text-center border-slate-800 opacity-60"><p class="font-bold text-slate-500 tracking-widest"><i data-lucide="scale" size="18" class="inline mr-2"></i> NO KARMA PENDING. COMPLETE TASKS TODAY.</p></div>`;
             } else {
                 let rewardsHtml = db.activeRewards.map(r => `
-                    <div class="karma-reward p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3 border border-emerald-900/30">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-emerald-500/20 p-2 rounded text-emerald-400"><i data-lucide="gift" size="18"></i></div>
-                            <div><p class="font-bold text-white text-sm leading-snug" style="text-transform:none;">${r.text}</p><p class="text-[10px] text-emerald-500 font-black tracking-widest mt-1">EXPIRES AT MIDNIGHT</p></div>
+                    <div class="bento-card p-5 border-l-4 border-emerald-500 flex flex-col md:flex-row justify-between items-center gap-4 border-t-0 border-r-0 border-b-0">
+                        <div class="flex items-center gap-4 w-full">
+                            <div class="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 flex-shrink-0"><i data-lucide="gift" size="24"></i></div>
+                            <div class="flex-1"><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${r.text}</p><p class="text-[10px] text-emerald-500 font-bold tracking-widest mt-1">EXPIRES AT MIDNIGHT ⏳</p></div>
                         </div>
-                        <button onclick="claimReward(${r.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-black text-xs tracking-widest btn-interact w-full md:w-auto flex-shrink-0">CLAIM</button>
+                        <button onclick="claimReward(${r.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-xl font-black text-sm tracking-widest btn-interact w-full md:w-auto flex-shrink-0 border-b-4 border-emerald-800">CLAIM</button>
                     </div>
                 `).join('');
                 
                 let penaltiesHtml = db.activePenalties.map(p => `
-                    <div class="karma-penalty p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3 border border-rose-900/30">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-rose-500/20 p-2 rounded text-rose-500"><i data-lucide="skull" size="18"></i></div>
-                            <div><p class="font-bold text-white text-sm leading-snug" style="text-transform:none;">${p.text}</p><p class="text-[10px] text-rose-500 font-black tracking-widest mt-1">CARRY FORWARD (STACKS)</p></div>
+                    <div class="bento-card p-5 border-l-4 border-rose-500 flex flex-col md:flex-row justify-between items-center gap-4 border-t-0 border-r-0 border-b-0">
+                        <div class="flex items-center gap-4 w-full">
+                            <div class="bg-rose-500/10 p-3 rounded-xl text-rose-500 flex-shrink-0"><i data-lucide="skull" size="24"></i></div>
+                            <div class="flex-1"><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${p.text}</p><p class="text-[10px] text-rose-500 font-bold tracking-widest mt-1">CARRY FORWARD (STACKS) ⚠️</p></div>
                         </div>
-                        <button onclick="markPenaltyDone(${p.id})" class="bg-rose-700 hover:bg-rose-600 text-white px-6 py-3 rounded-lg font-black text-xs tracking-widest btn-interact w-full md:w-auto flex-shrink-0">MARK DONE</button>
+                        <button onclick="markPenaltyDone(${p.id})" class="bg-rose-700 hover:bg-rose-600 text-white px-8 py-4 rounded-xl font-black text-sm tracking-widest btn-interact w-full md:w-auto flex-shrink-0 border-b-4 border-rose-900">MARK DONE</button>
                     </div>
                 `).join('');
 
                 karmaHtml = `
                     <div class="flex flex-col gap-4">
-                        ${db.activePenalties.length > 0 ? `<div><h4 class="text-xs font-black text-rose-500 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" size="14"></i> ACTIVE PENALTIES (DO NOT IGNORE)</h4>${penaltiesHtml}</div>` : ''}
-                        ${db.activeRewards.length > 0 ? `<div class="${db.activePenalties.length > 0 ? 'mt-4 pt-4 border-t border-slate-800' : ''}"><h4 class="text-xs font-black text-emerald-400 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="star" size="14"></i> UNLOCKED REWARDS (EXPIRES TODAY)</h4>${rewardsHtml}</div>` : ''}
+                        ${db.activePenalties.length > 0 ? `<div><h4 class="text-sm font-black text-rose-500 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" size="18"></i> ACTIVE PENALTIES (DO NOT IGNORE)</h4><div class="flex flex-col gap-3">${penaltiesHtml}</div></div>` : ''}
+                        ${db.activeRewards.length > 0 ? `<div class="${db.activePenalties.length > 0 ? 'mt-4 pt-4 border-t-2 border-slate-800' : ''}"><h4 class="text-sm font-black text-emerald-400 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="star" size="18"></i> UNLOCKED REWARDS (EXPIRES TODAY)</h4><div class="flex flex-col gap-3">${rewardsHtml}</div></div>` : ''}
                     </div>
                 `;
             }
             
             pactSec.innerHTML = `<div class="flex flex-col gap-2"><p class="text-xs font-bold text-indigo-400 tracking-widest mb-2"><i data-lucide="dices" size="14" class="inline"></i> KARMA ENGINE</p>${karmaHtml}</div>`;
             
-            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="bento-card p-4 md:p-5 flex justify-between items-center group relative z-10 hover:bg-white/[0.02] transition-colors border border-transparent hover:border-white/10"><div class="flex items-center gap-4 w-full"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-2 border-slate-700 bg-black flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-600 border-indigo-500 text-white' : 'text-transparent'} transition-all">${t.done ? '<i data-lucide="check" size="20"></i>' : ''}</button><p class="font-bold text-base md:text-lg leading-snug flex-1 ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}" style="text-transform:none;">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact flex-shrink-0"><i data-lucide="x" size="24"></i></button></div>`).join('');
+            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="bento-card p-4 md:p-5 flex justify-between items-center group relative z-10 hover:bg-slate-900 transition-colors"><div class="flex items-center gap-4 w-full"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-2 border-slate-700 bg-black flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-600 border-indigo-500 text-white' : 'text-transparent'} transition-all">${t.done ? '<i data-lucide="check" size="20"></i>' : ''}</button><p class="font-bold text-base md:text-lg leading-snug flex-1 ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}" style="text-transform:none;">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact flex-shrink-0"><i data-lucide="x" size="24"></i></button></div>`).join('');
             document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { 
                 let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; 
                 let contentClass = isDone ? 'raid-card-done' : (isAborted ? 'raid-card-failed' : 'raid-card-active'); 
                 let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-black py-2 px-4 rounded-xl text-rose-500 font-black tracking-widest text-sm flex items-center gap-2 border-2 border-rose-900/50"><i data-lucide="target" size="16" class="animate-pulse"></i><span id="timer_${t.id}" class="tabular-nums hud-text">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-slate-500 font-black text-[10px] tracking-widest">ABORTED</div>` : '')); 
-                let buttons = t.status === 'active' ? `<div class="flex flex-col sm:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600 text-white hover:bg-emerald-500 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-800 flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="check" size="20"></i> CLEAR RAID</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black border-2 border-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-500 hover:border-rose-900 py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="x" size="20"></i> ABORT</button></div>` : ``; 
+                let buttons = t.status === 'active' ? `<div class="flex flex-col sm:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600 text-white hover:bg-emerald-500 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-800 flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="check" size="20"></i> CLEAR</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black border-2 border-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-500 hover:border-rose-900 py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="x" size="20"></i> ABORT</button></div>` : ``; 
                 return `<div class="raid-card p-6 md:p-8 ${contentClass} transition-all"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-base md:text-lg tracking-wide text-white ${isAborted ? 'text-slate-500 line-through' : ''} ${isDone ? 'text-emerald-400' : ''}" style="text-transform:none;">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; 
             }).join(''); startTaskTimers();
 
@@ -893,20 +978,20 @@
             }).join('');
             let balEl = document.getElementById('walletBalanceDisplay'); balEl.innerText = db.wallet.balance;
             if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-white'); balEl.parentElement.classList.add('text-rose-500'); } else { balEl.parentElement.classList.add('text-white'); balEl.parentElement.classList.remove('text-rose-500'); }
-            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="bento-card p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} transition-all hover:bg-[#18181b]"><div class="flex flex-col"><span class="font-black text-base text-white" style="text-transform:none;">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-2xl ${e.type === 'in' ? 'text-emerald-400' : 'text-rose-400'} tabular-nums hud-text">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="24"></i></button></div></div>`).join('');
-            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-white' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-500'; return `<div class="bento-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 transition-colors hover:border-slate-700"><div class="flex-1"><h3 class="font-black text-base text-white" style="text-transform:none;">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="w-full sm:w-auto font-black text-sm ${sColor} cursor-pointer"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="w-full sm:w-auto text-slate-600 hover:text-rose-500 p-3 bg-black border-2 border-slate-800 rounded-xl transition btn-interact flex items-center justify-center"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
+            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="bento-card p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} transition-all hover:bg-[#18181b] border-t-0 border-r-0 border-b-0"><div class="flex flex-col"><span class="font-black text-base text-white" style="text-transform:none;">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-2xl ${e.type === 'in' ? 'text-emerald-400' : 'text-rose-400'} tabular-nums hud-text">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="24"></i></button></div></div>`).join('');
+            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-white' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-500'; return `<div class="bento-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 transition-colors hover:border-slate-700"><div class="flex-1"><h3 class="font-black text-base text-white" style="text-transform:none;">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="w-full sm:w-auto font-black text-sm ${sColor} cursor-pointer bg-black border-2 border-slate-800"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="w-full sm:w-auto text-slate-600 hover:text-rose-500 p-4 bg-black border-2 border-slate-800 rounded-xl transition btn-interact flex items-center justify-center"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
             document.getElementById('tradeCapitalDisplay').innerText = db.tradeCapital;
-            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="bento-card p-6 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer transition-colors hover:border-slate-700"><div class="flex items-center gap-4"><span class="font-black text-base text-white">${t.index}</span><span class="text-[10px] bg-black px-3 py-1.5 rounded-lg border-2 border-slate-800 text-slate-400 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="24"></i></div></div>`).join('');
+            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="bento-card p-6 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer transition-colors hover:border-slate-700 border-t-0 border-r-0 border-b-0"><div class="flex items-center gap-4"><span class="font-black text-base text-white">${t.index}</span><span class="text-[10px] bg-black px-3 py-1.5 rounded-lg border-2 border-slate-800 text-slate-400 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="24"></i></div></div>`).join('');
             document.getElementById('combatPushups').value = db.awakening.combat.pushups; document.getElementById('combatPullups').value = db.awakening.combat.pullups; document.getElementById('combatSquats').value = db.awakening.combat.squats; document.getElementById('combatCore').value = db.awakening.combat.core;
             
             let hDate = new Date(db.awakening.lastHaircut); 
             if (isNaN(hDate.getTime())) { let parts = db.awakening.lastHaircut.split('/'); if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]); else hDate = new Date(); }
             let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); 
             if (isNaN(daysPassed) || daysPassed < 0) daysPassed = 0;
-            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-rose-500 hud-text"; else hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-cyan-400 hud-text";
+            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-rose-500 hud-text"; else hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-white hud-text";
             
             const looksMap = [ {id: 'oil', label: 'FACE WASH (AM/PM)'}, {id: 'water', label: 'HYDRATION (4L)'}, {id: 'mewing', label: 'JAWLINE MEWING'}, {id: 'skin', label: 'SKINCARE'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-black p-5 rounded-xl border-2 border-slate-800 hover:border-slate-600 transition-colors cursor-pointer group"><span class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-6 h-6 accent-indigo-600 cursor-pointer rounded"></label>`).join('');
-            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="bento-card p-6 md:p-8 border-t-4 border-indigo-500 transition-all"><p class="text-[10px] text-indigo-400 font-bold mb-4 flex items-center gap-2 tracking-widest"><i data-lucide="calendar" size="16"></i> ${date}</p><p id="${safeId}" class="text-base font-bold text-slate-200 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-white mt-5 flex items-center gap-2 bg-slate-800 px-5 py-3 rounded-xl border-2 border-slate-700 btn-interact tracking-widest">READ MORE <i data-lucide="chevron-down" size="14"></i></button></div>`; }).join('');
+            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="bento-card p-6 md:p-8 border-t-4 border-indigo-500 transition-all"><p class="text-[10px] text-indigo-400 font-bold mb-4 flex items-center gap-2 tracking-widest"><i data-lucide="calendar" size="16"></i> ${date}</p><p id="${safeId}" class="text-base font-bold text-slate-200 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-white mt-5 flex items-center gap-2 bg-slate-800 px-5 py-3 rounded-xl border-2 border-slate-700 btn-interact tracking-widest border-b-4 border-slate-900">READ MORE <i data-lucide="chevron-down" size="14"></i></button></div>`; }).join('');
             document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="bento-card p-6 md:p-8 border-t-4 border-purple-500 relative group z-10"><button onclick="deleteSkill(${s.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="24"></i></button><div class="flex justify-between items-end mb-6 pr-10"><div><h3 class="font-black text-2xl text-white" style="text-transform:none;">${s.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-2 tracking-widest">LATEST: <span class="text-white" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">LEVEL</p><p class="text-5xl font-black text-purple-400 hud-text">${s.level}</p></div></div><div class="flex justify-between text-xs font-bold mb-2 text-slate-400"><span>EXPERIENCE</span><span>${s.exp}/${sMax}</span></div><div class="bar-bg mb-6"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col sm:flex-row gap-3"><input type="text" id="skillRemark_${s.id}" placeholder="Log Progress..." class="w-full sm:flex-1" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full sm:w-auto bg-white text-black px-8 py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-slate-300">GRIND</button></div></div>`; }).join('');
             
             const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); 
@@ -927,97 +1012,9 @@
                     logArray.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'active'});
                 } else { logArray = db.history[date] || []; } 
                 if(logArray.length === 0) return ''; 
-                return `<div class="bento-card p-6 md:p-8 border-l-4 border-indigo-500"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-4">${logArray.map(t => `<p class="font-bold text-sm tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug" style="text-transform:none;">${t.text}</span></p>`).join('')}</div></div>`; 
+                return `<div class="bento-card p-6 md:p-8 border-l-4 border-slate-500 border-t-0 border-r-0 border-b-0"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-4">${logArray.map(t => `<p class="font-bold text-sm tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug" style="text-transform:none;">${t.text}</span></p>`).join('')}</div></div>`; 
             }).join('');
             lucide.createIcons();
-        }
-
-        // ==========================================
-        // V45: THE KARMA EVALUATOR (DAY RESET LOGIC)
-        // ==========================================
-        function checkReset() {
-            const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
-            if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
-            
-            if (db.lastDate !== currDate) {
-                // 1. CALCULATE SCORE FOR THE DAY
-                let totalTasks = db.today.length + db.timed.length;
-                let completedTasks = db.today.filter(t => t.done).length + db.timed.filter(t => t.status === 'done').length;
-                let scorePercent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
-
-                // Unfinished Simple Tasks logic
-                let unfinSimple = db.today.filter(t => !t.done).length; if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
-                
-                // History Setup
-                let dailyHistory = []; 
-                db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
-                db.timed = db.timed.filter(t => { if(t.status !== 'active') { dailyHistory.push({text: t.text + ` (${t.durationStr})`, state: t.status === 'done' ? 'done' : 'aborted'}); return false; } return true; });
-                
-                let combatStr = `COMBAT: ${db.awakening.combat.pushups}PU | ${db.awakening.combat.pullups}PL | ${db.awakening.combat.squats}SQ | ${db.awakening.combat.core}s`;
-                dailyHistory.push({text: combatStr, state: (db.awakening.combat.pushups>0||db.awakening.combat.pullups>0||db.awakening.combat.squats>0||db.awakening.combat.core>0) ? 'done':'failed'});
-                
-                let looksArr = [];
-                if(db.awakening.looks.oil) looksArr.push("WASH");
-                if(db.awakening.looks.water) looksArr.push("WATER");
-                if(db.awakening.looks.mewing) looksArr.push("MEWING");
-                if(db.awakening.looks.skin) looksArr.push("SKIN");
-                if(db.awakening.looks.posture) looksArr.push("POSTURE");
-                let looksStr = looksArr.length > 0 ? `LOOKS: ${looksArr.join(', ')}` : `LOOKS: FAILED`;
-                dailyHistory.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'failed'});
-
-                if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
-                
-                // 2. THE KARMA ENGINE EXECUTION
-                // Clear old rewards (Expire at midnight)
-                db.activeRewards = [];
-
-                if (totalTasks > 0) {
-                    if (scorePercent >= 80) {
-                        // WIN PROTOCOL
-                        let numRewards = scorePercent === 100 ? Math.floor(Math.random() * 2) + 2 : Math.floor(Math.random() * 2) + 1; // 2-3 for 100%, 1-2 for 80-99%
-                        let availableNormals = karmaRewards.filter(r => r.type === "small" || r.type === "big");
-                        
-                        for(let i=0; i<numRewards; i++) {
-                            let rdm = availableNormals[Math.floor(Math.random() * availableNormals.length)];
-                            db.activeRewards.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
-                        }
-
-                        // King Reward if streak >= 3
-                        if (db.player.streak >= 3) {
-                            let availableKings = karmaRewards.filter(r => r.type === "king" && (r.days === "all" || r.days.includes(dayOfWeek)));
-                            if(availableKings.length > 0) {
-                                let rdmKing = availableKings[Math.floor(Math.random() * availableKings.length)];
-                                db.activeRewards.push({ id: Date.now() + 100, text: rdmKing.text, type: "king" });
-                            }
-                        }
-                    } else {
-                        // FAIL PROTOCOL (PENALTIES STACK)
-                        let numPenalties = scorePercent < 50 ? Math.floor(Math.random() * 2) + 2 : Math.floor(Math.random() * 2) + 1; // 2-3 for <50%, 1-2 for 50-79%
-                        let availableSmallBig = karmaPenalties.filter(p => p.type === "small" || p.type === "big");
-                        let availableExtreme = karmaPenalties.filter(p => p.type === "extreme");
-
-                        for(let i=0; i<numPenalties; i++) {
-                            let isExtreme = Math.random() < 0.1 && scorePercent < 50; // 10% chance for extreme on Big Fail
-                            let pool = isExtreme ? availableExtreme : availableSmallBig;
-                            let rdm = pool[Math.floor(Math.random() * pool.length)];
-                            db.activePenalties.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
-                        }
-                    }
-                }
-
-                db.today = []; db.lastDate = currDate; 
-                db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
-                
-                save();
-            }
-        }
-        
-        function updateDayTimer() { 
-            const now = new Date(); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); const diff = tomorrow - now; 
-            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); 
-            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); 
-            const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); 
-            document.querySelectorAll('.dayCountdownText').forEach(el => el.innerText = `${h}:${m}:${s}`); 
         }
 
         checkLoginStreak(); checkReset(); render(); updateSystemVoice(); setInterval(checkReset, 60000); setInterval(updateDayTimer, 1000); updateDayTimer();
