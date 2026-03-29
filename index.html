@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | True Monarch v40</title>
+    <title>HappySam | Blood Monarch v41</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,7 +15,7 @@
             theme: { 
                 extend: { 
                     fontFamily: { sans: ['Poppins', 'sans-serif'], display: ['Orbitron', 'sans-serif'] }, 
-                    colors: { primary: '#3b82f6', danger: '#f43f5e', dark: '#05050a', neonBlue: '#00f0ff', neonPurple: '#a855f7' } 
+                    colors: { blood: '#ff0033', darkblood: '#5a0012', void: '#050000' } 
                 } 
             }
         }
@@ -23,229 +23,257 @@
 
     <style>
         * { font-family: 'Poppins', sans-serif; font-style: normal !important; text-transform: uppercase; letter-spacing: 0.5px; }
-        h1, h2, h3, .hud-text { font-family: 'Orbitron', sans-serif !important; letter-spacing: 1.5px; }
+        h1, h2, h3, .hud-text { font-family: 'Orbitron', sans-serif !important; letter-spacing: 1px; }
         
-        /* TRUE ANIME SYSTEM BACKGROUND (Deep Magical Aura) */
+        /* THE VOID & BLOOD BACKGROUND */
         body { 
-            background-color: #030408;
+            background-color: #030000;
             color: #f8fafc; 
             -webkit-tap-highlight-color: transparent; 
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08), transparent 40%);
-            animation: breatheBg 10s ease-in-out infinite alternate;
+                radial-gradient(circle at 50% 0%, rgba(255, 0, 51, 0.15), transparent 50%),
+                radial-gradient(circle at 10% 90%, rgba(90, 0, 18, 0.4), transparent 40%);
+            background-attachment: fixed;
         }
 
-        @keyframes breatheBg {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 100% 100%; }
+        /* NOISE TEXTURE FOR PREMIUM FEEL */
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0JyBoZWlnaHQ9JzQnPjxyZWN0IHdpZHRoPSc0JyBoZWlnaHQ9JzQnIGZpbGw9JyNmZmYnIGZpbGwtb3BhY2l0eT0nMC4wMScvPjwvc3ZnPg==');
+            z-index: -1; pointer-events: none; opacity: 0.6;
         }
         
-        /* DARK MAGICAL GLASS PANELS */
+        /* PREMIUM GLOSSY DARK GLASS */
         .glass { 
-            background: rgba(12, 16, 28, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 15px rgba(59, 130, 246, 0.05);
-            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(20, 0, 5, 0.8) 0%, rgba(5, 0, 0, 0.9) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 100, 100, 0.2);
+            border-left: 1px solid rgba(255, 50, 50, 0.1);
+            border-right: 1px solid rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.9);
+            box-shadow: 0 25px 40px -10px rgba(0,0,0,0.9), inset 0 1px 15px rgba(255, 0, 51, 0.05);
+            border-radius: 20px;
         }
+        
         .glass-panel { 
-            background: rgba(5, 7, 12, 0.8); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
+            background: linear-gradient(180deg, rgba(30,0,5,0.6) 0%, rgba(0,0,0,0.8) 100%); 
+            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            border-bottom: 1px solid rgba(0,0,0,0.8);
             border-radius: 12px;
+            box-shadow: inset 0 2px 10px rgba(255,0,51,0.05);
         }
         
-        /* SMOOTH HOVER ANIMATIONS */
+        /* SMOOTH HOVER ANIMATIONS (LIQUID FEEL) */
         .btn-interact { transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; position: relative; overflow: hidden; }
-        .btn-interact:hover { transform: translateY(-3px); filter: brightness(1.15); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
-        .btn-interact:active { transform: translateY(1px) scale(0.97); }
-        
-        /* GLOWING ANIMATED BARS */
-        .bar-bg { background: rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden; height: 10px; width: 100%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
-        
-        .bar-glow { position: relative; }
-        .bar-glow::after {
-            content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite linear;
+        .btn-interact::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-20deg); transition: all 0.5s ease;
         }
-        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .btn-interact:hover::before { left: 150%; }
+        .btn-interact:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 0, 51, 0.4); }
+        .btn-interact:active { transform: translateY(1px) scale(0.98); }
+        
+        /* GLOSSY ANIMATED BARS */
+        .bar-bg { 
+            background: #0a0002; border-radius: 12px; overflow: hidden; height: 12px; width: 100%; 
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.05); 
+        }
+        
+        .hp-fill, .exp-fill, .skill-fill { 
+            height: 100%; transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+            position: relative;
+        }
+        
+        /* The Glossy Highlight on Bars */
+        .hp-fill::after, .exp-fill::after, .skill-fill::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+        }
 
-        .hp-fill { background: linear-gradient(90deg, #e11d48, #fb7185); height: 100%; transition: width 0.5s ease-out; box-shadow: 0 0 15px rgba(225,29,72,0.6); }
-        .exp-fill { background: linear-gradient(90deg, #2563eb, #60a5fa); height: 100%; transition: width 0.5s ease-out; box-shadow: 0 0 15px rgba(37,99,235,0.6); }
-        .skill-fill { background: linear-gradient(90deg, #9333ea, #d946ef); height: 100%; transition: width 0.5s ease-out; box-shadow: 0 0 15px rgba(147,51,234,0.6); }
+        .hp-fill { background: linear-gradient(90deg, #9f1239, #ff0033); box-shadow: 0 0 15px rgba(255,0,51,0.6); }
+        .exp-fill { background: linear-gradient(90deg, #4c0519, #e11d48); box-shadow: 0 0 15px rgba(225,29,72,0.6); }
+        .skill-fill { background: linear-gradient(90deg, #5a0012, #ff0033); box-shadow: 0 0 15px rgba(255,0,51,0.6); }
         
-        /* ACTIVE NAV TAB INDICATOR */
-        .nav-active { color: #60a5fa !important; text-shadow: 0 0 10px rgba(96,165,250,0.6); }
-        .nav-active::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 30px; height: 3px; background: #60a5fa; border-radius: 4px; box-shadow: 0 0 10px #60a5fa; }
+        /* ACTIVE NAV TAB INDICATOR (BLOOD GLOW) */
+        .nav-active { color: #ff0033 !important; text-shadow: 0 0 15px rgba(255,0,51,0.8); }
+        .nav-active::after { 
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); 
+            width: 40px; height: 3px; background: #ff0033; border-radius: 4px; box-shadow: 0 0 15px #ff0033; 
+        }
         
-        .toast-enter { transform: translateY(0); opacity: 1; }
-        .toast-leave { transform: translateY(-50px); opacity: 0; }
         button i, button svg { pointer-events: none; }
         
-        ::-webkit-scrollbar { height: 4px; width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar { height: 2px; width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #ff0033; border-radius: 4px; }
 
-        /* TYPEWRITER CURSOR */
+        /* TYPEWRITER & PULSE */
         .typewriter-cursor { animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        .danger-pulse { animation: redAlert 1.5s infinite alternate; }
-        @keyframes redAlert { 0% { box-shadow: inset 0 0 0px rgba(244,63,94,0); border-color: rgba(244,63,94,0.3); } 100% { box-shadow: inset 0 0 20px rgba(244,63,94,0.2); border-color: #f43f5e; } }
+        .danger-pulse { animation: bloodPulse 1.5s infinite alternate; }
+        @keyframes bloodPulse { 
+            0% { box-shadow: inset 0 0 0px rgba(255,0,51,0); border-color: rgba(255,0,51,0.3); } 
+            100% { box-shadow: inset 0 0 30px rgba(255,0,51,0.3); border-color: #ff0033; } 
+        }
 
         .tabular-nums { font-variant-numeric: tabular-nums; }
         input[type="date"] { -webkit-appearance: none; appearance: none; min-width: 0; color-scheme: dark; }
         
-        /* SLEEK INPUTS */
+        /* GLOSSY INPUTS */
         input, select, textarea { 
-            background: rgba(0,0,0,0.4) !important; 
-            border: 1px solid rgba(255,255,255,0.08) !important; 
+            background: rgba(0,0,0,0.6) !important; 
+            border: 1px solid rgba(255,255,255,0.1) !important; 
+            border-top: 1px solid rgba(0,0,0,0.8) !important;
             transition: all 0.3s ease; 
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.5) !important;
         }
         input:focus, select:focus, textarea:focus { 
-            border-color: #3b82f6 !important; 
-            box-shadow: 0 0 0 2px rgba(59,130,246,0.2) !important; 
+            border-color: #ff0033 !important; 
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.5), 0 0 15px rgba(255,0,51,0.3) !important; 
             outline: none; 
-            background: rgba(0,0,0,0.6) !important; 
+            background: rgba(20,0,5,0.8) !important; 
         }
         
-        .checkbox-custom:checked + label { background-color: #3b82f6; border-color: #3b82f6; color: white; }
+        .checkbox-custom:checked + label { background-color: #ff0033; border-color: #ff0033; color: white; box-shadow: 0 0 10px rgba(255,0,51,0.5); }
 
         /* FADE IN ANIMATION FOR TABS */
-        .tab-content { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content { animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); filter: blur(5px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
         
-        /* NEON TEXTS */
-        .neon-blue { text-shadow: 0 0 10px rgba(96,165,250,0.6); color: #60a5fa; }
-        .neon-red { text-shadow: 0 0 10px rgba(251,113,133,0.6); color: #fb7185; }
-        .neon-purple { text-shadow: 0 0 10px rgba(217,70,239,0.6); color: #d946ef; }
-        .neon-amber { text-shadow: 0 0 10px rgba(251,191,36,0.6); color: #fbbf24; }
+        /* THE BLOOD GLOW TEXTS */
+        .blood-glow { text-shadow: 0 0 15px rgba(255,0,51,0.7); color: #ff0033; }
+        .silver-glow { text-shadow: 0 0 10px rgba(255,255,255,0.3); color: #f8fafc; }
+        
+        /* Custom Checkbox Gloss */
+        .glossy-check { background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%); }
     </style>
 </head>
-<body class="flex flex-col md:flex-row min-h-screen pb-20 md:pb-0 relative">
+<body class="flex flex-col md:flex-row min-h-screen pb-24 md:pb-0 relative">
 
     <audio id="penaltyAlarm" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" preload="auto"></audio>
-    <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[92%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 backdrop-blur-xl hidden justify-center items-center p-2 md:p-10 cursor-zoom-out" onclick="closeImageZoom()">
-        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-transform duration-300 transform scale-95 border border-blue-500/30">
+    <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 backdrop-blur-xl hidden justify-center items-center p-4 cursor-zoom-out" onclick="closeImageZoom()">
+        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_60px_rgba(255,0,51,0.4)] transition-transform duration-300 transform scale-95 border border-blood">
     </div>
 
-    <div id="tradeModal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex-col justify-center items-center p-4">
+    <div id="tradeModal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-lg hidden flex-col justify-center items-center p-4">
         <div class="glass p-8 w-full max-w-2xl modal-enter relative overflow-y-auto max-h-[90vh]">
             <button onclick="closeTradeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white btn-interact bg-black rounded-full p-2 border border-white/10"><i data-lucide="x" size="20"></i></button>
-            <h2 class="text-2xl font-black mb-6 border-b border-white/10 pb-4 flex items-center gap-2 neon-blue hud-text"><i data-lucide="bar-chart-2"></i> INTEL RECORD</h2>
+            <h2 class="text-2xl font-black mb-6 border-b border-white/10 pb-4 flex items-center gap-2 blood-glow hud-text"><i data-lucide="crosshair"></i> INTEL RECORD</h2>
             <div id="tradeModalContent" class="space-y-4 mt-4"></div>
         </div>
     </div>
 
-    <div id="statusModal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex-col justify-center items-center p-4">
+    <div id="statusModal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-lg hidden flex-col justify-center items-center p-4">
         <div class="glass p-8 w-full max-w-md modal-enter relative overflow-y-auto max-h-[90vh]">
             <button onclick="closeStatusModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white btn-interact bg-black rounded-full p-2 border border-white/10"><i data-lucide="x" size="20"></i></button>
-            <h2 class="text-2xl font-black mb-6 text-center border-b border-white/10 pb-4 neon-blue hud-text">SYSTEM ROOT</h2>
+            <h2 class="text-2xl font-black mb-6 text-center border-b border-white/10 pb-4 blood-glow hud-text">SYSTEM ROOT</h2>
             <div class="space-y-4 mb-8">
                 <div class="flex justify-between items-center glass-panel p-5"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="check-square" size="16"></i> TOTAL QUESTS</span><span id="statQuests" class="text-2xl font-black text-white tabular-nums hud-text">0</span></div>
-                <div class="flex justify-between items-center glass-panel p-5"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE</span><span id="statWinRate" class="text-2xl font-black text-emerald-400 tabular-nums hud-text">0%</span></div>
+                <div class="flex justify-between items-center glass-panel p-5"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE</span><span id="statWinRate" class="text-2xl font-black text-white tabular-nums hud-text">0%</span></div>
             </div>
             <div class="border-t border-white/10 pt-6">
-                <p class="text-[10px] text-slate-500 font-bold mb-4 tracking-widest text-center">DATA BACKUP</p>
+                <p class="text-[10px] text-blood font-bold mb-4 tracking-widest text-center">DATA BACKUP</p>
                 <div class="flex gap-4">
-                    <button onclick="exportSystem()" class="flex-1 bg-blue-600/20 border border-blue-500/50 text-blue-400 hover:bg-blue-600 hover:text-white py-3 rounded-xl font-bold btn-interact flex justify-center items-center gap-2"><i data-lucide="download" size="16"></i> EXPORT</button>
-                    <button onclick="document.getElementById('importFile').click()" class="flex-1 bg-amber-500/20 border border-amber-500/50 text-amber-400 hover:bg-amber-500 hover:text-black py-3 rounded-xl font-bold btn-interact flex justify-center items-center gap-2"><i data-lucide="upload" size="16"></i> IMPORT</button>
+                    <button onclick="exportSystem()" class="flex-1 bg-black border border-white/10 text-white hover:border-blood hover:text-blood py-3 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 transition-all"><i data-lucide="download" size="16"></i> EXPORT</button>
+                    <button onclick="document.getElementById('importFile').click()" class="flex-1 bg-black border border-white/10 text-white hover:border-blood hover:text-blood py-3 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 transition-all"><i data-lucide="upload" size="16"></i> IMPORT</button>
                     <input type="file" id="importFile" class="hidden" accept=".json" onchange="importSystem(event)">
                 </div>
             </div>
-            <div class="mt-6"><button onclick="forceDayReset()" class="w-full bg-rose-500/10 text-rose-500 border border-rose-500/30 hover:bg-rose-600 hover:text-white py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2"><i data-lucide="refresh-cw" size="18"></i> FORCE DAY RESET</button></div>
+            <div class="mt-6"><button onclick="forceDayReset()" class="w-full bg-blood text-white border border-blood hover:bg-white hover:text-blood py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 transition-all shadow-[0_0_20px_rgba(255,0,51,0.4)]"><i data-lucide="refresh-cw" size="18"></i> FORCE DAY RESET</button></div>
         </div>
     </div>
 
-    <aside class="hidden md:flex flex-col w-72 bg-[#05060a]/90 border-r border-blue-500/20 p-8 gap-8 sticky top-0 h-screen z-40 backdrop-blur-2xl shadow-[10px_0_30px_rgba(59,130,246,0.05)]">
-        <div class="font-black text-3xl tracking-tight flex items-center gap-3 text-white hud-text"><div class="bg-blue-600 p-2 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"><i data-lucide="hexagon" size="24" class="text-white"></i></div> SYSTEM</div>
+    <aside class="hidden md:flex flex-col w-72 bg-[#020000]/90 border-r border-white/5 p-8 gap-8 sticky top-0 h-screen z-40 backdrop-blur-2xl shadow-[10px_0_40px_rgba(0,0,0,0.8)]">
+        <div class="font-black text-4xl tracking-tight flex items-center gap-3 text-white hud-text drop-shadow-2xl"><div class="bg-gradient-to-br from-blood to-darkblood p-2 rounded-xl shadow-[0_0_20px_rgba(255,0,51,0.5)] border border-white/20"><i data-lucide="droplet" size="24" class="text-white"></i></div> MONARCH</div>
         <nav class="flex flex-col gap-2 overflow-y-auto pr-2 mt-4">
-            <button onclick="switchTab('tasks')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/30 shadow-inner transition-all" data-tab="tasks"><i data-lucide="crosshair" size="20"></i> <span class="font-bold tracking-wide">QUESTS</span></button>
-            <button onclick="switchTab('vault')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-blue-300 transition-all border border-transparent" data-tab="vault"><i data-lucide="database" size="20"></i> <span class="font-bold tracking-wide">VAULT</span></button>
-            <button onclick="switchTab('trading')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-blue-300 transition-all border border-transparent" data-tab="trading"><i data-lucide="activity" size="20"></i> <span class="font-bold tracking-wide">MARKET LOG</span></button>
-            <button onclick="switchTab('expenses')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-blue-300 transition-all border border-transparent" data-tab="expenses"><i data-lucide="credit-card" size="20"></i> <span class="font-bold tracking-wide">WALLET</span></button>
-            <button onclick="switchTab('awakening')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-rose-400 transition-all border border-transparent" data-tab="awakening"><i data-lucide="flame" size="20"></i> <span class="font-bold tracking-wide">AWAKEN</span></button>
-            <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-blue-300 transition-all border border-transparent" data-tab="diary"><i data-lucide="book-open" size="20"></i> <span class="font-bold tracking-wide">DIARY</span></button>
-            <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-emerald-400 transition-all border border-transparent" data-tab="history"><i data-lucide="pie-chart" size="20"></i> <span class="font-bold tracking-wide">STATS</span></button>
+            <button onclick="switchTab('tasks')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl bg-blood/10 text-blood border border-blood/30 shadow-inner transition-all" data-tab="tasks"><i data-lucide="crosshair" size="20"></i> <span class="font-bold tracking-wide">QUESTS</span></button>
+            <button onclick="switchTab('vault')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all border border-transparent" data-tab="vault"><i data-lucide="database" size="20"></i> <span class="font-bold tracking-wide">VAULT</span></button>
+            <button onclick="switchTab('trading')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all border border-transparent" data-tab="trading"><i data-lucide="activity" size="20"></i> <span class="font-bold tracking-wide">MARKET LOG</span></button>
+            <button onclick="switchTab('expenses')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all border border-transparent" data-tab="expenses"><i data-lucide="credit-card" size="20"></i> <span class="font-bold tracking-wide">WALLET</span></button>
+            <button onclick="switchTab('awakening')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-blood/5 hover:text-blood transition-all border border-transparent" data-tab="awakening"><i data-lucide="flame" size="20"></i> <span class="font-bold tracking-wide">AWAKEN</span></button>
+            <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all border border-transparent" data-tab="diary"><i data-lucide="book-open" size="20"></i> <span class="font-bold tracking-wide">DIARY</span></button>
+            <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all border border-transparent" data-tab="history"><i data-lucide="pie-chart" size="20"></i> <span class="font-bold tracking-wide">STATS</span></button>
         </nav>
-        <div class="mt-auto glass-panel p-5 text-center border-t-2 border-rose-500/50">
-            <p class="text-[10px] text-slate-400 font-bold tracking-widest mb-1">DAY RESETS IN</p>
-            <p class="dayCountdownText font-black text-rose-500 text-2xl tracking-widest tabular-nums neon-red hud-text">00:00:00</p>
+        <div class="mt-auto glass-panel p-5 text-center">
+            <p class="text-[10px] text-slate-500 font-bold tracking-widest mb-1">DAY RESETS IN</p>
+            <p class="dayCountdownText font-black text-white text-2xl tracking-widest tabular-nums mt-1 blood-glow hud-text">00:00:00</p>
         </div>
     </aside>
 
-    <nav class="md:hidden fixed bottom-0 w-full bg-[#05060a]/95 backdrop-blur-2xl border-t border-white/10 z-50 flex overflow-x-auto px-4 py-4 pb-6 gap-6 snap-x shadow-[0_-10px_40px_rgba(0,0,0,0.8)] justify-between items-center">
-        <button onclick="switchTab('tasks')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-blue-400 nav-active w-12 relative" data-tab="tasks"><i data-lucide="crosshair" size="24"></i></button>
-        <button onclick="switchTab('vault')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 w-12 relative" data-tab="vault"><i data-lucide="database" size="24"></i></button>
-        <button onclick="switchTab('trading')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 w-12 relative" data-tab="trading"><i data-lucide="activity" size="24"></i></button>
-        <button onclick="switchTab('expenses')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 w-12 relative" data-tab="expenses"><i data-lucide="credit-card" size="24"></i></button>
-        <button onclick="switchTab('awakening')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 w-12 relative" data-tab="awakening"><i data-lucide="flame" size="24"></i></button>
-        <button onclick="switchTab('diary')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 w-12 relative" data-tab="diary"><i data-lucide="book-open" size="24"></i></button>
-        <button onclick="switchTab('history')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 w-12 relative" data-tab="history"><i data-lucide="pie-chart" size="24"></i></button>
+    <nav class="md:hidden fixed bottom-0 w-full bg-[#030000]/95 backdrop-blur-2xl border-t border-white/5 z-50 flex overflow-x-auto px-4 py-5 pb-8 gap-8 snap-x shadow-[0_-15px_40px_rgba(0,0,0,0.9)] justify-between items-center">
+        <button onclick="switchTab('tasks')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-blood nav-active w-12 relative" data-tab="tasks"><i data-lucide="crosshair" size="26"></i></button>
+        <button onclick="switchTab('vault')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 hover:text-white w-12 relative transition-colors" data-tab="vault"><i data-lucide="database" size="26"></i></button>
+        <button onclick="switchTab('trading')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 hover:text-white w-12 relative transition-colors" data-tab="trading"><i data-lucide="activity" size="26"></i></button>
+        <button onclick="switchTab('expenses')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 hover:text-white w-12 relative transition-colors" data-tab="expenses"><i data-lucide="credit-card" size="26"></i></button>
+        <button onclick="switchTab('awakening')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 hover:text-blood w-12 relative transition-colors" data-tab="awakening"><i data-lucide="flame" size="26"></i></button>
+        <button onclick="switchTab('diary')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 hover:text-white w-12 relative transition-colors" data-tab="diary"><i data-lucide="book-open" size="26"></i></button>
+        <button onclick="switchTab('history')" class="m-nav-btn flex-shrink-0 flex flex-col items-center gap-1 text-slate-500 hover:text-white w-12 relative transition-colors" data-tab="history"><i data-lucide="pie-chart" size="26"></i></button>
     </nav>
 
     <main class="flex-1 p-4 md:p-10 w-full overflow-y-auto z-10 relative">
         <div class="md:hidden flex gap-2 mb-6">
-            <div class="glass-panel p-4 text-center flex-1 border-t-2 border-rose-500/50">
+            <div class="glass p-4 text-center flex-1">
                 <p class="text-[9px] text-slate-400 font-bold tracking-widest">DAY RESETS IN</p>
-                <p class="dayCountdownText font-black text-rose-500 text-lg tracking-widest tabular-nums mt-1 hud-text neon-red">00:00:00</p>
+                <p class="dayCountdownText font-black text-white text-xl tracking-widest tabular-nums mt-1 hud-text blood-glow">00:00:00</p>
             </div>
         </div>
 
-        <div onclick="openStatusModal()" class="glass p-6 md:p-8 mb-8 flex flex-col md:flex-row justify-between gap-8 md:items-center relative cursor-pointer hover:border-blue-500/40 transition-all group border-l-4 border-blue-500">
+        <div onclick="openStatusModal()" class="glass p-6 md:p-8 mb-8 flex flex-col md:flex-row justify-between gap-8 md:items-center relative cursor-pointer group border-l-4 border-l-blood">
             <div class="flex items-center gap-6 w-full md:w-auto">
-                <div class="h-20 w-20 bg-black/50 border border-blue-500/50 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hud-text">
-                    <span class="text-blue-400 mr-1 text-sm">L</span><span id="playerLvl" class="tabular-nums">1</span>
+                <div class="h-20 w-20 bg-gradient-to-b from-[#3a000a] to-[#0a0002] border border-blood/50 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-[0_0_25px_rgba(255,0,51,0.3),inset_0_2px_5px_rgba(255,255,255,0.2)] hud-text">
+                    <span class="text-blood mr-1 text-sm">L</span><span id="playerLvl" class="tabular-nums">1</span>
                 </div>
                 <div class="flex-1">
-                    <div class="flex justify-between items-center"><h1 class="font-black text-2xl md:text-3xl tracking-tight text-white hud-text neon-blue">SOMNATH</h1><i data-lucide="maximize" class="text-slate-600 group-hover:text-blue-400 transition ml-2" size="20"></i></div>
-                    <p class="text-sm font-bold text-amber-400 flex items-center gap-2 mt-2"><i data-lucide="zap" size="16"></i> STREAK: <span id="playerStreak" class="tabular-nums font-black text-lg">0</span> DAYS <span class="text-[10px] text-slate-400 border border-slate-700 px-2 py-0.5 rounded-md ml-2 tracking-widest">[1.5x EXP]</span></p>
+                    <div class="flex justify-between items-center"><h1 class="font-black text-3xl tracking-tight text-white hud-text silver-glow">SOMNATH</h1><i data-lucide="maximize" class="text-slate-600 group-hover:text-white transition ml-2" size="20"></i></div>
+                    <p class="text-sm font-bold text-slate-300 flex items-center gap-2 mt-2"><i data-lucide="zap" size="16" class="text-blood"></i> STREAK: <span id="playerStreak" class="tabular-nums font-black text-lg text-white">0</span> DAYS <span class="text-[10px] text-slate-500 border border-slate-700 px-2 py-0.5 rounded-md ml-2 tracking-widest">[1.5x EXP]</span></p>
                 </div>
             </div>
             <div class="flex-1 w-full md:max-w-md space-y-6" onclick="event.stopPropagation()">
                 <div>
-                    <div class="flex justify-between text-[11px] font-bold tracking-widest mb-2 text-rose-400"><span>HEALTH (HP)</span><span id="hpText" class="tabular-nums text-white hud-text">100/100</span></div>
-                    <div class="bar-bg"><div id="hpBar" class="hp-fill bar-glow" style="width: 100%;"></div></div>
+                    <div class="flex justify-between text-[11px] font-bold tracking-widest mb-2 text-slate-400"><span>HEALTH (HP)</span><span id="hpText" class="tabular-nums text-white hud-text">100/100</span></div>
+                    <div class="bar-bg"><div id="hpBar" class="hp-fill" style="width: 100%;"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-[11px] font-bold tracking-widest mb-2 text-blue-400"><span>EXPERIENCE (EXP)</span><span id="expText" class="tabular-nums text-white hud-text">0/100</span></div>
-                    <div class="bar-bg"><div id="expBar" class="exp-fill bar-glow" style="width: 0%;"></div></div>
+                    <div class="flex justify-between text-[11px] font-bold tracking-widest mb-2 text-slate-400"><span>EXPERIENCE (EXP)</span><span id="expText" class="tabular-nums text-white hud-text">0/100</span></div>
+                    <div class="bar-bg"><div id="expBar" class="exp-fill" style="width: 0%;"></div></div>
                 </div>
             </div>
         </div>
         
-        <div id="systemVoiceBox" class="glass-panel p-6 md:p-8 mt-6 mb-10 border border-white/5 shadow-[0_5px_20px_rgba(0,0,0,0.4)] relative text-center">
-            <p class="text-[10px] font-bold text-blue-400 tracking-widest mb-4 flex justify-center items-center gap-2"><i data-lucide="terminal" size="14"></i> SYSTEM MESSAGE</p>
+        <div id="systemVoiceBox" class="glass-panel p-6 md:p-8 mt-6 mb-10 text-center transition-all relative overflow-hidden group border-b border-blood/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest mb-4 flex justify-center items-center gap-2"><i data-lucide="terminal" size="14"></i> SYSTEM MESSAGE</p>
             <p class="text-lg md:text-xl font-medium text-white tracking-wide leading-relaxed" style="text-transform: none;">
-                "<span id="systemVoice">Arise.</span><span class="text-blue-500 typewriter-cursor">_</span>"
+                "<span id="systemVoice">Arise.</span><span class="text-blood typewriter-cursor font-bold">_</span>"
             </p>
         </div>
 
         <section id="tasks" class="tab-content active space-y-10">
             <div id="pactSection" class="mb-8"></div>
             <div>
-                <h3 class="text-xl font-black text-white mb-5 flex items-center gap-2 hud-text neon-blue"><i data-lucide="check-square" size="22"></i> DAILY QUESTS</h3>
-                <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-2 border-blue-500">
-                    <input type="text" id="simpleTaskInp" placeholder="Enter objective..." class="w-full p-4 text-sm font-bold flex-1" style="text-transform: none;">
-                    <button onclick="addSimpleTask()" class="bg-blue-600 text-white px-10 py-4 font-black btn-interact w-full md:w-auto hover:bg-blue-500 shadow-[0_5px_15px_rgba(37,99,235,0.4)] text-sm tracking-widest rounded-xl">ADD</button>
+                <h3 class="text-xl font-black text-white mb-5 flex items-center gap-2 hud-text silver-glow"><i data-lucide="check-square" size="22"></i> DAILY QUESTS</h3>
+                <div class="glass p-3 flex flex-col md:flex-row gap-3">
+                    <input type="text" id="simpleTaskInp" placeholder="Enter objective..." class="w-full p-4 text-sm font-bold flex-1 rounded-xl" style="text-transform: none;">
+                    <button onclick="addSimpleTask()" class="bg-white text-black px-10 py-4 font-black btn-interact w-full md:w-auto hover:bg-blood hover:text-white shadow-[0_5px_20px_rgba(255,255,255,0.2)] text-sm tracking-widest rounded-xl transition-colors">ADD</button>
                 </div>
                 <div id="simpleTasksList" class="grid gap-4 mt-6"></div>
             </div>
             <div class="pt-6">
-                <h3 class="text-xl font-black text-rose-500 mb-2 flex items-center gap-2 hud-text neon-red"><i data-lucide="swords" size="22"></i> RAID MISSIONS</h3>
-                <p class="text-xs text-slate-400 font-bold tracking-widest mb-5">PERSISTENT UNTIL CLEARED.</p>
-                <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-2 border-rose-500">
-                    <input type="text" id="timedInp" placeholder="Raid objective..." class="p-4 text-sm font-bold flex-1" style="text-transform: none;">
+                <h3 class="text-xl font-black text-blood mb-2 flex items-center gap-2 hud-text blood-glow"><i data-lucide="swords" size="22"></i> RAID MISSIONS</h3>
+                <p class="text-xs text-slate-500 font-bold tracking-widest mb-5">PERSISTENT UNTIL CLEARED.</p>
+                <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-blood">
+                    <input type="text" id="timedInp" placeholder="Raid objective..." class="p-4 text-sm font-bold flex-1 rounded-xl" style="text-transform: none;">
                     <div class="flex gap-3 w-full md:w-auto">
-                        <input type="number" id="raidTimeVal" placeholder="DUR" class="w-full md:w-24 text-center tabular-nums p-4 rounded-xl">
-                        <select id="raidTimeUnit" class="w-full md:w-28 text-rose-400 font-bold p-4 rounded-xl cursor-pointer">
+                        <input type="number" id="raidTimeVal" placeholder="DUR" class="w-full md:w-24 text-center tabular-nums p-4 rounded-xl font-bold text-white">
+                        <select id="raidTimeUnit" class="w-full md:w-28 text-white font-bold p-4 rounded-xl cursor-pointer">
                             <option value="m">MINS</option><option value="h">HRS</option><option value="d">DAYS</option>
                         </select>
                     </div>
-                    <button onclick="addTimedTask()" class="bg-rose-600 text-white px-10 py-4 font-black btn-interact w-full md:w-auto hover:bg-rose-500 shadow-[0_5px_15px_rgba(225,29,72,0.4)] text-sm tracking-widest rounded-xl">START</button>
+                    <button onclick="addTimedTask()" class="bg-blood text-white px-10 py-4 font-black btn-interact w-full md:w-auto hover:bg-white hover:text-blood shadow-[0_5px_20px_rgba(255,0,51,0.4)] text-sm tracking-widest rounded-xl transition-colors">START</button>
                 </div>
                 <div id="timedTasksList" class="grid gap-5 mt-6"></div>
             </div>
@@ -253,207 +281,207 @@
 
         <section id="vault" class="tab-content hidden space-y-12">
             <div>
-                <h2 class="text-3xl font-black tracking-tight text-white mb-2 hud-text neon-blue">THE VAULT</h2>
-                <p class="text-sm font-bold text-slate-400 tracking-widest border-b border-white/5 pb-4">EVOLUTION. ESCAPE. SKILLS.</p>
+                <h2 class="text-4xl font-black tracking-widest text-white mb-2 hud-text silver-glow">THE VAULT</h2>
+                <p class="text-sm font-bold text-slate-500 tracking-widest">EVOLUTION. ESCAPE. SKILLS.</p>
             </div>
             
             <div class="space-y-6 pt-2">
-                <h3 class="text-xl font-black text-amber-400 flex items-center gap-2 hud-text neon-amber"><i data-lucide="map" size="22"></i> EVOLUTION PATH</h3>
-                <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-2 border-amber-500">
-                    <input type="text" id="rmTitleInp" placeholder="New Master Goal..." class="flex-1 p-4 text-sm font-bold" style="text-transform: none;">
-                    <button onclick="addRoadmap()" class="bg-amber-500 text-black hover:bg-amber-400 px-10 py-4 font-black btn-interact w-full md:w-auto rounded-xl shadow-[0_5px_15px_rgba(245,158,11,0.3)] tracking-widest text-sm">CREATE</button>
+                <h3 class="text-xl font-black text-white flex items-center gap-2 hud-text"><i data-lucide="map" size="22"></i> EVOLUTION PATH</h3>
+                <div class="glass p-3 flex flex-col md:flex-row gap-3">
+                    <input type="text" id="rmTitleInp" placeholder="New Master Goal..." class="flex-1 p-4 text-sm font-bold rounded-xl" style="text-transform: none;">
+                    <button onclick="addRoadmap()" class="bg-white text-black hover:bg-blood hover:text-white px-10 py-4 font-black btn-interact w-full md:w-auto rounded-xl shadow-[0_5px_15px_rgba(255,255,255,0.2)] tracking-widest text-sm transition-colors">CREATE</button>
                 </div>
                 <div id="roadmapsContainer" class="grid gap-8 mt-6"></div>
             </div>
 
             <div class="space-y-6 border-t border-white/5 pt-8">
-                <h3 class="text-xl font-black text-emerald-400 flex items-center gap-2 hud-text text-shadow-sm"><i data-lucide="briefcase" size="22"></i> ESCAPE MATRIX</h3>
-                <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-2 border-emerald-500">
-                    <input type="text" id="jobCompInp" placeholder="Company Name" class="w-full md:w-1/3 p-4 font-bold text-sm" style="text-transform: none;">
-                    <input type="text" id="jobRoleInp" placeholder="Role/Position" class="flex-1 p-4 font-bold text-sm" style="text-transform: none;">
+                <h3 class="text-xl font-black text-white flex items-center gap-2 hud-text"><i data-lucide="briefcase" size="22"></i> ESCAPE MATRIX</h3>
+                <div class="glass p-3 flex flex-col md:flex-row gap-3">
+                    <input type="text" id="jobCompInp" placeholder="Company Name" class="w-full md:w-1/3 p-4 font-bold text-sm rounded-xl" style="text-transform: none;">
+                    <input type="text" id="jobRoleInp" placeholder="Role/Position" class="flex-1 p-4 font-bold text-sm rounded-xl" style="text-transform: none;">
                     <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                        <select id="jobStatusInp" class="text-emerald-400 w-full p-4 font-bold rounded-xl cursor-pointer">
+                        <select id="jobStatusInp" class="text-white w-full p-4 font-bold rounded-xl cursor-pointer">
                             <option value="APPLIED">APPLIED</option><option value="INTERVIEW">INTERVIEW</option><option value="OFFERED">OFFERED</option><option value="REJECTED">REJECTED</option>
                         </select>
-                        <button onclick="addJob()" class="bg-emerald-500 text-black hover:bg-emerald-400 px-10 py-4 font-black btn-interact w-full rounded-xl tracking-widest text-sm shadow-[0_5px_15px_rgba(16,185,129,0.3)]">LOG</button>
+                        <button onclick="addJob()" class="bg-white text-black hover:bg-blood hover:text-white px-10 py-4 font-black btn-interact w-full rounded-xl tracking-widest text-sm transition-colors shadow-[0_5px_15px_rgba(255,255,255,0.2)]">LOG</button>
                     </div>
                 </div>
                 <div id="careerList" class="grid gap-4 mt-6"></div>
             </div>
 
             <div class="space-y-6 border-t border-white/5 pt-8">
-                <h3 class="text-xl font-black text-purple-400 flex items-center gap-2 hud-text neon-purple"><i data-lucide="zap" size="22"></i> SKILL TREE</h3>
-                <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-2 border-purple-500">
-                    <input type="text" id="newSkillInp" placeholder="Add new skill to learn..." class="flex-1 p-4 text-sm font-bold" style="text-transform: none;">
-                    <button onclick="addNewSkill()" class="bg-purple-600 text-white hover:bg-purple-500 px-10 py-4 font-black btn-interact w-full md:w-auto rounded-xl shadow-[0_5px_15px_rgba(147,51,234,0.4)] tracking-widest text-sm">CREATE</button>
+                <h3 class="text-xl font-black text-white flex items-center gap-2 hud-text"><i data-lucide="zap" size="22"></i> SKILL TREE</h3>
+                <div class="glass p-3 flex flex-col md:flex-row gap-3">
+                    <input type="text" id="newSkillInp" placeholder="Add new skill to learn..." class="flex-1 p-4 text-sm font-bold rounded-xl" style="text-transform: none;">
+                    <button onclick="addNewSkill()" class="bg-white text-black hover:bg-blood hover:text-white px-10 py-4 font-black btn-interact w-full md:w-auto rounded-xl transition-colors shadow-[0_5px_15px_rgba(255,255,255,0.2)] tracking-widest text-sm">CREATE</button>
                 </div>
                 <div id="skillsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6"></div>
             </div>
         </section>
 
         <section id="trading" class="tab-content hidden space-y-8">
-            <h2 class="text-3xl font-black tracking-tight text-white mb-6 hud-text neon-blue">MARKET LOG</h2>
+            <h2 class="text-4xl font-black tracking-widest text-white mb-6 hud-text silver-glow">MARKET LOG</h2>
             
-            <div class="glass p-8 flex justify-between items-center border-l-4 border-blue-500 relative overflow-hidden group">
-                <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
+            <div class="glass p-8 flex justify-between items-center relative overflow-hidden group border-l-4 border-white">
+                <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
                 <div class="relative z-10">
-                    <p class="text-xs text-blue-400 font-bold tracking-widest mb-2">TRADING CAPITAL</p>
+                    <p class="text-xs text-slate-400 font-bold tracking-widest mb-2">TRADING CAPITAL</p>
                     <p class="text-5xl font-black text-white tabular-nums hud-text">₹<span id="tradeCapitalDisplay">0</span></p>
                 </div>
-                <button onclick="editTradeCapital()" class="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 py-3 rounded-xl font-bold btn-interact text-sm transition-colors tracking-widest relative z-10"><i data-lucide="edit-3" size="16" class="inline mr-2"></i> EDIT</button>
+                <button onclick="editTradeCapital()" class="bg-black/50 border border-white/10 text-white hover:bg-white hover:text-black px-6 py-3 rounded-xl font-bold btn-interact text-sm transition-colors tracking-widest relative z-10"><i data-lucide="edit-3" size="16" class="inline mr-2"></i> EDIT</button>
             </div>
 
-            <div id="drawdownAlertBox" class="hidden glass-panel p-6 border border-rose-500 danger-pulse mb-6">
-                <p class="font-black text-rose-500 text-lg flex items-center gap-3 tracking-widest justify-center"><i data-lucide="alert-triangle" size="24"></i> DRAWDOWN LIMIT REACHED. STOP TRADING.</p>
+            <div id="drawdownAlertBox" class="hidden glass-panel p-6 border border-blood danger-pulse mb-6">
+                <p class="font-black text-blood text-lg flex items-center gap-3 tracking-widest justify-center"><i data-lucide="alert-triangle" size="24"></i> DRAWDOWN LIMIT REACHED. STOP TRADING.</p>
             </div>
             
-            <div class="glass p-6 md:p-8 flex flex-col gap-6 border border-white/5">
+            <div class="glass p-6 md:p-8 flex flex-col gap-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <input type="text" id="tIndex" placeholder="ASSET" value="XAUUSD" class="p-4 font-bold text-sm text-center rounded-xl border border-white/10 bg-black/40">
-                    <select id="tResult" class="p-4 text-emerald-400 font-bold text-sm text-center rounded-xl cursor-pointer border border-white/10 bg-black/40">
+                    <input type="text" id="tIndex" placeholder="ASSET" value="XAUUSD" class="p-4 font-bold text-sm text-center rounded-xl text-white">
+                    <select id="tResult" class="p-4 text-white font-bold text-sm text-center rounded-xl cursor-pointer">
                         <option value="WIN">WIN ✅</option><option value="LOSS">LOSS ❌</option>
                     </select>
-                    <input type="number" id="tEntry" placeholder="ENTRY" class="p-4 tabular-nums font-bold text-sm text-center rounded-xl border border-white/10 bg-black/40">
-                    <input type="number" id="tExit" placeholder="EXIT" class="p-4 tabular-nums font-bold text-sm text-center rounded-xl border border-white/10 bg-black/40">
+                    <input type="number" id="tEntry" placeholder="ENTRY" class="p-4 tabular-nums font-bold text-sm text-center rounded-xl text-white">
+                    <input type="number" id="tExit" placeholder="EXIT" class="p-4 tabular-nums font-bold text-sm text-center rounded-xl text-white">
                 </div>
                 
-                <div class="glass-panel p-6 border border-white/5">
-                    <p class="text-[10px] font-bold text-blue-400 mb-4 tracking-widest border-b border-white/5 pb-3"><i data-lucide="crosshair" size="14" class="inline mr-1"></i> SETUP CHECKLIST</p>
+                <div class="glass-panel p-6">
+                    <p class="text-[10px] font-bold text-slate-400 mb-4 tracking-widest border-b border-white/5 pb-3"><i data-lucide="crosshair" size="14" class="inline mr-1"></i> SETUP CHECKLIST</p>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-5" id="tradeSetupChecklist">
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="5-6 15m Candle Sweep" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">5-6 15M SWEEP</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Massive High" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE HIGH</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Massive Low" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE LOW</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="News" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">NEWS IMPACT</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Support" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">SUPPORT TRADE</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Resistance" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">RESISTANCE</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group col-span-2 md:col-span-3"><input type="checkbox" value="Big Screen Analysis" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-slate-600 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all peer-checked:shadow-[0_0_10px_#3b82f6]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">BIG SCREEN ANALYSIS</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="5-6 15m Candle Sweep" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">5-6 15M SWEEP</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Massive High" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE HIGH</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Massive Low" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE LOW</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="News" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">NEWS IMPACT</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Support" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">SUPPORT TRADE</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group"><input type="checkbox" value="Resistance" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">RESISTANCE</span></label>
+                        <label class="flex items-center gap-3 cursor-pointer group col-span-2 md:col-span-3"><input type="checkbox" value="Big Screen Analysis" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border border-white/20 peer-checked:bg-blood peer-checked:border-blood flex items-center justify-center transition-all glossy-check peer-checked:shadow-[0_0_10px_rgba(255,0,51,0.5)]"><i data-lucide="check" size="16" class="text-white opacity-0 peer-checked:opacity-100"></i></div><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">BIG SCREEN ANALYSIS</span></label>
                     </div>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="tLogic" placeholder="Trade logic / Remarks..." class="p-4 flex-1 text-sm font-medium rounded-xl border border-white/10 bg-black/40" style="text-transform: none;">
-                    <input type="number" id="tPnL" placeholder="NET P&L (₹)" class="p-4 w-full md:w-48 font-black text-white tabular-nums rounded-xl border border-white/10 bg-black/40 text-center">
+                    <input type="text" id="tLogic" placeholder="Trade logic / Remarks..." class="p-4 flex-1 text-sm font-medium rounded-xl text-white" style="text-transform: none;">
+                    <input type="number" id="tPnL" placeholder="NET P&L (₹)" class="p-4 w-full md:w-48 font-black text-white tabular-nums rounded-xl text-center">
                 </div>
-                <input type="file" id="tImg" accept="image/*" class="text-xs font-bold text-slate-400 p-4 cursor-pointer border border-white/10 bg-black/40 rounded-xl">
+                <input type="file" id="tImg" accept="image/*" class="text-xs font-bold text-slate-400 p-4 cursor-pointer rounded-xl">
                 
-                <button onclick="addTrade()" class="bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold btn-interact w-full text-sm flex justify-center items-center gap-2 shadow-[0_5px_20px_rgba(37,99,235,0.4)] tracking-widest mt-2"><i data-lucide="save" size="18"></i> ARCHIVE INTEL</button>
+                <button onclick="addTrade()" class="bg-white hover:bg-blood text-black hover:text-white py-4 rounded-xl font-bold btn-interact w-full text-sm flex justify-center items-center gap-2 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest mt-2 transition-colors"><i data-lucide="save" size="18"></i> ARCHIVE INTEL</button>
             </div>
             <div id="tradingList" class="grid grid-cols-1 gap-4 mt-6"></div>
         </section>
 
         <section id="awakening" class="tab-content hidden space-y-8">
             <div>
-                <h2 class="text-3xl font-black tracking-tight text-white mb-2 hud-text neon-red">AWAKENING</h2>
-                <p class="text-sm font-bold text-slate-400 tracking-widest border-b border-white/5 pb-4">PHYSICAL & MENTAL PROTOCOL.</p>
+                <h2 class="text-4xl font-black tracking-widest text-white mb-2 hud-text blood-glow">AWAKENING</h2>
+                <p class="text-sm font-bold text-slate-500 tracking-widest border-b border-white/5 pb-4">PHYSICAL & MENTAL PROTOCOL.</p>
             </div>
             
-            <div class="glass p-6 md:p-8 border-t-4 border-t-rose-600 shadow-[0_0_30px_rgba(225,29,72,0.15)] relative overflow-hidden">
-                <div class="absolute -left-20 -top-20 w-64 h-64 bg-rose-600/10 rounded-full blur-3xl"></div>
+            <div class="glass p-8 border-t-4 border-t-blood shadow-[0_15px_40px_rgba(255,0,51,0.15)] relative overflow-hidden">
+                <div class="absolute -left-20 -top-20 w-64 h-64 bg-blood/10 rounded-full blur-3xl"></div>
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 relative z-10">
                     <div class="w-full md:w-auto">
-                        <h3 class="text-2xl font-black text-rose-500 flex items-center gap-3 hud-text"><i data-lucide="shield-alert" size="24"></i> IRON WILL</h3>
-                        <p class="text-xs text-rose-300 font-bold mt-2 tracking-widest opacity-80">MAINTAIN PURITY. RELAPSE = SEVERE PENALTY.</p>
-                        <p class="text-[10px] font-bold text-rose-400 mt-4 bg-rose-500/10 inline-block px-4 py-2 border border-rose-500/20 rounded-lg">LAST RELAPSE: <span id="lastRelapseDateDisplay"></span></p>
+                        <h3 class="text-3xl font-black text-white flex items-center gap-3 hud-text"><i data-lucide="shield-alert" size="28" class="text-blood"></i> IRON WILL</h3>
+                        <p class="text-xs text-slate-400 font-bold mt-2 tracking-widest">MAINTAIN PURITY. RELAPSE = SEVERE PENALTY.</p>
+                        <p class="text-[10px] font-bold text-white mt-4 bg-black/50 inline-block px-4 py-2 border border-white/10 rounded-lg">LAST RELAPSE: <span id="lastRelapseDateDisplay" class="text-blood"></span></p>
                         <div id="curseWarningDisplay" class="mt-3 hidden">
-                            <p class="text-[10px] font-black text-white bg-rose-600 inline-block px-4 py-2 border border-rose-400 danger-pulse tracking-widest rounded-lg">⚠️ CURSE ACTIVE: <span id="curseDaysDisplay" class="text-lg mx-1"></span> DAYS LEFT</p>
+                            <p class="text-xs font-black text-white bg-blood inline-block px-4 py-2 border border-blood danger-pulse tracking-widest rounded-lg">⚠️ CURSE ACTIVE: <span id="curseDaysDisplay" class="text-xl mx-1"></span> DAYS LEFT</p>
                         </div>
                     </div>
-                    <div class="bg-black/60 px-10 py-6 border border-white/5 rounded-2xl text-center w-full md:w-auto shadow-inner">
-                        <p class="text-[10px] font-bold text-slate-500 tracking-widest mb-2">CURRENT STREAK</p>
-                        <p class="text-5xl font-black text-rose-500 tabular-nums hud-text neon-red"><span id="nofapDays">0</span><span class="text-xl text-rose-800 ml-1">D</span></p>
+                    <div class="glass-panel px-10 py-6 border border-blood/30 text-center w-full md:w-auto shadow-inner">
+                        <p class="text-[10px] font-bold text-slate-400 tracking-widest mb-2">CURRENT STREAK</p>
+                        <p class="text-6xl font-black text-white tabular-nums hud-text blood-glow"><span id="nofapDays">0</span><span class="text-2xl text-blood ml-1">D</span></p>
                     </div>
                 </div>
-                <button onclick="triggerRelapse()" class="w-full bg-rose-950/40 border border-rose-500/50 text-rose-500 hover:bg-rose-600 hover:text-white py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 transition-all tracking-widest text-sm relative z-10"><i data-lucide="skull" size="20"></i> REPORT RELAPSE (-40 HP)</button>
+                <button onclick="triggerRelapse()" class="w-full bg-black/50 border border-blood/50 text-blood hover:bg-blood hover:text-white py-5 rounded-xl font-black btn-interact flex justify-center items-center gap-2 transition-all tracking-widest text-lg relative z-10 shadow-[0_0_15px_rgba(255,0,51,0.2)]"><i data-lucide="skull" size="24"></i> REPORT RELAPSE (-40 HP)</button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="glass p-6 md:p-8 border-t-2 border-t-amber-500 lg:col-span-2">
-                    <h3 class="text-xl font-black text-amber-400 mb-6 flex items-center gap-2 hud-text neon-amber"><i data-lucide="dumbbell" size="22"></i> COMBAT LOG</h3>
+                <div class="glass p-6 md:p-8 lg:col-span-2">
+                    <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-2 hud-text"><i data-lucide="dumbbell" size="24" class="text-slate-400"></i> COMBAT LOG</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-black/30 p-5 border border-white/5 rounded-xl text-center transition-colors hover:border-amber-500/30">
+                        <div class="glass-panel p-5 text-center transition-colors hover:border-white/30">
                             <p class="text-[10px] font-bold text-slate-500 mb-3 tracking-widest">PUSHUPS</p>
-                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatPushups" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-2xl text-white tabular-nums outline-none focus:border-amber-400 pb-1" value="0"><span class="text-slate-600 font-bold text-xs">/60</span></div>
+                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatPushups" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-3xl text-white tabular-nums outline-none focus:border-white pb-1 hud-text" value="0"><span class="text-slate-600 font-bold text-xs">/60</span></div>
                         </div>
-                        <div class="bg-black/30 p-5 border border-white/5 rounded-xl text-center transition-colors hover:border-amber-500/30">
+                        <div class="glass-panel p-5 text-center transition-colors hover:border-white/30">
                             <p class="text-[10px] font-bold text-slate-500 mb-3 tracking-widest">PULLUPS</p>
-                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatPullups" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-2xl text-white tabular-nums outline-none focus:border-amber-400 pb-1" value="0"><span class="text-slate-600 font-bold text-xs">/50</span></div>
+                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatPullups" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-3xl text-white tabular-nums outline-none focus:border-white pb-1 hud-text" value="0"><span class="text-slate-600 font-bold text-xs">/50</span></div>
                         </div>
-                        <div class="bg-black/30 p-5 border border-white/5 rounded-xl text-center transition-colors hover:border-amber-500/30">
+                        <div class="glass-panel p-5 text-center transition-colors hover:border-white/30">
                             <p class="text-[10px] font-bold text-slate-500 mb-3 tracking-widest">SQUATS</p>
-                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatSquats" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-2xl text-white tabular-nums outline-none focus:border-amber-400 pb-1" value="0"><span class="text-slate-600 font-bold text-xs">/100</span></div>
+                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatSquats" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-3xl text-white tabular-nums outline-none focus:border-white pb-1 hud-text" value="0"><span class="text-slate-600 font-bold text-xs">/100</span></div>
                         </div>
-                        <div class="bg-black/30 p-5 border border-white/5 rounded-xl text-center transition-colors hover:border-amber-500/30">
+                        <div class="glass-panel p-5 text-center transition-colors hover:border-white/30">
                             <p class="text-[10px] font-bold text-slate-500 mb-3 tracking-widest">CORE (S)</p>
-                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatCore" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-2xl text-white tabular-nums outline-none focus:border-amber-400 pb-1" value="0"><span class="text-slate-600 font-bold text-xs">/120</span></div>
+                            <div class="flex items-center justify-center gap-1"><input type="number" id="combatCore" class="w-16 bg-transparent border-b border-white/20 text-center font-black text-3xl text-white tabular-nums outline-none focus:border-white pb-1 hud-text" value="0"><span class="text-slate-600 font-bold text-xs">/120</span></div>
                         </div>
                     </div>
-                    <button onclick="saveCombat()" class="w-full mt-6 bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500 hover:text-black py-4 rounded-xl font-bold btn-interact text-xs transition-colors tracking-widest">SAVE COMBAT</button>
+                    <button onclick="saveCombat()" class="w-full mt-6 bg-white text-black hover:bg-slate-300 py-4 rounded-xl font-black btn-interact text-sm transition-colors tracking-widest shadow-[0_5px_15px_rgba(255,255,255,0.2)]">SAVE COMBAT</button>
                 </div>
 
-                <div class="glass p-6 md:p-8 border-t-2 border-t-cyan-500 flex flex-col justify-center text-center">
-                    <p class="text-[10px] text-cyan-400 font-bold tracking-widest mb-2"><i data-lucide="scissors" size="14" class="inline mb-1"></i> MAINTENANCE</p>
-                    <p class="text-6xl font-black text-white tabular-nums my-4 hud-text" id="haircutDaysDisplay">0</p>
-                    <p class="text-[10px] text-slate-500 font-bold mb-8 tracking-widest">DAYS SINCE HAIRCUT</p>
-                    <button onclick="resetHaircut()" class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black w-full py-4 rounded-xl font-bold btn-interact text-xs transition-colors tracking-widest">LOG HAIRCUT</button>
+                <div class="glass p-6 md:p-8 flex flex-col justify-center text-center">
+                    <p class="text-xs text-slate-400 font-bold tracking-widest mb-2"><i data-lucide="scissors" size="16" class="inline mb-1"></i> MAINTENANCE</p>
+                    <p class="text-7xl font-black text-white tabular-nums my-4 hud-text" id="haircutDaysDisplay">0</p>
+                    <p class="text-xs text-slate-500 font-bold mb-8 tracking-widest">DAYS SINCE HAIRCUT</p>
+                    <button onclick="resetHaircut()" class="bg-black/50 border border-white/10 text-white hover:bg-white hover:text-black w-full py-4 rounded-xl font-bold btn-interact text-xs transition-colors tracking-widest">LOG HAIRCUT</button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 md:p-8 border-t-2 border-t-indigo-500">
-                    <h3 class="text-xl font-black text-indigo-400 mb-6 flex items-center gap-2 hud-text"><i data-lucide="sparkles" size="22"></i> LOOKS PROTOCOL</h3>
+                <div class="glass p-6 md:p-8">
+                    <h3 class="text-xl font-black text-white mb-6 flex items-center gap-2 hud-text"><i data-lucide="sparkles" size="22" class="text-slate-400"></i> LOOKS PROTOCOL</h3>
                     <div class="space-y-3" id="looksChecklist"></div>
                 </div>
                 
-                <div class="glass p-6 md:p-8 border-t-2 border-t-rose-500 bg-rose-950/10">
-                    <h3 class="text-xl font-black text-rose-500 mb-6 flex items-center gap-2 hud-text"><i data-lucide="ban" size="22"></i> FORBIDDEN</h3>
+                <div class="glass p-6 md:p-8 border border-blood/20 bg-blood/5">
+                    <h3 class="text-xl font-black text-blood mb-6 flex items-center gap-2 hud-text blood-glow"><i data-lucide="ban" size="22"></i> FORBIDDEN</h3>
                     <div class="space-y-3">
-                        <p class="text-xs font-bold text-white bg-black/40 p-4 rounded-xl border border-rose-500/20 flex items-center gap-4"><span class="text-rose-500 text-base">❌</span> NO REFINED SUGAR</p>
-                        <p class="text-xs font-bold text-white bg-black/40 p-4 rounded-xl border border-rose-500/20 flex items-center gap-4"><span class="text-rose-500 text-base">❌</span> NO DEEP FRIED FOOD</p>
-                        <p class="text-xs font-bold text-white bg-black/40 p-4 rounded-xl border border-rose-500/20 flex items-center gap-4"><span class="text-rose-500 text-base">❌</span> NO P*RN / PEEKING</p>
-                        <p class="text-xs font-bold text-white bg-black/40 p-4 rounded-xl border border-rose-500/20 flex items-center gap-4"><span class="text-rose-500 text-base">❌</span> NO MINDLESS SCROLL</p>
+                        <p class="text-xs font-bold text-white bg-black/60 p-4 rounded-xl border border-white/5 flex items-center gap-4"><span class="text-blood text-lg">❌</span> NO REFINED SUGAR</p>
+                        <p class="text-xs font-bold text-white bg-black/60 p-4 rounded-xl border border-white/5 flex items-center gap-4"><span class="text-blood text-lg">❌</span> NO DEEP FRIED FOOD</p>
+                        <p class="text-xs font-bold text-white bg-black/60 p-4 rounded-xl border border-white/5 flex items-center gap-4"><span class="text-blood text-lg">❌</span> NO P*RN / PEEKING</p>
+                        <p class="text-xs font-bold text-white bg-black/60 p-4 rounded-xl border border-white/5 flex items-center gap-4"><span class="text-blood text-lg">❌</span> NO MINDLESS SCROLL</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="expenses" class="tab-content hidden space-y-6">
-            <h2 class="text-3xl font-black tracking-widest text-white mb-6 hud-text neon-blue">WALLET</h2>
-            <div class="glass p-8 flex flex-col md:flex-row justify-between items-center gap-8 border-l-4 border-emerald-500 relative overflow-hidden">
+            <h2 class="text-4xl font-black tracking-widest text-white mb-6 hud-text silver-glow">WALLET</h2>
+            <div class="glass p-8 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden border-l-4 border-emerald-500">
                 <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-emerald-500/10 blur-3xl rounded-full"></div>
                 <div class="w-full md:w-auto text-center md:text-left relative z-10">
-                    <p class="text-xs text-emerald-400 font-bold tracking-widest mb-2">AVAILABLE BALANCE</p>
-                    <p id="balanceContainer" class="text-5xl md:text-6xl font-black text-white flex items-center justify-center md:justify-start gap-4 tabular-nums hud-text">
+                    <p class="text-xs text-slate-400 font-bold tracking-widest mb-2">AVAILABLE BALANCE</p>
+                    <p id="balanceContainer" class="text-6xl font-black text-white flex items-center justify-center md:justify-start gap-4 tabular-nums hud-text">
                         ₹<span id="walletBalanceDisplay">0</span>
-                        <button onclick="editBalance()" class="text-slate-500 hover:text-emerald-400 btn-interact mt-2 bg-white/5 p-2 rounded-xl border border-white/5"><i data-lucide="edit-3" size="20"></i></button>
+                        <button onclick="editBalance()" class="text-slate-500 hover:text-white btn-interact mt-2 bg-white/5 p-2 rounded-xl border border-white/5"><i data-lucide="edit-3" size="20"></i></button>
                     </p>
                 </div>
                 <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto relative z-10">
-                    <input type="number" id="addBalInp" placeholder="ADD ₹" class="p-4 font-black w-full md:w-40 text-center text-lg text-emerald-400 rounded-xl bg-black/50 border border-white/10">
-                    <button onclick="addBalance()" class="bg-emerald-500 hover:bg-white text-black px-8 py-4 rounded-xl font-black btn-interact shadow-[0_5px_15px_rgba(16,185,129,0.3)] tracking-widest text-sm">DEPOSIT</button>
+                    <input type="number" id="addBalInp" placeholder="ADD ₹" class="p-4 font-black w-full md:w-40 text-center text-xl text-white rounded-xl">
+                    <button onclick="addBalance()" class="bg-white hover:bg-emerald-500 text-black px-8 py-4 rounded-xl font-black btn-interact shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest text-sm transition-colors">DEPOSIT</button>
                 </div>
             </div>
-            <div class="glass p-3 flex flex-col md:flex-row gap-3 border-t-2 border-rose-500">
-                <input type="text" id="eTitle" placeholder="Spend Reason..." class="flex-1 p-4 font-bold text-sm rounded-xl bg-black/40 border border-white/5" style="text-transform:none;">
-                <input type="number" id="eAmt" placeholder="₹ AMOUNT" class="w-full md:w-48 p-4 font-black text-rose-400 text-base tabular-nums text-center rounded-xl bg-black/40 border border-white/5">
-                <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-500 text-white px-10 py-4 rounded-xl font-black btn-interact w-full md:w-auto tracking-widest text-sm shadow-[0_5px_15px_rgba(225,29,72,0.3)]">DEDUCT</button>
+            <div class="glass p-3 flex flex-col md:flex-row gap-3">
+                <input type="text" id="eTitle" placeholder="Spend Reason..." class="flex-1 p-4 font-bold text-sm rounded-xl" style="text-transform:none;">
+                <input type="number" id="eAmt" placeholder="₹ AMOUNT" class="w-full md:w-48 p-4 font-black text-blood text-lg tabular-nums text-center rounded-xl border border-blood/20">
+                <button onclick="addExpense()" class="bg-blood hover:bg-white text-white hover:text-black px-10 py-4 rounded-xl font-black btn-interact w-full md:w-auto tracking-widest text-sm shadow-[0_5px_15px_rgba(255,0,51,0.4)] transition-colors">DEDUCT</button>
             </div>
-            <div id="expensesList" class="grid gap-4 mt-6"></div>
+            <div id="expensesList" class="grid gap-3 mt-6"></div>
         </section>
 
         <section id="diary" class="tab-content hidden space-y-6">
-            <h2 class="text-3xl font-black tracking-widest text-white mb-4 hud-text neon-blue">PROTAGONIST LOG</h2>
-            <div class="glass p-6 md:p-8 border-t-2 border-indigo-500">
-                <textarea id="diaryInp" rows="8" placeholder="Document the journey..." class="w-full p-5 font-medium text-sm text-white resize-none bg-black/40 border border-white/10 rounded-xl leading-relaxed" style="text-transform: none;"></textarea>
-                <button onclick="saveDiary()" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact w-full text-sm flex justify-center items-center gap-2 shadow-[0_5px_15px_rgba(99,102,241,0.3)] tracking-widest">
-                    <i data-lucide="save" size="18"></i> ARCHIVE ENTRY
+            <h2 class="text-4xl font-black tracking-widest text-white mb-2 hud-text silver-glow">PROTAGONIST LOG</h2>
+            <div class="glass p-6 md:p-8">
+                <textarea id="diaryInp" rows="8" placeholder="Document the journey..." class="w-full p-5 font-medium text-sm text-white resize-none rounded-xl leading-relaxed" style="text-transform: none;"></textarea>
+                <button onclick="saveDiary()" class="mt-4 bg-white hover:bg-slate-300 text-black py-4 rounded-xl font-black btn-interact w-full text-sm flex justify-center items-center gap-2 shadow-[0_5px_15px_rgba(255,255,255,0.2)] tracking-widest">
+                    <i data-lucide="save" size="20"></i> ARCHIVE ENTRY
                 </button>
             </div>
             <div id="diaryDisplay" class="mt-8 space-y-6"></div>
         </section>
 
         <section id="history" class="tab-content hidden space-y-8">
-            <h2 class="text-3xl font-black tracking-widest text-white mb-4 hud-text neon-blue">ANALYTICS</h2>
-            <div class="glass p-8 border-t-2 border-cyan-500 shadow-[0_0_30px_rgba(0,240,255,0.05)]">
+            <h2 class="text-4xl font-black tracking-widest text-white mb-4 hud-text silver-glow">ANALYTICS</h2>
+            <div class="glass p-8">
                 <h3 class="text-xs font-bold text-slate-400 mb-6 tracking-widest border-b border-white/5 pb-2">QUEST COMPLETION (LAST 7 DAYS)</h3>
                 <canvas id="historyChart" height="100"></canvas>
             </div>
@@ -463,12 +491,11 @@
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V40 - True Monarch)
+        // DATABASE MIGRATION & INIT (V41 - Blood Monarch)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v39_absolute')) || JSON.parse(localStorage.getItem('happysam_v38_quantum'));
-        let db = JSON.parse(localStorage.getItem('happysam_v40_monarch')) || oldDb || {};
+        let oldDb = JSON.parse(localStorage.getItem('happysam_v40_monarch')) || JSON.parse(localStorage.getItem('happysam_v39_absolute'));
+        let db = JSON.parse(localStorage.getItem('happysam_v41_blood')) || oldDb || {};
         
-        // AUTO-CLEANER
         if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
         
         if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
@@ -496,6 +523,7 @@
         let timerIntervals = {};
         let chartInstance = null;
 
+        // MONARCH QUOTES
         const soloQuotes = [
             "You are standing at the bottom of the abyss. The only way out is through sheer, unrelenting force.",
             "When you feel like quitting, remember why you started. Every drop of sweat is a tear your enemies will shed.",
@@ -520,7 +548,7 @@
             "You wanted to be a Monarch? Act like one and face punishment.",
             "The shadow of your relapse hangs over you. Survive it.",
             "No pity for the weak. Only the crucible remains.",
-            "Your desires betrayed you. Let the curse forge your mind anew.",
+            "Your desires betrayed you. Let the blood curse forge your mind anew.",
             "7 Days of Hell. It’s the only way to cleanse the weakness."
         ];
 
@@ -540,17 +568,16 @@
             "Chart Hell (Backtest 50 XAUUSD Charts)"
         ];
 
-        // "NONE" BUG ABSOLUTE FIX
         if (!db.pact.reward || db.pact.reward === "NONE" || db.pact.reward === "") {
             let dayOfWeek = new Date().getDay();
             let availableRewards = gachaRewards.filter(r => r.days === 'all' || r.days.includes(dayOfWeek));
             db.pact.reward = availableRewards[Math.floor(Math.random() * availableRewards.length)].text;
             db.pact.penalty = gachaPenalties[Math.floor(Math.random() * gachaPenalties.length)];
-            localStorage.setItem('happysam_v40_monarch', JSON.stringify(db));
+            localStorage.setItem('happysam_v41_blood', JSON.stringify(db));
         }
 
         function save() { 
-            try { localStorage.setItem('happysam_v40_monarch', JSON.stringify(db)); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v41_blood', JSON.stringify(db)); render(); updateSystemVoice(); } 
             catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs with images.", "penalty"); }
         }
 
@@ -578,37 +605,25 @@
         }
         function showSystemAlert(title, desc, type="info") {
             const container = document.getElementById('toastContainer'); const alertBox = document.createElement('div');
-            let colorClasses = "bg-slate-900 border-slate-700"; let icon = "info"; let textColor = "text-blue-400";
-            if (type === "reward") { colorClasses = "bg-[#05070a] border-blue-500/50 shadow-lg shadow-blue-500/20"; icon = "check-circle"; textColor = "text-blue-400"; }
-            else if (type === "penalty") { colorClasses = "bg-[#05070a] border-rose-500/50 shadow-lg shadow-rose-500/20"; icon = "skull"; textColor = "text-rose-400"; }
-            else if (type === "warning") { colorClasses = "bg-[#05070a] border-amber-500/50 shadow-lg shadow-amber-500/20"; icon = "alert-triangle"; textColor = "text-amber-400"; }
-            alertBox.className = `glass ${colorClasses} text-white border-l-4 p-4 rounded-xl flex items-center gap-4 transition-all duration-500 toast-leave w-full md:w-96 mx-auto backdrop-blur-xl`;
-            alertBox.innerHTML = `<div class="bg-black/40 p-2.5 rounded-lg flex-shrink-0 border border-white/5"><i data-lucide="${icon}" class="${textColor}"></i></div><div><h4 class="font-black text-xs tracking-widest leading-tight ${textColor} hud-text">${title}</h4><p class="text-[11px] font-medium opacity-80 mt-1" style="text-transform:none;">${desc}</p></div>`;
+            let colorClasses = "bg-black border-slate-800"; let icon = "info"; let textColor = "text-white";
+            if (type === "reward") { colorClasses = "bg-[#05070a] border-white/20 shadow-lg shadow-white/10"; icon = "check-circle"; textColor = "text-white"; }
+            else if (type === "penalty") { colorClasses = "bg-[#1a0005] border-blood/50 shadow-lg shadow-blood/20"; icon = "skull"; textColor = "text-blood"; }
+            else if (type === "warning") { colorClasses = "bg-[#1a1000] border-amber-500/50 shadow-lg shadow-amber-500/20"; icon = "alert-triangle"; textColor = "text-amber-400"; }
+            alertBox.className = `glass ${colorClasses} text-white border-l-4 p-4 rounded-xl flex items-center gap-4 transition-all duration-500 toast-leave w-full md:w-96 mx-auto backdrop-blur-2xl`;
+            alertBox.innerHTML = `<div class="bg-white/5 p-2.5 rounded-lg flex-shrink-0 border border-white/10"><i data-lucide="${icon}" class="${textColor}"></i></div><div><h4 class="font-black text-xs tracking-widest leading-tight ${textColor} hud-text">${title}</h4><p class="text-[11px] font-bold text-slate-300 mt-1" style="text-transform:none;">${desc}</p></div>`;
             container.appendChild(alertBox); lucide.createIcons();
             requestAnimationFrame(() => { alertBox.classList.remove('toast-leave'); alertBox.classList.add('toast-enter'); });
             setTimeout(() => { alertBox.classList.remove('toast-enter'); alertBox.classList.add('toast-leave'); setTimeout(() => alertBox.remove(), 500); }, 3500);
         }
 
-        // TYPEWRITER EFFECT FOR SYSTEM VOICE
         let typewriterTimeout;
         function typeWriterEffect(text, elementId) {
             const el = document.getElementById(elementId);
-            el.innerHTML = '';
-            let i = 0;
-            clearTimeout(typewriterTimeout);
-            function type() {
-                if (i < text.length) {
-                    el.innerHTML += text.charAt(i);
-                    i++;
-                    typewriterTimeout = setTimeout(type, 30); 
-                }
-            }
+            el.innerHTML = ''; let i = 0; clearTimeout(typewriterTimeout);
+            function type() { if (i < text.length) { el.innerHTML += text.charAt(i); i++; typewriterTimeout = setTimeout(type, 30); } }
             type();
         }
 
-        // ==========================================
-        // SYSTEM CORE
-        // ==========================================
         function checkLoginStreak() {
             const today = new Date().toLocaleDateString();
             if(db.player.lastLogin === today) return; 
@@ -632,19 +647,19 @@
             let message = "";
             let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
 
-            voiceContainer.classList.remove('border-rose-500', 'shadow-[0_0_30px_rgba(255,0,60,0.2)]');
+            voiceContainer.classList.remove('border-blood', 'shadow-[0_10px_30px_rgba(255,0,51,0.2)]');
             
             if (dailyLosses >= 2) { 
                 message = "CRITICAL WARNING: Drawdown Limit Breached! Cease Trading Immediately."; 
-                voiceContainer.classList.add('border-rose-500', 'shadow-[0_0_30px_rgba(255,0,60,0.2)]'); 
+                voiceContainer.classList.add('border-blood', 'shadow-[0_10px_30px_rgba(255,0,51,0.2)]'); 
             }
             else if (db.player.hp <= 0) { 
                 message = "You have fallen. The System demands a penalty to rise again."; 
-                voiceContainer.classList.add('border-rose-500', 'shadow-[0_0_30px_rgba(255,0,60,0.2)]'); 
+                voiceContainer.classList.add('border-blood', 'shadow-[0_10px_30px_rgba(255,0,51,0.2)]'); 
             }
             else if (db.awakening.curseActive) { 
                 message = curseQuotes[Math.floor(Math.random() * curseQuotes.length)]; 
-                voiceContainer.classList.add('border-rose-500', 'shadow-[0_0_30px_rgba(255,0,60,0.2)]'); 
+                voiceContainer.classList.add('border-blood', 'shadow-[0_10px_30px_rgba(255,0,51,0.2)]'); 
             }
             else if (db.player.hp < 40) { 
                 message = "Weakness is a choice. Stand up."; 
@@ -659,15 +674,15 @@
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.querySelectorAll('.d-nav-btn, .m-nav-btn').forEach(b => { 
-                b.classList.remove('bg-blue-600/10', 'text-blue-400', 'shadow-inner', 'border-blue-500/30', 'nav-active'); 
-                b.classList.add('text-slate-400', 'border-transparent'); 
+                b.classList.remove('bg-blood/10', 'text-blood', 'shadow-inner', 'border-blood/30', 'nav-active'); 
+                b.classList.add('text-slate-500', 'border-transparent'); 
             });
             
             let dBtn = Array.from(document.querySelectorAll('.d-nav-btn')).find(b => b.dataset.tab === id); 
-            if(dBtn) dBtn.classList.add('bg-blue-600/10', 'text-blue-400', 'shadow-inner', 'border-blue-500/30');
+            if(dBtn) dBtn.classList.add('bg-blood/10', 'text-blood', 'shadow-inner', 'border-blood/30');
             
             let mBtn = Array.from(document.querySelectorAll('.m-nav-btn')).find(b => b.dataset.tab === id); 
-            if(mBtn) mBtn.classList.add('nav-active', 'text-blue-400');
+            if(mBtn) mBtn.classList.add('nav-active', 'text-blood');
             
             document.getElementById(id).classList.remove('hidden'); 
             if(id === 'history') renderChart(); 
@@ -686,9 +701,6 @@
             save(); 
         }
 
-        // ==========================================
-        // GACHA PACT & TASKS
-        // ==========================================
         function checkPactStatus() { 
             const total = db.today.length; const done = db.today.filter(t=>t.done).length; 
             if(total > 0 && done === total && db.pact.state !== "unlocked") { 
@@ -720,11 +732,8 @@
         function addTimedTask() { const text = document.getElementById('timedInp').value; const val = parseInt(document.getElementById('raidTimeVal').value) || 0; const unit = document.getElementById('raidTimeUnit').value; if(!text) return; let multiplier = 0; if(unit === 'm') multiplier = 60000; else if(unit === 'h') multiplier = 3600000; else if(unit === 'd') multiplier = 86400000; let endTime = val > 0 ? Date.now() + (val * multiplier) : null; let displayDur = val > 0 ? `${val}${unit.toUpperCase()}` : 'No Limit'; db.timed.push({ id: Date.now(), text: text, durationStr: displayDur, endTime: endTime, status: 'active' }); document.getElementById('timedInp').value = ''; document.getElementById('raidTimeVal').value = ''; save(); }
         function completeTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; t.status = 'done'; clearInterval(timerIntervals[id]); updateStats(50, 10); showSystemAlert("RAID CLEARED!", "+50 EXP | +10 HP", "reward"); save(); }
         function abortTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; if(confirm("ABORT RAID? THIS DEALS 30 HP DAMAGE.")) { t.status = 'aborted'; clearInterval(timerIntervals[id]); updateStats(0, -30, true); showSystemAlert("RAID FAILED", "-30 HP DAMAGE!", "penalty"); save(); } }
-        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
+        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-blood', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
 
-        // ==========================================
-        // ROADMAP, WALLET, TRADING, OTHERS
-        // ==========================================
         function addRoadmap() { const t = document.getElementById('rmTitleInp').value; if(!t) return; db.roadmaps.unshift({ id: Date.now(), title: t, steps: [] }); document.getElementById('rmTitleInp').value = ''; showSystemAlert("PATH CREATED", "New Path forged.", "info"); save(); }
         function addRoadmapStep(rmId) { const t = document.getElementById(`rmStepText_${rmId}`).value; const d = document.getElementById(`rmStepDate_${rmId}`).value; if(!t || !d) { showSystemAlert("MISSING DATA", "Step desc and date required.", "warning"); return; } let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { rm.steps.push({ id: Date.now(), text: t, date: d, done: false }); save(); } }
         function toggleRmStep(rmId, stepId) { let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { let step = rm.steps.find(s => s.id == stepId); if(step && !step.done) { step.done = true; updateStats(50, 0); showSystemAlert("MILESTONE", "+50 EXP GAINED", "reward"); save(); } } }
@@ -743,15 +752,15 @@
             let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
-            try { localStorage.setItem('happysam_v40_monarch', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived.", "info"); render(); updateSystemVoice(); } 
+            try { localStorage.setItem('happysam_v41_blood', JSON.stringify(db)); document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; document.getElementById('tImg').value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); showSystemAlert("MARKET LOGGED", "Trade intel archived.", "info"); render(); updateSystemVoice(); } 
             catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Delete old logs.", "penalty"); }
         }
         function deleteTrade(id) { if(confirm("DELETE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
         function openTradeModal(id) { 
             const t = db.trading.find(x => x.id == id); if(!t) return; 
-            let imgHtml = '<p class="text-center text-slate-500 text-xs font-bold mt-4 border-t border-slate-800 pt-4">NO IMAGE ATTACHED</p>'; if (t.img && t.img.length > 20) { imgHtml = `<div class="mt-4 relative group cursor-zoom-in border-t border-slate-800 pt-4" onclick="openImageZoom(${t.id})"><img src="${t.img}" class="w-full rounded-xl border border-blue-500/20 hover:border-blue-500/50 transition shadow-inner"><div class="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition pointer-events-none"><div class="bg-black/60 backdrop-blur-md p-3 rounded-xl text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]"><i data-lucide="zoom-in" size="24"></i></div></div></div>`; } 
-            let setupBadges = ''; if(t.setups && t.setups.length > 0) { setupBadges = `<div class="mt-4"><p class="text-[10px] text-blue-400 font-bold mb-2 tracking-widest"><i data-lucide="crosshair" size="12" class="inline"></i> SETUP TRIGGERED:</p><div class="flex flex-wrap gap-2">${t.setups.map(s => `<span class="bg-blue-900/20 text-blue-300 border border-blue-700/30 px-3 py-1 rounded-md text-[10px] font-bold tracking-wide">${s}</span>`).join('')}</div></div>`; }
-            let htmlContent = `<div class="flex justify-between items-center glass-panel p-5"><div><p class="text-[10px] text-slate-400 font-bold tracking-widest">ASSET</p><p class="text-2xl font-black text-white hud-text">${t.index}</p></div><div class="text-right"><p class="text-[10px] text-slate-400 font-bold tracking-widest">RESULT</p><p class="text-2xl font-black hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-400'}">${t.result} ${t.pnl ? `[₹${t.pnl}]` : ''}</p></div></div><div class="flex justify-between text-xs font-bold text-slate-400 px-2 mt-3 font-mono"><span>ENT: ${t.entry || 'N/A'}</span><span>EXT: ${t.exit || 'N/A'}</span></div><div class="glass-panel p-5 mt-4"><p class="text-[10px] text-blue-400 font-bold mb-3 tracking-widest"><i data-lucide="brain" class="inline" size="14"></i> TRADE LOGIC</p><p class="text-sm font-medium text-slate-200 leading-relaxed" style="text-transform: none;">${t.logic}</p></div>${setupBadges}${imgHtml}<p class="text-right text-[10px] text-slate-500 font-bold mt-4 mb-4 tracking-widest">LOGGED: ${t.date}</p><button onclick="deleteTrade(${t.id})" class="w-full bg-rose-600 hover:bg-rose-500 text-white py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-sm transition-all tracking-widest shadow-[0_5px_15px_rgba(225,29,72,0.3)]"><i data-lucide="trash-2" size="18"></i> DELETE RECORD</button>`;
+            let imgHtml = '<p class="text-center text-slate-500 text-xs font-bold mt-4 border-t border-white/5 pt-4">NO IMAGE ATTACHED</p>'; if (t.img && t.img.length > 20) { imgHtml = `<div class="mt-4 relative group cursor-zoom-in border-t border-white/5 pt-4" onclick="openImageZoom(${t.id})"><img src="${t.img}" class="w-full rounded-xl border border-white/10 hover:border-blood/50 transition shadow-inner"><div class="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition pointer-events-none"><div class="bg-black/80 backdrop-blur-md p-4 rounded-full text-white shadow-[0_0_20px_rgba(255,255,255,0.5)]"><i data-lucide="zoom-in" size="24"></i></div></div></div>`; } 
+            let setupBadges = ''; if(t.setups && t.setups.length > 0) { setupBadges = `<div class="mt-4"><p class="text-[10px] text-white font-bold mb-2 tracking-widest"><i data-lucide="crosshair" size="12" class="inline"></i> SETUP TRIGGERED:</p><div class="flex flex-wrap gap-2">${t.setups.map(s => `<span class="bg-white/10 text-white border border-white/20 px-3 py-1 rounded-lg text-[10px] font-bold tracking-wide">${s}</span>`).join('')}</div></div>`; }
+            let htmlContent = `<div class="flex justify-between items-center glass-panel p-5"><div><p class="text-[10px] text-slate-400 font-bold tracking-widest">ASSET</p><p class="text-2xl font-black text-white hud-text">${t.index}</p></div><div class="text-right"><p class="text-[10px] text-slate-400 font-bold tracking-widest">RESULT</p><p class="text-2xl font-black hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-blood'}">${t.result} ${t.pnl ? `[₹${t.pnl}]` : ''}</p></div></div><div class="flex justify-between text-xs font-bold text-slate-400 px-2 mt-3 font-mono"><span>ENT: ${t.entry || 'N/A'}</span><span>EXT: ${t.exit || 'N/A'}</span></div><div class="glass-panel p-5 mt-4"><p class="text-[10px] text-white font-bold mb-3 tracking-widest"><i data-lucide="brain" class="inline" size="14"></i> TRADE LOGIC</p><p class="text-sm font-medium text-slate-300 leading-relaxed" style="text-transform: none;">${t.logic}</p></div>${setupBadges}${imgHtml}<p class="text-right text-[10px] text-slate-500 font-bold mt-4 mb-4 tracking-widest">LOGGED: ${t.date}</p><button onclick="deleteTrade(${t.id})" class="w-full bg-blood hover:bg-white text-white hover:text-black py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-sm transition-all tracking-widest shadow-[0_5px_15px_rgba(255,0,51,0.3)]"><i data-lucide="trash-2" size="18"></i> DELETE RECORD</button>`;
             document.getElementById('tradeModalContent').innerHTML = htmlContent; lucide.createIcons(); document.getElementById('tradeModal').classList.remove('hidden'); document.getElementById('tradeModal').classList.add('flex'); 
         }
         function closeTradeModal() { document.getElementById('tradeModal').classList.add('hidden'); document.getElementById('tradeModal').classList.remove('flex'); }
@@ -787,19 +796,16 @@
             } 
         }
 
-        // ==========================================
-        // SYSTEM OVERRIDES & CHARTS
-        // ==========================================
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v40_monarch.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v40_monarch', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v41_blood.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v41_blood', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
             for(let i=6; i>=0; i--) { let d = new Date(); d.setDate(d.getDate() - i); let dStr = d.toLocaleDateString(); labels.push(d.getDate() + "/" + (d.getMonth()+1)); let count = 0; if(dStr === new Date().toLocaleDateString()) { count = db.today.filter(t=>t.done).length + db.timed.filter(t=>t.status==='done').length; } else if (db.history[dStr]) { count = db.history[dStr].filter(t=>t.state==='done').length; } data.push(count); }
             if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#000', pointBorderColor: '#3b82f6', pointRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', stepSize: 1, font: {family: 'Orbitron', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#64748b', font: {family: 'Orbitron', weight: 'bold'} } } } } });
+            chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#fff', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#ff0033', pointBorderColor: '#fff', pointRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', stepSize: 1, font: {family: 'Orbitron', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#64748b', font: {family: 'Orbitron', weight: 'bold'} } } } } });
         }
         function forceDayReset() { 
             if(confirm("Force Day Reset?")) { 
@@ -850,48 +856,48 @@
             let markDoneBtnHtml = '';
             if (isPenaltyActive) {
                 if (db.awakening.curseActive && !isLastHour) {
-                    markDoneBtnHtml = `<div class="bg-rose-500/10 text-rose-400 text-[10px] text-center py-4 mt-5 rounded-xl font-bold border border-rose-500/30 tracking-widest"><i data-lucide="lock" size="12" class="inline"></i> LOCKED TILL 23:00</div>`;
+                    markDoneBtnHtml = `<div class="bg-black/50 text-rose-500 text-[10px] text-center py-3.5 mt-4 rounded-lg font-bold border border-rose-500/30 tracking-widest"><i data-lucide="lock" size="12" class="inline"></i> SYSTEM LOCKED TILL 23:00</div>`;
                 } else {
-                    markDoneBtnHtml = `<button onclick="clearPenalty()" class="w-full mt-5 bg-rose-600 hover:bg-rose-500 text-white text-xs py-4 rounded-xl font-bold btn-interact tracking-widest shadow-[0_5px_15px_rgba(225,29,72,0.4)]">ENDURE & CLEAR</button>`;
+                    markDoneBtnHtml = `<button onclick="clearPenalty()" class="w-full mt-4 bg-white hover:bg-blood text-black hover:text-white py-3.5 rounded-lg font-black btn-interact tracking-widest shadow-[0_5px_15px_rgba(255,255,255,0.2)] transition-colors">ENDURE & CLEAR</button>`;
                 }
             }
             
-            let pCard = `<div class="glass p-6 border-l-4 ${isPenaltyActive ? 'border-rose-500 bg-rose-500/5 shadow-[0_10px_30px_rgba(225,29,72,0.1)]' : 'border-slate-700 opacity-60'} flex-1 transition-all">
-                <div class="flex justify-between items-center mb-4"><span class="text-[10px] font-bold tracking-widest ${isPenaltyActive ? 'text-rose-400' : 'text-slate-500'}">${penaltyLabel}</span><i data-lucide="skull" size="18" class="${isPenaltyActive ? 'text-rose-400' : 'text-slate-600'}"></i></div>
-                <p class="font-black text-sm md:text-base leading-snug ${isPenaltyActive ? 'text-white' : 'text-slate-400'}">${db.pact.penalty || "NONE"}</p>
+            let pCard = `<div class="glass p-5 border-t-2 ${isPenaltyActive ? 'border-blood shadow-[0_10px_30px_rgba(255,0,51,0.2)]' : 'border-white/5 opacity-60'} flex-1 transition-all">
+                <div class="flex justify-between items-center mb-3"><span class="text-[10px] font-bold tracking-widest ${isPenaltyActive ? 'text-blood' : 'text-slate-500'}">${penaltyLabel}</span><i data-lucide="skull" size="18" class="${isPenaltyActive ? 'text-blood' : 'text-slate-600'}"></i></div>
+                <p class="font-black text-sm md:text-base leading-snug ${isPenaltyActive ? 'text-white' : 'text-slate-500'}">${db.pact.penalty || "NONE"}</p>
                 ${markDoneBtnHtml}
             </div>`;
             
             let isRewardUnlocked = (db.pact.state === "unlocked");
-            let rCard = `<div class="glass p-6 border-l-4 ${isRewardUnlocked ? 'border-blue-500 bg-blue-500/5 shadow-[0_10px_30px_rgba(59,130,246,0.1)]' : 'border-slate-700 opacity-60'} flex-1 transition-all">
-                <div class="flex justify-between items-center mb-4"><span class="text-[10px] font-bold tracking-widest ${isRewardUnlocked ? 'text-blue-400' : 'text-slate-500'}">REWARD ${isRewardUnlocked ? 'UNLOCKED' : '[LOCKED]'}</span><i data-lucide="${isRewardUnlocked ? 'unlock' : 'lock'}" size="18" class="${isRewardUnlocked ? 'text-blue-400' : 'text-slate-600'}"></i></div>
-                <p class="font-black text-sm md:text-base leading-snug ${isRewardUnlocked ? 'text-white' : 'text-slate-400'}">${db.pact.reward || "NONE"}</p>
+            let rCard = `<div class="glass p-5 border-t-2 ${isRewardUnlocked ? 'border-white shadow-[0_10px_30px_rgba(255,255,255,0.1)]' : 'border-white/5 opacity-60'} flex-1 transition-all">
+                <div class="flex justify-between items-center mb-3"><span class="text-[10px] font-bold tracking-widest ${isRewardUnlocked ? 'text-white' : 'text-slate-500'}">REWARD ${isRewardUnlocked ? 'UNLOCKED' : '[LOCKED]'}</span><i data-lucide="${isRewardUnlocked ? 'unlock' : 'lock'}" size="18" class="${isRewardUnlocked ? 'text-white' : 'text-slate-600'}"></i></div>
+                <p class="font-black text-sm md:text-base leading-snug ${isRewardUnlocked ? 'text-white' : 'text-slate-500'}">${db.pact.reward || "NONE"}</p>
             </div>`;
-            pactSec.innerHTML = `<p class="text-[10px] font-bold text-slate-400 tracking-widest mb-3 border-b border-white/5 pb-2"><i data-lucide="dices" size="14" class="inline"></i> THE PACT</p><div class="flex flex-col md:flex-row gap-5">${rCard}${pCard}</div>`;
+            pactSec.innerHTML = `<p class="text-[10px] font-bold text-slate-500 tracking-widest mb-3"><i data-lucide="dices" size="14" class="inline"></i> THE PACT</p><div class="flex flex-col md:flex-row gap-4">${rCard}${pCard}</div>`;
             
-            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="glass p-5 flex justify-between items-center group relative z-10 hover:bg-white/[0.05] transition-colors border border-transparent hover:border-white/10"><div class="flex items-center gap-4"><button onclick="toggleSimpleTask(${t.id})" class="h-12 w-12 border border-white/10 bg-black/40 flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-blue-600 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]' : ''} transition-all">${t.done ? '<i data-lucide="check" class="text-white" size="24"></i>' : ''}</button><p class="font-bold text-sm md:text-base leading-snug tracking-wide ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="x" size="24"></i></button></div>`).join('');
-            document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; let contentClass = isDone ? 'opacity-40 border-emerald-500' : (isAborted ? 'opacity-40 border-rose-500 line-through' : 'border-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.15)]'); let timerHtml = (t.endTime && t.status === 'active') ? `<div class="glass-panel py-1.5 px-4 rounded-lg text-amber-400 font-bold tracking-widest text-xs flex items-center gap-2 border border-amber-500/20"><i data-lucide="clock" size="14"></i><span id="timer_${t.id}" class="tabular-nums">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-rose-500 font-black text-[10px] tracking-widest">ABORTED</div>` : '')); let buttons = t.status === 'active' ? `<div class="flex flex-col md:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500 hover:text-black py-3 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-xs transition-colors tracking-widest"><i data-lucide="check" size="18"></i> CLEAR (+50)</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-xs transition-colors tracking-widest"><i data-lucide="x" size="18"></i> ABORT (-30)</button></div>` : ``; return `<div class="glass p-6 border-l-4 ${contentClass} relative z-10 transition-all border border-white/5"><div class="flex justify-between items-start mb-2"><h3 class="font-bold text-sm md:text-base tracking-wide text-white ${isAborted ? 'text-rose-400 line-through' : ''} ${isDone ? 'text-emerald-400' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; }).join(''); startTaskTimers();
+            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="glass p-4 flex justify-between items-center group relative z-10 hover:bg-white/[0.05] transition-colors border border-transparent hover:border-white/10"><div class="flex items-center gap-4"><button onclick="toggleSimpleTask(${t.id})" class="h-12 w-12 border border-white/20 bg-black/40 flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-white border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : ''} transition-all">${t.done ? '<i data-lucide="check" class="text-black" size="24"></i>' : ''}</button><p class="font-bold text-sm md:text-base leading-snug tracking-wide ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-blood p-2 transition btn-interact"><i data-lucide="x" size="24"></i></button></div>`).join('');
+            document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; let contentClass = isDone ? 'opacity-40 border-emerald-500' : (isAborted ? 'opacity-40 border-blood line-through' : 'border-blood shadow-[0_0_20px_rgba(255,0,51,0.15)]'); let timerHtml = (t.endTime && t.status === 'active') ? `<div class="glass-panel py-1.5 px-4 rounded-lg text-white font-bold tracking-widest text-xs flex items-center gap-2 border border-white/20"><i data-lucide="clock" size="14"></i><span id="timer_${t.id}" class="tabular-nums">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-blood font-black text-[10px] tracking-widest">ABORTED</div>` : '')); let buttons = t.status === 'active' ? `<div class="flex flex-col md:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-white text-black hover:bg-slate-300 py-3.5 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-sm transition-colors tracking-widest"><i data-lucide="check" size="18"></i> CLEAR (+50)</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black/50 text-blood border border-blood/50 hover:bg-blood hover:text-white py-3.5 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 text-sm transition-colors tracking-widest"><i data-lucide="x" size="18"></i> ABORT (-30)</button></div>` : ``; return `<div class="glass p-6 border-l-4 ${contentClass} relative z-10 transition-all"><div class="flex justify-between items-start mb-2"><h3 class="font-bold text-sm md:text-base tracking-wide text-white ${isAborted ? 'text-blood line-through' : ''} ${isDone ? 'text-emerald-400' : ''}">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; }).join(''); startTaskTimers();
             document.getElementById('roadmapsContainer').innerHTML = db.roadmaps.map(rm => {
-                let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-400" size="18"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-600" size="18"></i>' : '<i data-lucide="circle" class="text-amber-400" size="18"></i>'); let textClass = s.done ? 'text-emerald-500 line-through opacity-50' : (isLocked ? 'text-slate-600' : 'text-slate-200'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-10 w-10 bg-amber-500/10 border border-amber-500/30 flex items-center justify-center rounded-xl text-amber-400 hover:bg-amber-500 hover:text-black hover:border-amber-400 transition-all ml-auto btn-interact"><i data-lucide="check" size="18"></i></button>`; return `<div class="flex items-stretch gap-5 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[9px] w-[2px] h-[calc(100%-1.5rem)] bg-white/10"></div>` : ''}<div class="mt-4 z-10 rounded-full flex items-center justify-center h-5 w-5 bg-black border border-slate-700">${statusIcon}</div><div class="flex-1 glass-panel p-4 mb-4 flex items-center justify-between shadow-sm"><div><p class="font-bold text-sm tracking-wide ${textClass}">${s.text}</p><p class="text-[10px] font-bold text-amber-500/70 mt-1 tracking-widest">TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
-                return `<div class="glass p-6 md:p-8 border-t-2 border-amber-500 relative group z-10 shadow-[0_10px_30px_rgba(245,158,11,0.05)]"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="22"></i></button><h3 class="text-2xl font-black text-amber-400 mb-8 flex items-center gap-3 hud-text neon-amber"><i data-lucide="flag" size="24"></i> ${rm.title}</h3><div class="mb-8 pl-1">${stepsHtml}</div><div class="flex flex-col md:flex-row gap-3 border-t border-white/5 pt-6"><input type="text" id="rmStepText_${rm.id}" placeholder="Next Milestone..." class="bg-black/40 border border-white/10 rounded-xl w-full md:flex-1 p-4 outline-none font-bold text-sm text-white tracking-wide" style="text-transform:none;"><input type="date" id="rmStepDate_${rm.id}" class="bg-black/40 border border-white/10 rounded-xl w-full md:w-48 p-4 outline-none font-bold text-sm text-slate-400 appearance-none min-w-0 box-border"><button onclick="addRoadmapStep(${rm.id})" class="bg-amber-500 hover:bg-amber-400 text-black px-8 py-4 rounded-xl font-bold btn-interact text-xs w-full md:w-auto tracking-widest shadow-[0_5px_15px_rgba(245,158,11,0.3)]"><i data-lucide="plus" class="inline mr-1" size="16"></i> ADD</button></div></div>`;
+                let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-400" size="18"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-600" size="18"></i>' : '<i data-lucide="circle" class="text-amber-400" size="18"></i>'); let textClass = s.done ? 'text-emerald-500 line-through opacity-50' : (isLocked ? 'text-slate-600' : 'text-slate-200'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-10 w-10 bg-white border border-white/20 flex items-center justify-center rounded-xl text-black hover:bg-slate-300 transition-all ml-auto btn-interact shadow-[0_0_15px_rgba(255,255,255,0.3)]"><i data-lucide="check" size="20"></i></button>`; return `<div class="flex items-stretch gap-5 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[9px] w-[2px] h-[calc(100%-1.5rem)] bg-white/10"></div>` : ''}<div class="mt-4 z-10 rounded-full flex items-center justify-center h-5 w-5 bg-black border border-slate-700">${statusIcon}</div><div class="flex-1 glass-panel p-4 mb-4 flex items-center justify-between shadow-sm"><div><p class="font-bold text-sm tracking-wide ${textClass}">${s.text}</p><p class="text-[10px] font-bold text-white mt-1 tracking-widest opacity-60">TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
+                return `<div class="glass p-6 md:p-8 border-t-2 border-amber-500 relative group z-10"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-6 right-6 text-slate-600 hover:text-blood transition-colors btn-interact"><i data-lucide="trash-2" size="22"></i></button><h3 class="text-2xl font-black text-white mb-8 flex items-center gap-3 hud-text"><i data-lucide="flag" size="24" class="text-amber-400"></i> ${rm.title}</h3><div class="mb-8 pl-1">${stepsHtml}</div><div class="flex flex-col md:flex-row gap-3 border-t border-white/10 pt-6"><input type="text" id="rmStepText_${rm.id}" placeholder="Next Milestone..." class="rounded-xl w-full md:flex-1 p-4 outline-none font-bold text-sm text-white tracking-wide" style="text-transform:none;"><input type="date" id="rmStepDate_${rm.id}" class="rounded-xl w-full md:w-48 p-4 outline-none font-bold text-sm text-slate-400 appearance-none min-w-0 box-border"><button onclick="addRoadmapStep(${rm.id})" class="bg-white hover:bg-slate-300 text-black px-8 py-4 rounded-xl font-bold btn-interact text-xs w-full md:w-auto tracking-widest shadow-[0_5px_15px_rgba(255,255,255,0.3)]"><i data-lucide="plus" class="inline mr-1" size="16"></i> ADD</button></div></div>`;
             }).join('');
             let balEl = document.getElementById('walletBalanceDisplay'); balEl.innerText = db.wallet.balance;
-            if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-white'); balEl.parentElement.classList.add('text-rose-500'); } else { balEl.parentElement.classList.add('text-white'); balEl.parentElement.classList.remove('text-rose-500'); }
-            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="glass p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} group relative transition-all hover:bg-white/[0.05] border border-white/5"><div class="flex flex-col"><span class="font-bold text-sm text-white tracking-wide">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl ${e.type === 'in' ? 'text-emerald-400' : 'text-rose-400'} tabular-nums hud-text">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`).join('');
-            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-blue-400' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-400'; return `<div class="glass p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 border-l-2 border-white/10 hover:border-emerald-500/50 transition-colors"><div class="flex-1"><h3 class="font-bold text-sm tracking-wide text-white">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="bg-black/40 border border-white/5 rounded-xl p-3 outline-none font-bold text-xs ${sColor} flex-1 md:flex-none tracking-widest cursor-pointer"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
+            if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-white'); balEl.parentElement.classList.add('text-blood'); } else { balEl.parentElement.classList.add('text-white'); balEl.parentElement.classList.remove('text-blood'); }
+            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="glass p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-blood'} group relative transition-all hover:bg-white/[0.05]"><div class="flex flex-col"><span class="font-bold text-sm text-white tracking-wide">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl ${e.type === 'in' ? 'text-emerald-400' : 'text-blood'} tabular-nums hud-text">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-blood p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`).join('');
+            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-white' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-blood'; return `<div class="glass p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 border-l-2 border-white/20 hover:border-white transition-colors"><div class="flex-1"><h3 class="font-bold text-sm tracking-wide text-white">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="rounded-xl p-3 outline-none font-bold text-xs ${sColor} flex-1 md:flex-none tracking-widest cursor-pointer bg-black/50 border border-white/10"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="text-slate-600 hover:text-blood p-2 transition btn-interact"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
             document.getElementById('tradeCapitalDisplay').innerText = db.tradeCapital;
-            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="glass p-5 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer transition-colors border border-white/5 hover:bg-white/[0.05]"><div class="flex items-center gap-4"><span class="font-bold text-sm text-white tracking-wide">${t.index}</span><span class="text-[10px] bg-white/10 px-3 py-1 rounded-md border border-white/5 text-slate-300 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-sm hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="20"></i></div></div>`).join('');
+            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="glass p-5 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-blood'} flex justify-between items-center cursor-pointer transition-colors hover:bg-white/[0.05]"><div class="flex items-center gap-4"><span class="font-bold text-sm text-white tracking-wide">${t.index}</span><span class="text-[9px] bg-white/10 px-3 py-1 rounded-md border border-white/5 text-slate-300 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-sm hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-blood'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="20"></i></div></div>`).join('');
             document.getElementById('combatPushups').value = db.awakening.combat.pushups; document.getElementById('combatPullups').value = db.awakening.combat.pullups; document.getElementById('combatSquats').value = db.awakening.combat.squats; document.getElementById('combatCore').value = db.awakening.combat.core;
             
             let hDate = new Date(db.awakening.lastHaircut); 
             if (isNaN(hDate.getTime())) { let parts = db.awakening.lastHaircut.split('/'); if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]); else hDate = new Date(); }
             let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); 
             if (isNaN(daysPassed) || daysPassed < 0) daysPassed = 0;
-            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-6xl font-black tabular-nums my-4 text-rose-500 hud-text neon-red"; else hcDisplay.className = "text-6xl font-black tabular-nums my-4 text-white hud-text";
+            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-6xl font-black tabular-nums my-4 text-blood hud-text blood-glow"; else hcDisplay.className = "text-6xl font-black tabular-nums my-4 text-white hud-text silver-glow";
             
-            const looksMap = [ {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'}, {id: 'mewing', label: 'JAWLINE MEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between glass-panel p-4 hover:border-indigo-500/30 transition-colors cursor-pointer group"><span class="text-xs font-bold text-slate-300 group-hover:text-indigo-400 transition-colors tracking-widest">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-indigo-600 cursor-pointer"></label>`).join('');
-            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="glass p-6 md:p-8 border-t-2 border-indigo-500 hover:shadow-[0_5px_20px_rgba(99,102,241,0.15)] transition-all border border-white/5"><p class="text-[10px] text-indigo-400 font-bold mb-4 flex items-center gap-2 tracking-widest"><i data-lucide="calendar" size="14"></i> ${date}</p><p id="${safeId}" class="text-sm font-medium text-slate-300 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-indigo-400 mt-5 flex items-center gap-1 hover:text-white btn-interact uppercase tracking-widest bg-indigo-900/30 px-5 py-2.5 rounded-lg border border-indigo-500/30 transition-colors">READ MORE <i data-lucide="chevron-down" size="12"></i></button></div>`; }).join('');
-            document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="glass p-6 md:p-8 border-t-2 border-fuchsia-500 relative group z-10 border border-white/5"><button onclick="deleteSkill(${s.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="20"></i></button><div class="flex justify-between items-end mb-6 pr-8"><div><h3 class="font-black text-xl text-white tracking-tight">${s.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-2 tracking-widest">LATEST: <span class="text-fuchsia-400" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">LEVEL</p><p class="text-4xl font-black text-fuchsia-400 hud-text neon-purple">${s.level}</p></div></div><div class="flex justify-between text-[10px] font-bold mb-2 tracking-widest"><span class="text-slate-400">EXPERIENCE</span><span class="text-white">${s.exp}/${sMax}</span></div><div class="bar-bg mb-6"><div class="skill-fill bar-glow" style="width: ${sPercent}%;"></div></div><div class="flex flex-col gap-3"><input type="text" id="skillRemark_${s.id}" placeholder="Log Progress..." class="bg-black/40 border border-white/10 rounded-xl p-4 outline-none font-bold text-xs text-white" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 transition-colors tracking-widest text-xs shadow-[0_5px_15px_rgba(192,132,252,0.4)]"><i data-lucide="zap" size="16"></i> GRIND (+20)</button></div></div>`; }).join('');
+            const looksMap = [ {id: 'oil', label: 'FACE WASH (AM & PM)'}, {id: 'water', label: 'HYDRATION (4L WATER)'}, {id: 'mewing', label: 'JAWLINE MEWING'}, {id: 'skin', label: 'SKINCARE / SUNSCREEN'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between glass-panel p-4 hover:border-white/30 transition-colors cursor-pointer group"><span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors tracking-widest">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-5 h-5 accent-white cursor-pointer"></label>`).join('');
+            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="glass p-6 md:p-8 border-t-2 border-white/20 hover:border-white transition-all"><p class="text-[10px] text-white font-bold mb-4 flex items-center gap-2 tracking-widest opacity-60"><i data-lucide="calendar" size="14"></i> ${date}</p><p id="${safeId}" class="text-sm font-medium text-slate-300 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-white mt-5 flex items-center gap-1 hover:bg-white hover:text-black btn-interact uppercase tracking-widest bg-white/10 px-5 py-2.5 rounded-lg border border-white/20 transition-colors">READ MORE <i data-lucide="chevron-down" size="12"></i></button></div>`; }).join('');
+            document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="glass p-6 md:p-8 border-t-2 border-purple-500 relative group z-10"><button onclick="deleteSkill(${s.id})" class="absolute top-6 right-6 text-slate-600 hover:text-blood transition-colors btn-interact"><i data-lucide="trash-2" size="20"></i></button><div class="flex justify-between items-end mb-6 pr-8"><div><h3 class="font-black text-xl text-white tracking-tight">${s.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-2 tracking-widest">LATEST: <span class="text-white" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">LEVEL</p><p class="text-4xl font-black text-purple-400 hud-text">${s.level}</p></div></div><div class="flex justify-between text-[10px] font-bold mb-2 tracking-widest"><span class="text-slate-400">EXPERIENCE</span><span class="text-white">${s.exp}/${sMax}</span></div><div class="bar-bg mb-6"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col gap-3"><input type="text" id="skillRemark_${s.id}" placeholder="Log Progress..." class="rounded-xl p-4 outline-none font-bold text-xs text-white" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full bg-white hover:bg-purple-500 text-black hover:text-white py-4 rounded-xl font-bold btn-interact flex justify-center items-center gap-2 transition-colors tracking-widest text-xs shadow-[0_5px_15px_rgba(255,255,255,0.2)]"><i data-lucide="zap" size="16"></i> GRIND (+20)</button></div></div>`; }).join('');
             
             const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); 
             document.getElementById('historyContainer').innerHTML = dates.map(date => { 
@@ -911,7 +917,7 @@
                     logArray.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'active'});
                 } else { logArray = db.history[date] || []; } 
                 if(logArray.length === 0) return ''; 
-                return `<div class="glass p-6 md:p-8 border-l-4 border-blue-500 border-t-0"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-3">${logArray.map(t => `<p class="font-bold text-xs tracking-wide ${t.state==='done' ? 'text-blue-400' : (t.state==='aborted'?'text-rose-500/60 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span>${t.text}</span></p>`).join('')}</div></div>`; 
+                return `<div class="glass p-6 md:p-8 border-l-4 border-white"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-3">${logArray.map(t => `<p class="font-bold text-xs tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-blood line-through':(t.state==='failed'?'text-blood':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span>${t.text}</span></p>`).join('')}</div></div>`; 
             }).join('');
             lucide.createIcons();
         }
