@@ -1,1076 +1,625 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | Heavy Armor v50</title>
+    <title>THE MONARCH SYSTEM | 2026</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Jost:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { 
-                extend: { 
-                    fontFamily: { sans: ['Jost', 'sans-serif'], display: ['Orbitron', 'sans-serif'] }, 
-                    colors: { primary: '#6366f1', darkbg: '#050505', card: '#0f0f11', cardhover: '#18181b', heavyborder: '#27272a' } 
-                } 
-            }
-        }
-    </script>
 
     <style>
-        * { font-family: 'Jost', sans-serif; font-style: normal !important; text-transform: uppercase; letter-spacing: 0.5px; box-sizing: border-box; }
-        .hud-text { font-family: 'Orbitron', sans-serif !important; letter-spacing: 1px; }
+        /* GLOBAL 2026 OG RULES - STRICTLY BOLD, UPPERCASE, NO ITALICS */
+        * {
+            font-family: 'Jost', sans-serif !important;
+            font-weight: 800 !important;
+            font-style: normal !important;
+            text-transform: uppercase !important;
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none;
+            scrollbar-width: none;
+        }
+        *::-webkit-scrollbar { display: none; }
+
+        :root {
+            --bg-void: #030303;
+            --armor-dark: rgba(12, 12, 15, 0.95);
+            --border-steel: #1e293b;
+            --neon-blue: #3b82f6;
+            --neon-red: #ef4444;
+            --neon-green: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            color: #e2e8f0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .scanlines {
+            position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px; opacity: 0.3;
+        }
+
+        .bento {
+            background: var(--armor-dark);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--border-steel);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,1), inset 0 0 20px rgba(255,255,255,0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .heavy-input {
+            background-color: #000;
+            border: 2px solid var(--border-steel);
+            color: white; padding: 1.25rem; border-radius: 8px; width: 100%; outline: none;
+            transition: all 0.3s ease; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); font-size: 1.1rem;
+        }
+        .heavy-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
         
-        body { 
-            background-color: #050505; color: #f8fafc; -webkit-tap-highlight-color: transparent; overflow-x: hidden;
-            background-image: linear-gradient(#0f0f11 1px, transparent 1px), linear-gradient(90deg, #0f0f11 1px, transparent 1px);
-            background-size: 50px 50px;
+        .btn-interact {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; border-radius: 8px;
+            display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+            text-align: center; line-height: 1.2; letter-spacing: 0.1em; white-space: nowrap;
         }
-
-        .bento-card { 
-            background-color: #0c0c0e; border: 2px solid #27272a; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.05); transition: all 0.2s ease-in-out;
-        }
-        .bento-card:hover { border-color: #3f3f46; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), inset 0 2px 0 rgba(255, 255, 255, 0.1); }
-
-        .raid-card { background-color: #120508; border: 2px solid #881337; border-radius: 16px; box-shadow: inset 0 0 20px rgba(225, 29, 72, 0.1); }
-        .raid-card-active { border-left: 6px solid #e11d48; }
-        .raid-card-done { border-left: 6px solid #10b981; filter: grayscale(0.8); opacity: 0.6; border-color: #064e3b; }
-        .raid-card-failed { border-left: 6px solid #475569; opacity: 0.5; border-color: #1e293b; }
-
-        .btn-interact { transition: all 0.15s ease-out; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid transparent; font-weight: 800; }
+        .btn-interact:hover { transform: translateY(-4px); filter: brightness(1.3); }
         .btn-interact:active { transform: scale(0.95); }
-        
-        .bar-bg { background: #18181b; border-radius: 8px; overflow: hidden; height: 12px; width: 100%; border: 2px solid #27272a;}
-        .hp-fill { background: #e11d48; height: 100%; transition: width 0.5s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3); }
-        .exp-fill { background: #4f46e5; height: 100%; transition: width 0.5s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3); }
-        .skill-fill { background: #9333ea; height: 100%; transition: width 0.5s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3);}
-        
-        .nav-active { color: #f8fafc !important; font-weight: 900; }
-        .nav-active .nav-icon-container { background: #4f46e5; color: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(79,70,229,0.5);}
-        
-        ::-webkit-scrollbar { display: none; }
 
-        .system-voice { font-family: 'Jost', sans-serif !important; color: #818cf8; text-shadow: 0 0 15px rgba(99,102,241,0.5); font-weight: 700; letter-spacing: 1px;}
-        .typewriter-cursor { animation: blink 1s step-end infinite; font-family: 'Jost', sans-serif !important;}
-        @keyframes blink { 50% { opacity: 0; } }
+        .btn-complete { background: #064e3b; border: 2px solid var(--neon-green); color: white; box-shadow: 0 0 10px rgba(16,185,129,0.3); }
+        .btn-complete:hover { box-shadow: 0 0 25px rgba(16,185,129,0.8); }
+        .btn-delete { background: #7f1d1d; border: 2px solid var(--neon-red); color: white; box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+        .btn-delete:hover { box-shadow: 0 0 25px rgba(239,68,68,0.8); }
 
-        .danger-pulse { animation: redAlert 1s infinite alternate; }
-        @keyframes redAlert { 0% { box-shadow: inset 0 0 0px rgba(255,0,60,0); border-color: rgba(255,0,60,0.5); } 100% { box-shadow: inset 0 0 20px rgba(255,0,60,0.5); border-color: #ff003c; } }
+        .progress-track { background: #000; border: 2px solid var(--border-steel); border-radius: 20px; overflow: hidden; height: 1.5rem; position: relative;}
+        .progress-fill { background: var(--neon-blue); height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon-blue); }
 
-        .tabular-nums { font-variant-numeric: tabular-nums; }
-        input[type="date"] { -webkit-appearance: none; appearance: none; min-width: 0; color-scheme: dark; }
-        
-        input, select, textarea { background: #09090b !important; border: 2px solid #27272a !important; border-radius: 12px !important; transition: all 0.2s ease; padding: 16px !important; font-size: 14px; font-weight: 700; width: 100%; color: #f8fafc !important; }
-        input:hover, select:hover, textarea:hover { border-color: #3f3f46 !important; }
-        input:focus, select:focus, textarea:focus { border-color: #6366f1 !important; background: #18181b !important; outline: none; }
-        
-        .raid-input { border-color: #881337 !important; background: #050102 !important; color: #fecdd3 !important;}
-        .raid-input:hover { border-color: #be123c !important; }
-        .raid-input:focus { border-color: #f43f5e !important; box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2) !important; }
+        /* UNIVERSAL FLOATING BOTTOM NAV */
+        .universal-nav {
+            background: rgba(5, 5, 5, 0.98);
+            border-top: 2px solid var(--border-steel);
+            box-shadow: 0 -10px 40px rgba(59, 130, 246, 0.15);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .nav-item { color: #475569; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 18px; min-width: 85px;}
+        .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
+        .nav-item.active { color: var(--neon-blue); transform: scale(1.1); text-shadow: 0 0 10px var(--neon-blue); border-top: 2px solid var(--neon-blue); background: rgba(59, 130, 246, 0.1); }
 
-        .checkbox-custom:checked + label { background-color: #f8fafc; color: #09090b; border-color: #f8fafc; }
-        .checkbox-custom:checked + label span { color: #09090b; font-weight: 900;}
-        .tab-content { animation: dropIn 0.3s ease-out; }
-        @keyframes dropIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* SCROLLABLE VIEWPORT FIX SO NAV DOESN'T OVERLAP */
+        .viewport-wrapper {
+            height: 100vh;
+            overflow-y: auto;
+            padding-bottom: 140px; /* Crucial: Prevents content from hiding behind the floating nav */
+        }
+
+        .tab-page { display: none; animation: quantumSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .tab-page.active { display: block; }
+        @keyframes quantumSlide { to { opacity: 1; transform: translateY(0); } }
+
+        .quote-box { animation: pulseText 8s infinite; color: var(--neon-blue); text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+        @keyframes pulseText { 0% {opacity: 0.5;} 50% {opacity: 1;} 100% {opacity: 0.5;} }
     </style>
 </head>
-<body class="flex flex-col md:flex-row min-h-screen pb-24 md:pb-0 relative">
+<body class="w-screen relative">
+    <div class="scanlines"></div>
 
-    <div id="penaltyAlarmPlayer" class="hidden"></div>
-    <div id="toastContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[92%] md:w-auto z-[100] flex flex-col gap-3 pointer-events-none"></div>
-
-    <div id="imageZoomModal" class="fixed inset-0 z-[300] bg-black/95 flex hidden justify-center items-center p-4 cursor-zoom-out" onclick="closeImageZoom()">
-        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain rounded-xl border-4 border-indigo-500">
-    </div>
-
-    <div id="tradeModal" class="fixed inset-0 z-[200] bg-black/90 hidden flex-col justify-center items-center p-4">
-        <div class="bento-card p-6 md:p-8 w-full max-w-2xl modal-enter relative overflow-y-auto max-h-[90vh]">
-            <button onclick="closeTradeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl btn-interact"><i data-lucide="x" size="20"></i></button>
-            <h2 class="text-2xl font-black mb-6 border-b border-slate-800 pb-4 flex items-center gap-2"><i data-lucide="bar-chart-2"></i> INTEL RECORD</h2>
-            <div id="tradeModalContent" class="space-y-4 mt-4"></div>
-        </div>
-    </div>
-
-    <div id="statusModal" class="fixed inset-0 z-[200] bg-black/90 hidden flex-col justify-center items-center p-4">
-        <div class="bento-card p-6 md:p-8 w-full max-w-md modal-enter relative overflow-y-auto max-h-[90vh]">
-            <button onclick="closeStatusModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl btn-interact"><i data-lucide="x" size="20"></i></button>
-            <h2 class="text-2xl font-black mb-6 text-center border-b border-slate-800 pb-4">SYSTEM ROOT</h2>
-            
-            <div id="storageWarning" class="bg-rose-950/50 border border-rose-500 text-rose-500 p-3 rounded-xl mb-4 hidden font-bold text-xs text-center tracking-widest">
-                <i data-lucide="alert-triangle" size="14" class="inline mr-1"></i> HIGH STORAGE DETECTED!
-            </div>
-
-            <div class="space-y-4 mb-8">
-                <div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="check-square" size="16"></i> TOTAL QUESTS</span><span id="statQuests" class="text-2xl font-black text-white tabular-nums hud-text">0</span></div>
-                <div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE</span><span id="statWinRate" class="text-2xl font-black text-emerald-400 tabular-nums hud-text">0%</span></div>
-            </div>
-            <div class="border-t border-slate-800 pt-6">
-                <p class="text-xs text-slate-500 font-bold mb-4 text-center">DATA BACKUP</p>
-                <div class="flex flex-col gap-3">
-                    <button onclick="exportSystem()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-indigo-800"><i data-lucide="download" size="18" class="inline mr-2"></i> EXPORT DATA</button>
-                    <button onclick="document.getElementById('importFile').click()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-slate-900"><i data-lucide="upload" size="18" class="inline mr-2"></i> IMPORT DATA</button>
-                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importSystem(event)">
-                </div>
-            </div>
-            <div class="mt-6 flex flex-col gap-3">
-                <button onclick="forceDayReset()" class="w-full bg-rose-600 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-rose-800"><i data-lucide="refresh-cw" size="18" class="inline mr-2"></i> FORCE DAY RESET</button>
-                <button onclick="nukeSystem()" class="w-full bg-black text-rose-500 border-2 border-rose-900 hover:bg-rose-950 py-4 rounded-xl font-black btn-interact text-sm"><i data-lucide="alert-triangle" size="18" class="inline mr-2"></i> FACTORY RESET (WIPE ALL DATA)</button>
-            </div>
-        </div>
-    </div>
-
-    <aside class="hidden md:flex flex-col w-72 p-6 gap-6 sticky top-0 h-screen z-40 bg-[#050505] border-r-2 border-slate-900">
-        <div class="font-black text-3xl flex items-center gap-3 text-white mb-4"><div class="bg-indigo-600 p-2.5 rounded-xl text-white border-b-4 border-indigo-800"><i data-lucide="hexagon" size="24"></i></div> SYSTEM</div>
-        <nav class="flex flex-col gap-3 overflow-y-auto">
-            <button onclick="switchTab('tasks')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl bg-slate-800 text-white border-2 border-slate-700 transition-all font-black" data-tab="tasks"><i data-lucide="crosshair" size="20"></i> <span>QUESTS</span></button>
-            <button onclick="switchTab('vault')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="vault"><i data-lucide="database" size="20"></i> <span>VAULT</span></button>
-            <button onclick="switchTab('trading')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="trading"><i data-lucide="activity" size="20"></i> <span>MARKET LOG</span></button>
-            <button onclick="switchTab('expenses')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="expenses"><i data-lucide="credit-card" size="20"></i> <span>WALLET</span></button>
-            <button onclick="switchTab('awakening')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-rose-950 hover:text-rose-500 transition-all border-2 border-transparent font-black" data-tab="awakening"><i data-lucide="flame" size="20"></i> <span>AWAKEN</span></button>
-            <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="diary"><i data-lucide="book-open" size="20"></i> <span>DIARY</span></button>
-            <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="history"><i data-lucide="pie-chart" size="20"></i> <span>STATS</span></button>
-        </nav>
-        <div class="mt-auto bento-card p-5 text-center border-t-4 border-rose-900">
-            <p class="text-xs text-slate-500 font-bold mb-1">DAY RESETS IN</p>
-            <p class="dayCountdownText font-black text-rose-500 text-xl tabular-nums mt-1 hud-text">00:00:00</p>
-        </div>
-    </aside>
-
-    <div class="md:hidden fixed bottom-4 left-4 right-4 z-50 pointer-events-none flex justify-center">
-        <nav class="bg-[#0c0c0e] border-2 border-slate-800 rounded-2xl flex overflow-x-auto p-2 gap-2 w-full pointer-events-auto snap-x no-scrollbar shadow-[0_10px_30px_rgba(0,0,0,0.9)]">
-            <button onclick="switchTab('tasks')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 nav-active w-[13.5%] h-12 snap-center rounded-xl" data-tab="tasks"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="crosshair" size="22"></i></div></button>
-            <button onclick="switchTab('vault')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="vault"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="database" size="22"></i></div></button>
-            <button onclick="switchTab('trading')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="trading"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="activity" size="22"></i></div></button>
-            <button onclick="switchTab('expenses')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="expenses"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="credit-card" size="22"></i></div></button>
-            <button onclick="switchTab('awakening')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="awakening"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="flame" size="22"></i></div></button>
-            <button onclick="switchTab('diary')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="diary"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="book-open" size="22"></i></div></button>
-            <button onclick="switchTab('history')" class="m-nav-btn flex-shrink-0 flex flex-col items-center justify-center text-slate-500 w-[13.5%] h-12 snap-center rounded-xl" data-tab="history"><div class="nav-icon-container p-2 w-full h-full flex items-center justify-center transition-colors"><i data-lucide="pie-chart" size="22"></i></div></button>
-        </nav>
-    </div>
-
-    <main class="flex-1 p-4 md:p-8 w-full overflow-y-auto z-10 pb-32 md:pb-8 flex flex-col gap-6">
+    <main class="viewport-wrapper w-full max-w-5xl mx-auto p-4" id="pages-container">
         
-        <div class="md:hidden">
-            <div class="bento-card p-4 flex justify-between items-center px-6 border-b-4 border-rose-900">
-                <p class="text-xs text-slate-400 font-bold">DAY RESETS IN</p>
-                <p class="dayCountdownText font-black text-rose-500 text-base tabular-nums hud-text">00:00:00</p>
-            </div>
-        </div>
+        <header class="bento p-6 mb-6 border-blue-900/50 text-center">
+            <h1 class="text-4xl tracking-[0.3em] text-white mb-2" style="text-shadow: 0 0 15px rgba(255,255,255,0.5);">MONARCH</h1>
+            <div id="global-quote" class="quote-box text-sm tracking-widest h-5 overflow-hidden">SYSTEM INITIALIZING...</div>
+        </header>
 
-        <div onclick="openStatusModal()" class="bento-card p-6 md:p-8 flex flex-col lg:flex-row justify-between gap-6 lg:items-center cursor-pointer border-l-4 border-indigo-500 hover:bg-slate-900/50">
-            <div class="flex items-center gap-5 w-full lg:w-auto">
-                <div class="h-20 w-20 bg-indigo-600 rounded-xl flex items-center justify-center text-4xl font-black text-white border-b-4 border-indigo-800 hud-text flex-shrink-0">
-                    <span class="text-indigo-200 mr-1 text-sm">L</span><span id="playerLvl" class="tabular-nums">1</span>
+        <div id="page-karma" class="tab-page">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">KARMA HUB</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bento p-8 text-center border-blue-900 flex flex-col justify-center">
+                    <h3 class="text-slate-400 mb-2 text-xl tracking-widest">DAY SYNC RATE</h3>
+                    <div class="text-7xl text-blue-500 mb-6" id="sync-rate-text" style="text-shadow: 0 0 30px rgba(59,130,246,0.8);">0%</div>
+                    <div class="progress-track"><div id="sync-bar" class="progress-fill w-0"></div></div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex justify-between items-center"><h1 class="font-black text-2xl md:text-3xl text-white truncate">SOMNATH</h1></div>
-                    <div class="inline-flex flex-wrap items-center gap-2 mt-2">
-                        <span class="bg-amber-500 text-black px-2 py-1 rounded font-black text-xs flex items-center gap-1"><i data-lucide="zap" size="12"></i> STREAK: <span id="playerStreak" class="tabular-nums">0</span></span>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full lg:w-96 flex flex-col gap-4">
-                <div>
-                    <div class="flex justify-between text-xs font-bold mb-1 text-slate-400"><span>HEALTH</span><span id="hpText" class="tabular-nums text-white hud-text">100/100</span></div>
-                    <div class="bar-bg"><div id="hpBar" class="hp-fill" style="width: 100%;"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-xs font-bold mb-1 text-slate-400"><span>EXPERIENCE</span><span id="expText" class="tabular-nums text-white hud-text">0/100</span></div>
-                    <div class="bar-bg"><div id="expBar" class="exp-fill" style="width: 0%;"></div></div>
+                <div class="bento p-6 border-slate-800 flex flex-col h-72">
+                    <h3 class="text-slate-400 mb-4 text-center text-xl tracking-widest shrink-0">WEEK REPORT</h3>
+                    <div class="flex-1 relative w-full h-full"><canvas id="weekChart"></canvas></div>
                 </div>
             </div>
-        </div>
-        
-        <div id="systemVoiceBox" class="bento-card p-6 md:p-8 text-center flex flex-col items-center justify-center">
-            <p class="text-xs font-bold text-indigo-500 mb-3 flex items-center gap-2"><i data-lucide="terminal" size="14"></i> SYSTEM LOG</p>
-            <p id="systemVoice" class="text-lg md:text-xl font-bold text-white leading-relaxed system-voice">
-                "Arise."<span class="text-indigo-500 typewriter-cursor">|</span>
-            </p>
-        </div>
-
-        <section id="tasks" class="tab-content active flex flex-col gap-6">
-            
-            <div id="karmaSection"></div>
-            
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-indigo-500">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h3 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="check-square" size="24" class="text-indigo-500"></i> DAILY QUESTS</h3>
-                </div>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="simpleTaskInp" placeholder="What needs to be done?" style="text-transform: none;">
-                    <button onclick="addSimpleTask()" class="bg-indigo-600 text-white px-10 py-4 font-black btn-interact w-full md:w-auto border-b-4 border-indigo-800 flex-shrink-0">ADD</button>
-                </div>
-                <div id="simpleTasksList" class="flex flex-col gap-3 mt-2"></div>
-            </div>
-
-            <div class="raid-card p-6 md:p-8 flex flex-col gap-6">
-                <div>
-                    <h3 class="text-2xl font-black text-rose-500 flex items-center gap-2"><i data-lucide="swords" size="24"></i> RAID MISSIONS</h3>
-                    <p class="text-xs text-rose-400 font-bold mt-1 opacity-80">PERSISTENT HAZARD. ABORT = HP LOSS.</p>
-                </div>
-                <div class="flex flex-col lg:flex-row gap-3">
-                    <input type="text" id="timedInp" placeholder="Raid objective..." class="raid-input flex-1" style="text-transform: none;">
-                    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <input type="number" id="raidTimeVal" placeholder="TIME" class="raid-input w-full sm:w-32 text-center tabular-nums">
-                        <select id="raidTimeUnit" class="raid-input w-full sm:w-32 text-center cursor-pointer font-black text-rose-400">
-                            <option value="m">MINS</option><option value="h">HRS</option><option value="d">DAYS</option>
-                        </select>
-                        <button onclick="addTimedTask()" class="bg-rose-600 text-white px-8 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-rose-800 flex-shrink-0">START</button>
-                    </div>
-                </div>
-                <div id="timedTasksList" class="flex flex-col gap-4 mt-2"></div>
-            </div>
-        </section>
-
-        <section id="vault" class="tab-content hidden flex flex-col gap-6">
-            <h2 class="text-4xl font-black text-white">THE VAULT</h2>
-            
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-amber-500">
-                <h3 class="text-2xl font-black text-amber-400 flex items-center gap-2"><i data-lucide="map" size="24"></i> EVOLUTION PATH</h3>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="rmTitleInp" placeholder="New Master Goal..." style="text-transform: none;">
-                    <button onclick="addRoadmap()" class="bg-amber-500 text-black hover:bg-amber-400 px-10 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-amber-700 flex-shrink-0">CREATE</button>
-                </div>
-                <div id="roadmapsContainer" class="flex flex-col gap-6"></div>
-            </div>
-
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-emerald-500">
-                <h3 class="text-2xl font-black text-emerald-400 flex items-center gap-2"><i data-lucide="briefcase" size="24"></i> ESCAPE MATRIX</h3>
-                <div class="flex flex-col lg:flex-row gap-3">
-                    <input type="text" id="jobCompInp" placeholder="Company Name" class="w-full lg:w-1/3" style="text-transform: none;">
-                    <input type="text" id="jobRoleInp" placeholder="Role/Position" class="w-full lg:flex-1" style="text-transform: none;">
-                    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <select id="jobStatusInp" class="w-full sm:w-40 text-emerald-400 font-bold cursor-pointer">
-                            <option value="APPLIED">APPLIED</option><option value="INTERVIEW">INTERVIEW</option><option value="OFFERED">OFFERED</option><option value="REJECTED">REJECTED</option>
-                        </select>
-                        <button onclick="addJob()" class="bg-emerald-500 text-black hover:bg-emerald-400 px-8 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-emerald-700 flex-shrink-0">LOG</button>
-                    </div>
-                </div>
-                <div id="careerList" class="flex flex-col gap-3"></div>
-            </div>
-
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-purple-500">
-                <h3 class="text-2xl font-black text-purple-400 flex items-center gap-2"><i data-lucide="zap" size="24"></i> SKILL TREE</h3>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="newSkillInp" placeholder="Add new skill..." style="text-transform: none;">
-                    <button onclick="addNewSkill()" class="bg-purple-600 text-white hover:bg-purple-500 px-10 py-4 font-black btn-interact w-full sm:w-auto border-b-4 border-purple-800 flex-shrink-0">LEARN</button>
-                </div>
-                <div id="skillsContainer" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
-            </div>
-        </section>
-
-        <section id="trading" class="tab-content hidden flex flex-col gap-6">
-            <h2 class="text-4xl font-black text-white">MARKET LOG</h2>
-            
-            <div class="bento-card p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4 items-start md:items-center border-l-4 border-indigo-500">
-                <div>
-                    <p class="text-xs text-slate-400 font-bold mb-1">TRADING CAPITAL</p>
-                    <p class="text-5xl font-black text-white tabular-nums hud-text">₹<span id="tradeCapitalDisplay">0</span></p>
-                </div>
-                <button onclick="editTradeCapital()" class="w-full md:w-auto bg-slate-800 border-2 border-slate-700 text-white hover:bg-slate-700 px-8 py-4 font-black btn-interact text-sm flex-shrink-0">EDIT BAL</button>
-            </div>
-
-            <div id="drawdownAlertBox" class="hidden bento-card p-6 border-2 border-rose-500 bg-rose-950/30 danger-pulse">
-                <p class="font-black text-rose-500 text-lg flex items-center justify-center gap-2"><i data-lucide="alert-triangle" size="24"></i> DRAWDOWN LIMIT. STOP TRADING.</p>
-            </div>
-            
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-6 border-t-4 border-indigo-500">
-                <h3 class="text-xl font-black text-white flex items-center gap-2"><i data-lucide="plus-circle" size="20" class="text-indigo-500"></i> NEW INTEL</h3>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <input type="text" id="tIndex" placeholder="ASSET" value="XAUUSD" class="text-center font-black text-lg">
-                    <select id="tResult" class="text-center font-black text-lg text-emerald-400 cursor-pointer">
-                        <option value="WIN">WIN ✅</option><option value="LOSS" class="text-rose-500">LOSS ❌</option>
-                    </select>
-                    <input type="number" id="tEntry" placeholder="ENTRY" class="text-center tabular-nums font-black text-lg">
-                    <input type="number" id="tExit" placeholder="EXIT" class="text-center tabular-nums font-black text-lg">
-                </div>
-                
-                <div class="bg-[#050505] p-5 rounded-2xl border-2 border-slate-800">
-                    <p class="text-xs font-bold text-indigo-400 mb-4 border-b border-slate-800 pb-2"><i data-lucide="crosshair" size="14" class="inline mr-1"></i> CHECKLIST</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="tradeSetupChecklist">
-                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="5-6 15m Candle Sweep" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">5-6 15M SWEEP</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Massive High" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE HIGH</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Massive Low" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">MASSIVE LOW</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="News" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">NEWS IMPACT</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Support" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">SUPPORT TRADE</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Resistance" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">RESISTANCE</span></label>
-                        <label class="flex items-center gap-3 cursor-pointer group col-span-1 sm:col-span-2 md:col-span-3 p-2 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"><input type="checkbox" value="Big Screen Analysis" class="hidden checkbox-custom peer"><div class="w-6 h-6 rounded border-2 border-slate-600 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all flex-shrink-0"><i data-lucide="check" size="16" class="text-black opacity-0 peer-checked:opacity-100"></i></div><span class="text-sm font-bold text-slate-400 group-hover:text-white transition-colors">BIG SCREEN ANALYSIS</span></label>
-                    </div>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="tLogic" placeholder="Trade logic / Remarks..." class="flex-1 font-medium" style="text-transform: none;">
-                    <input type="number" id="tPnL" placeholder="NET P&L (₹)" class="w-full md:w-48 font-black text-center tabular-nums">
-                </div>
-                
-                <div class="relative w-full">
-                    <input type="file" id="tImg" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <div class="bg-slate-900 border-2 border-slate-800 rounded-xl p-4 flex items-center justify-center gap-2 text-sm font-bold text-slate-400 group transition-colors hover:bg-slate-800">
-                        <i data-lucide="image" size="20" class="group-hover:text-white transition-colors"></i> 
-                        <span class="group-hover:text-white transition-colors" id="fileLabel">ATTACH SCREENSHOT (OPTIONAL)</span>
-                    </div>
-                </div>
-                
-                <button onclick="addTrade()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact text-lg border-b-4 border-indigo-800"><i data-lucide="save" size="20"></i> ARCHIVE INTEL</button>
-            </div>
-            
-            <div id="tradingList" class="flex flex-col gap-4 mt-4"></div>
-        </section>
-
-        <section id="awakening" class="tab-content hidden flex flex-col gap-6">
-            <h2 class="text-4xl font-black text-white">AWAKENING</h2>
-            
-            <div class="bento-card p-6 md:p-8 border-t-4 border-rose-600">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
-                    <div class="w-full md:w-auto">
-                        <h3 class="text-3xl font-black text-white flex items-center gap-3"><i data-lucide="shield-alert" size="28" class="text-rose-500"></i> IRON WILL</h3>
-                        <p class="text-sm text-slate-400 font-bold mt-1">MAINTAIN PURITY. RELAPSE = PENALTY.</p>
-                        
-                        <div class="flex flex-wrap items-center gap-3 mt-4">
-                            <span class="bg-slate-900 px-3 py-1.5 rounded-lg border-2 border-slate-800 text-xs font-bold text-slate-300 flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-rose-500"></div> LAST RELAPSE: <span id="lastRelapseDateDisplay" class="text-white"></span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-full md:w-auto bg-[#050505] p-6 rounded-2xl border-2 border-slate-800 text-center flex-shrink-0">
-                        <p class="text-xs font-bold text-slate-500 mb-1">STREAK</p>
-                        <p class="text-5xl font-black text-white tabular-nums hud-text"><span id="nofapDays">0</span><span class="text-2xl text-rose-500 ml-1">D</span></p>
-                    </div>
-                </div>
-                <button onclick="triggerRelapse()" class="w-full bg-slate-900 border-2 border-slate-800 text-rose-500 hover:bg-rose-600 hover:text-white py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2"><i data-lucide="skull" size="20"></i> REPORT RELAPSE (-40 HP)</button>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bento-card p-6 md:p-8 lg:col-span-2 flex flex-col gap-6 border-t-4 border-amber-500">
-                    <h3 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="dumbbell" size="24" class="text-amber-500"></i> COMBAT LOG</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
-                            <p class="text-xs font-bold text-slate-500">PUSHUPS</p>
-                            <input type="number" id="combatPushups" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
-                            <p class="text-[10px] font-bold text-slate-600">TARGET: 60</p>
-                        </div>
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
-                            <p class="text-xs font-bold text-slate-500">PULLUPS</p>
-                            <input type="number" id="combatPullups" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
-                            <p class="text-[10px] font-bold text-slate-600">TARGET: 50</p>
-                        </div>
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
-                            <p class="text-xs font-bold text-slate-500">SQUATS</p>
-                            <input type="number" id="combatSquats" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
-                            <p class="text-[10px] font-bold text-slate-600">TARGET: 100</p>
-                        </div>
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-slate-800 flex flex-col items-center justify-center gap-2">
-                            <p class="text-xs font-bold text-slate-500">CORE (S)</p>
-                            <input type="number" id="combatCore" class="w-full bg-transparent text-center font-black text-3xl text-white tabular-nums border-none p-0 focus:ring-0 hud-text" value="0">
-                            <p class="text-[10px] font-bold text-slate-600">TARGET: 120s</p>
-                        </div>
-                    </div>
-                    <button onclick="saveCombat()" class="w-full bg-amber-500 text-black hover:bg-amber-400 py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-amber-700">SAVE COMBAT</button>
-                </div>
-
-                <div class="bento-card p-6 md:p-8 flex flex-col justify-center items-center text-center border-t-4 border-cyan-500">
-                    <div class="bg-cyan-500/10 p-4 rounded-2xl mb-4"><i data-lucide="scissors" size="24" class="text-cyan-500"></i></div>
-                    <p class="text-6xl font-black text-white tabular-nums my-2 hud-text" id="haircutDaysDisplay">0</p>
-                    <p class="text-xs text-slate-400 font-bold mb-6">DAYS SINCE HAIRCUT</p>
-                    <button onclick="resetHaircut()" class="w-full bg-slate-800 border-2 border-slate-700 hover:bg-cyan-600 hover:border-cyan-600 text-white py-4 rounded-xl font-black btn-interact text-sm transition-colors">LOG HAIRCUT</button>
-                </div>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bento-card p-6 md:p-8 flex flex-col gap-6">
-                    <h3 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="sparkles" size="24" class="text-indigo-400"></i> LOOKS PROTOCOL</h3>
-                    <div class="flex flex-col gap-3" id="looksChecklist"></div>
+                <div class="bento p-6 border-emerald-900/50">
+                    <h3 class="text-emerald-500 text-2xl border-b border-slate-800 pb-2 mb-4">GRANTED REWARDS</h3>
+                    <ul id="active-rewards" class="space-y-4 text-slate-300"></ul>
                 </div>
-                
-                <div class="bento-card p-6 md:p-8 border-2 border-rose-900 bg-rose-950/10 flex flex-col gap-6">
-                    <h3 class="text-2xl font-black text-rose-500 flex items-center gap-2"><i data-lucide="ban" size="24"></i> FORBIDDEN</h3>
-                    <div class="flex flex-col gap-3">
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO REFINED SUGAR</p></div>
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO DEEP FRIED FOOD</p></div>
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO P*RN / PEEKING</p></div>
-                        <div class="bg-[#050505] p-4 rounded-xl border-2 border-rose-900/50 flex items-center gap-4"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="x" size="16" class="text-rose-500"></i></div><p class="text-sm font-bold text-slate-300">NO MINDLESS SCROLL</p></div>
+                <div class="bento p-6 border-red-900/50">
+                    <h3 class="text-red-500 text-2xl border-b border-slate-800 pb-2 mb-4">ACTIVE CURSES</h3>
+                    <ul id="active-penalties" class="space-y-4 text-slate-300"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-tasks" class="tab-page active">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">THE GRIND</h2>
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <input type="text" id="task-input" class="heavy-input text-xl" placeholder="ENTER MISSION DETAILS...">
+                <button onclick="addTask()" class="btn-interact bg-blue-700 md:px-12 py-5 text-white border-2 border-blue-400 w-full md:w-auto text-xl">ADD TASK</button>
+            </div>
+            <div id="task-list" class="flex flex-col gap-4"></div>
+        </div>
+
+        <div id="page-raids" class="tab-page">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">RAID MISSIONS</h2>
+            <div class="bento p-6 bg-slate-900/50 mb-6">
+                <input type="text" id="raid-name" class="heavy-input mb-4 text-xl" placeholder="TARGET OBJECTIVE...">
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <input type="number" id="raid-d" class="heavy-input text-center text-xl" placeholder="DAYS" min="0">
+                    <input type="number" id="raid-h" class="heavy-input text-center text-xl" placeholder="HOURS" min="0">
+                    <input type="number" id="raid-m" class="heavy-input text-center text-xl" placeholder="MINUTES" min="0">
+                </div>
+                <button onclick="startRaid()" class="btn-interact bg-red-900 py-5 text-white border-2 border-red-500 w-full text-2xl tracking-widest">INITIATE RAID</button>
+            </div>
+            <div id="raid-list" class="flex flex-col gap-4"></div>
+        </div>
+
+        <div id="page-trading" class="tab-page">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">MARKET LOG PRO</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="flex flex-col gap-4">
+                    <input type="text" id="trade-asset" class="heavy-input text-xl" placeholder="ASSET NAME (E.G., XAUUSD)">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="trade-entry" class="heavy-input text-xl" placeholder="ENTRY PRICE">
+                        <input type="number" id="trade-exit" class="heavy-input text-xl" placeholder="EXIT PRICE">
                     </div>
+                    <input type="number" id="trade-pnl" class="heavy-input text-xl" placeholder="NET PNL ($)">
+                    <select id="trade-status" class="heavy-input text-white bg-black text-xl">
+                        <option value="CONTINUE" class="text-yellow-500">CONTINUE (OPEN POSITION)</option>
+                        <option value="WIN" class="text-emerald-500">WIN (PROFIT ACHIEVED)</option>
+                        <option value="LOSS" class="text-red-500">LOSS (STOP HIT)</option>
+                    </select>
+                    <button onclick="logTrade()" class="btn-interact bg-slate-900 border-2 border-slate-600 w-full py-6 text-2xl tracking-widest">RECORD TRADE</button>
                 </div>
+                <div class="bento p-4 overflow-y-auto max-h-[500px]" id="trade-history"></div>
             </div>
-        </section>
+        </div>
 
-        <section id="expenses" class="tab-content hidden flex flex-col gap-6">
-            <h2 class="text-4xl font-black text-white">WALLET</h2>
-            
-            <div class="bento-card p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-l-4 border-emerald-500">
-                <div class="w-full md:w-auto">
-                    <p class="text-xs text-slate-400 font-bold mb-2">AVAILABLE BALANCE</p>
-                    <div class="flex items-center gap-4">
-                        <p id="balanceContainer" class="text-5xl md:text-6xl font-black text-white tabular-nums hud-text">₹<span id="walletBalanceDisplay">0</span></p>
-                        <button onclick="editBalance()" class="text-slate-500 hover:text-white btn-interact bg-slate-800 p-3 rounded-xl border-2 border-slate-700 flex-shrink-0"><i data-lucide="edit-3" size="20"></i></button>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <input type="number" id="addBalInp" placeholder="ADD ₹" class="p-4 font-black w-full sm:w-40 text-center text-xl border-emerald-500/50 focus:border-emerald-500">
-                    <button onclick="addBalance()" class="bg-emerald-500 hover:bg-emerald-400 text-black px-8 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-700 w-full sm:w-auto flex-shrink-0">DEPOSIT</button>
-                </div>
+        <div id="page-wallet" class="tab-page">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">THE LEDGER</h2>
+            <div class="text-center mb-6 bento p-8 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                <div class="text-sm text-slate-500 tracking-widest mb-2">CAPITAL RESERVE</div>
+                <div class="text-7xl text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" id="wallet-balance">₹0</div>
             </div>
-            
-            <div class="bento-card p-4 md:p-6 flex flex-col md:flex-row gap-3 border-t-4 border-rose-500">
-                <input type="text" id="eTitle" placeholder="Spend Reason..." class="flex-1 p-4 font-bold text-base" style="text-transform:none;">
-                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <input type="number" id="eAmt" placeholder="₹ AMOUNT" class="w-full sm:w-48 p-4 font-black text-rose-400 text-lg tabular-nums text-center border-rose-500/50">
-                    <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-500 text-white px-10 py-4 rounded-xl font-black btn-interact w-full sm:w-auto border-b-4 border-rose-800 flex-shrink-0">DEDUCT</button>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <input type="number" id="wallet-amt" class="heavy-input text-xl" placeholder="AMOUNT (₹)">
+                <input type="text" id="wallet-tag" class="heavy-input text-xl" placeholder="REASON / TAG">
             </div>
-            <div id="expensesList" class="flex flex-col gap-3 mt-4"></div>
-        </section>
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <button onclick="transact('IN')" class="btn-interact bg-emerald-900 flex-1 border-2 border-emerald-500 text-white py-5 text-2xl">DEPOSIT</button>
+                <button onclick="transact('OUT')" class="btn-interact bg-red-900 flex-1 border-2 border-red-500 text-white py-5 text-2xl">DEDUCT</button>
+            </div>
+            <div class="bento p-6 flex flex-col gap-4" id="wallet-history"></div>
+        </div>
 
-        <section id="diary" class="tab-content hidden flex flex-col gap-6">
-            <h2 class="text-4xl font-black text-white">PROTAGONIST LOG</h2>
-            <div class="bento-card p-6 md:p-8 flex flex-col gap-4 border-t-4 border-indigo-500">
-                <textarea id="diaryInp" rows="6" placeholder="What happened today?" class="w-full font-medium text-base text-white resize-none leading-relaxed" style="text-transform: none;"></textarea>
-                <button onclick="saveDiary()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black btn-interact w-full text-base flex justify-center items-center gap-2 border-b-4 border-indigo-800 mt-2">
-                    <i data-lucide="save" size="20"></i> SAVE ENTRY
-                </button>
+        <div id="page-awaken" class="tab-page">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">AWAKEN PROTOCOL</h2>
+            <div class="bento border-red-900 bg-red-950/20 p-8 mb-6 text-center shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                <h3 class="text-3xl text-red-500 mb-2">IRON WILL STREAK</h3>
+                <p id="last-relapse-text" class="text-sm text-slate-400 mb-6">LAST BREACH: PURE</p>
+                <button onclick="reportRelapse()" class="btn-interact bg-red-900 w-full py-6 border-2 border-red-500 text-white text-2xl tracking-widest">REPORT SYSTEM BREACH</button>
             </div>
-            <div id="diaryDisplay" class="flex flex-col gap-4 mt-4"></div>
-        </section>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bento p-6"><h3 class="text-emerald-500 text-2xl border-b border-slate-800 pb-2 mb-4">DAILY COMBAT LOG</h3><ul id="day-workout-list" class="space-y-4 text-slate-300"></ul></div>
+                <div class="bento p-6"><h3 class="text-blue-500 text-2xl border-b border-slate-800 pb-2 mb-4">LOOKSMAX LOG</h3><ul id="day-looks-list" class="space-y-4 text-slate-300"></ul></div>
+            </div>
+        </div>
 
-        <section id="history" class="tab-content hidden flex flex-col gap-6">
-            <h2 class="text-4xl font-black text-white">ANALYTICS</h2>
-            <div class="bento-card p-6 md:p-8 border-t-4 border-cyan-500">
-                <h3 class="text-sm font-black text-slate-400 mb-6">QUEST COMPLETION (LAST 7 DAYS)</h3>
-                <canvas id="historyChart" height="100"></canvas>
+        <div id="page-settings" class="tab-page">
+            <h2 class="text-3xl border-b-2 border-slate-800 pb-3 mb-6 text-white tracking-wider">SYSTEM ROOT</h2>
+            <div class="bento border-red-900 p-8 bg-red-950/10 text-center">
+                <h3 class="text-3xl text-red-500 mb-2">FACTORY RESET PROTOCOL</h3>
+                <p class="text-sm text-slate-400 mb-6 tracking-widest">WARNING: DESTROYS ALL LOCAL DATA. REQUIRES EXACTLY 50+ WORDS OF JUSTIFICATION TO UNLOCK.</p>
+                <p id="last-wipe-text" class="text-xl text-blue-500 mb-6">LAST WIPE: NEVER</p>
+                <textarea id="reset-reason" class="heavy-input h-48 mb-6 text-lg" placeholder="TYPE YOUR EXPLANATION HERE... MINIMUM 50 WORDS REQUIRED."></textarea>
+                <button onclick="factoryReset()" class="btn-interact bg-red-900 w-full py-6 text-white border-2 border-red-600 text-2xl tracking-widest">NUKE SYSTEM</button>
             </div>
-            <div id="historyContainer" class="flex flex-col gap-6 mt-4"></div>
-        </section>
+        </div>
+
     </main>
 
+    <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 universal-nav rounded-2xl md:rounded-full px-2 py-2 flex items-center justify-between w-[95%] md:w-auto md:min-w-[800px] z-50">
+        </nav>
+
     <script>
-        // ==========================================
-        // DATABASE MIGRATION, CLEANUP & INIT (V50 - INFINITY)
-        // ==========================================
-        const CURRENT_VERSION = 'happysam_v50_infinity';
-        let db;
-
-        // 1. EXTRACT LATEST DATA FROM ANY PREVIOUS VERSION (If exists)
-        let latestData = null;
-        let oldKeys = ['happysam_v49_phoenix', 'happysam_v48_fresh', 'happysam_v47_real', 'happysam_v46_final', 'happysam_v45_karma'];
-        for(let key of oldKeys) {
-            let data = localStorage.getItem(key);
-            if(data) {
-                try { latestData = JSON.parse(data); break; } catch(e){}
-            }
-        }
-        
-        // 2. LOAD OR MIGRATE
-        try {
-            db = JSON.parse(localStorage.getItem(CURRENT_VERSION)) || latestData || {};
-        } catch(e) {
-            db = {};
-        }
-
-        // 3. 🧹 THE DEEP CLEANER: NUKE ALL OLD VERSIONS TO FREE UP 5MB QUOTA!
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-            let key = localStorage.key(i);
-            if (key && key.startsWith('happysam_') && key !== CURRENT_VERSION) {
-                localStorage.removeItem(key);
-                console.log("Deleted old ghost file: " + key);
-            }
-        }
-        
-        if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
-        
-        if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
-        if (!db.activeRewards) db.activeRewards = [];
-        if (!db.activePenalties) db.activePenalties = [];
-        if (db.pact) { delete db.pact; }
-        
-        if (!db.skills) db.skills = [];
-        if (!db.career) db.career = [];
-        if (!db.diary) db.diary = {};
-        if (!db.today) db.today = [];
-        if (!db.timed) db.timed = [];
-        if (!db.roadmaps) db.roadmaps = [];
-        if (!db.trading) db.trading = [];
-        if (!db.history) db.history = {};
-        if (!db.wallet) db.wallet = { balance: 0 };
-        if (!db.expenses) db.expenses = [];
-        if (db.tradeCapital === undefined) db.tradeCapital = 0;
-        
-        if (!db.awakening) db.awakening = { noFapStreak: 0, noFapLastDate: "", combat: { pushups: 0, pullups: 0, squats: 0, core: 0 }, looks: { oil: false, water: false, mewing: false, skin: false, posture: false }, lastHaircut: new Date().toLocaleDateString() };
-
-        db.wallet.balance = parseFloat(db.wallet.balance) || 0;
-        if (!db.lastDate) db.lastDate = new Date().toLocaleDateString();
-        if (db.savedMonth === undefined) db.savedMonth = new Date().getMonth();
-
-        let timerIntervals = {};
-        let chartInstance = null;
-
-        // YT ALARM SYSTEM
-        let ytPlayer;
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('penaltyAlarmPlayer', {
-                height: '0', width: '0', videoId: 'bgl6re32FO0',
-                playerVars: { 'autoplay': 0, 'controls': 0 },
-            });
-        }
-
-        const soloQuotes = [
-            "You are standing at the bottom of the abyss. The only way out is through sheer, unrelenting force.",
-            "When you feel like quitting, remember why you started. Every drop of sweat is a tear your enemies will shed.",
-            "The System does not care about your feelings, your fatigue, or your heartbreak. It reads only results.",
-            "Tears and regrets will not build the empire you envision.",
-            "A monarch does not beg the world for opportunities. He sharpens his skills in the shadows.",
-            "The matrix is a prison designed for the weak. Grind harder to escape.",
-            "Every time you choose discipline over pleasure, your stats level up.",
-            "The market is a battlefield, and your capital is your army. Wait for the perfect setup.",
-            "Pain is just EXP leaving the body. The heavier the weight, the stronger the shadow.",
-            "They laughed at the shadow because it was quiet. But when it swallowed the light, they bowed.",
-            "Your past is dead. Focus on building an inescapable aura.",
-            "No one is coming to save you. The system only rewards those who bleed for their goals."
+        // --- 1. DATABASES ---
+        const QUOTES = [
+            "YOU ARE STANDING AT THE BOTTOM OF THE ABYSS. THE ONLY WAY OUT IS THROUGH SHEER, UNRELENTING FORCE.",
+            "THE SYSTEM DOES NOT CARE ABOUT YOUR FEELINGS. IT READS ONLY RESULTS.",
+            "TEARS AND REGRETS WILL NOT BUILD THE EMPIRE YOU ENVISION.",
+            "THE MATRIX IS A PRISON DESIGNED FOR THE WEAK. GRIND HARDER TO ESCAPE.",
+            "EVERY TIME YOU CHOOSE DISCIPLINE OVER PLEASURE, YOUR STATS LEVEL UP."
         ];
 
-        const curseQuotes = [
-            "You chose the comfort of the abyss. Now crawl your way out.",
-            "The System records every failure. Wash it away with sweat.",
-            "A broken vow demands a heavy toll. Endure the curse.",
-            "Discipline abandoned. Suffering initiated.",
-            "This pain is merely the interest on the debt of your weakness.",
-            "You wanted to be a Monarch? Act like one and face punishment.",
-            "The shadow of your relapse hangs over you. Survive it.",
-            "No pity for the weak. Only the crucible remains.",
-            "Your desires betrayed you. Let the curse forge your mind anew.",
-            "7 Days of Hell. It’s the only way to cleanse the weakness."
+        const REWARDS_DB = [
+            "30 MINUTE STRATEGIC GAMING (STRICT TIMER LOCKED)", "TACTICAL REST (30 MINS DARK ROOM, ZERO TECH)", "JOURNAL 'THE CONQUEST': DOCUMENT TODAY'S DOMINANCE",
+            "ICE COLD SHOWER: RAW SYSTEM REBOOT", "PHYSIQUE CHECK: 5 MINUTE MIRROR POSING & ASSESSMENT", "DEEP STRETCHING PROTOCOL: 15 MINS MOBILITY WORK",
+            "MICRO-SKILL ACQUISITION: 15 MINS TYPING/EXCEL DRILL", "VOCAL PROJECTION DRILL: RECORD 3 MINS SPEAKING WITH AUTHORITY", "POSTURE RESET: 10 MINS STRICT WALL-SIT OR PLANK",
+            "BREATHWORK: 10 MINS WIM HOF OR BOX BREATHING", "VISUALIZE THE EMPIRE: 10 MINS PURE GOAL MANIFESTATION", "TACTICAL REFUEL: HIGH PROTEIN & CLEAN CARBS SNACK",
+            "SUNLIGHT EXPOSURE: 15 MINS PURE ABSORPTION, NO PHONE", "CLEAN THE BATTLESTATION: WIPE DOWN DESK AND RIG", "REVIEW PREVIOUS TRADES: ANALYZE 3 PAST WINNING CHARTS",
+            "RRB QUICK DRILL: SOLVE 20 REASONING QUESTIONS FOR RAW SPEED", "READ 10 PAGES: HIGH-VALUE NON-FICTION ONLY", "FINANCIAL ALLOCATION: INVEST ₹500 IN ASSETS OR SKILLS",
+            "UPGRADE LINKEDIN: HIGHLIGHT 5 YEARS EXPERIENCE PROMINENTLY", "STRATEGIZE INCOME: 30 MINS MAPPING OUT MULTIPLE REVENUE STREAMS", "THE ARCHITECT: CODE 1 NEW MODULE FOR THE CERTIFICATE GENERATOR",
+            "ELITE NETWORKING: CONNECT WITH 2 HIGH-VALUE INDIVIDUALS IN YOUR FIELD", "SOLO PATROL: WALK AROUND PURULIA, OBSERVE THE MATRIX", "AESTHETIC UPGRADE: BUY OR RESEARCH A PREMIUM GROOMING PRODUCT",
+            "HIGH-TIER FUEL: ORDER A CLEAN, PREMIUM HIGH-PROTEIN MEAL", "PODCAST ABSORPTION: 1 HOUR OF ELITE TRADING OR MINDSET AUDIO", "RECONNECT WITH ORIGINS: CALL A DAY-ONE FRIEND, SHARE VISIONS",
+            "CRAFT THE NARRATIVE: UPDATE RESUME TO REFLECT SENIORITY", "SYSTEM DIAGNOSTIC: 1 HOUR REVIEWING MONTHLY FINANCES", "NEW ARSENAL: CREATE A FRESH, HIGH-BPM WORKOUT PLAYLIST",
+            "DIGITAL PURGE: UNFOLLOW WEAK INFLUENCES ON SOCIAL MEDIA", "RRB MASTERCLASS: WATCH 1 ELITE STRATEGY VIDEO FOR THE EXAM", "SLEEP OPTIMIZATION: BUY OR SET UP BLACKOUT CURTAINS OR SLEEP MASK",
+            "WARDROBE AUDIT: THROW OUT OR DONATE WEAK CLOTHING", "GROOMING RITUAL: FULL BEARD LINEUP, SKINCARE, NAILS", "SYSTEM OVERRIDE: 3 HOURS NO-GUILT RECOVERY",
+            "TACTICAL ACQUISITION: BUY THE HARDWARE OR SOFTWARE YOU NEED", "TOTAL SYSTEM SHUTDOWN: FULL REST DAY", "WEEKLY DEBRIEF: COFFEE SHOP, LAPTOP, FULL WEEK REVIEW",
+            "THE MONARCH VIEW: ROOFTOP, NO TECH, ACKNOWLEDGE THE EMPIRE", "MOVIE PROTOCOL: 1 HIGH-CINEMA FILM, NO MINDLESS SCROLLING", "THE LONG RIDE: NIGHT PATROL ON EMPTY ROADS",
+            "DEEP SLEEP PROTOCOL: NO ALARM, WAKE UP NATURALLY", "CULINARY REWARD: HIGH-CALORIE CHEAT MEAL, EARNED IN BLOOD", "UNPLUGGED WILDERNESS: SPEND 3 HOURS IN NATURE, ZERO TECH",
+            "VIP TREATMENT: BOOK A MASSAGE OR PREMIUM BARBER VISIT", "MENTORSHIP SESSION: EARN A 1-ON-1 WITH A PRO", "THE ALPHA FLEX: 1 DAY COMPLETELY OFF-GRID",
+            "THE CELEBRATION: BUY A QUALITY CIGAR OR COFFEE TO TOAST A MAJOR WIN", "UPGRADE THE RIG: BUY A NEW MONITOR OR PERIPHERAL FOR THE SETUP", "PORTFOLIO EXPANSION: OPEN A NEW ASSET CLASS ACCOUNT"
         ];
 
-        const karmaRewards = [
-            {id: 1, text: "30 min guilt-free gaming", type: "small", days: "all"},
-            {id: 2, text: "20 min reels (strict timer)", type: "small", days: "all"},
-            {id: 3, text: "Favorite food treat today", type: "big", days: "all"},
-            {id: 4, text: "Chill + music session (eyes closed)", type: "small", days: "all"},
-            {id: 5, text: "Guilt-free rest (30-60 min)", type: "small", days: "all"},
-            {id: 6, text: "Streak update (track wins)", type: "small", days: "all"},
-            {id: 7, text: "Journal 'WIN entry'", type: "small", days: "all"},
-            {id: 8, text: "Before/after progress check", type: "small", days: "all"},
-            {id: 9, text: "Task completion satisfaction pause", type: "small", days: "all"},
-            {id: 10, text: "Self-reward statement (out loud)", type: "small", days: "all"},
-            {id: 11, text: "Intense workout finisher", type: "small", days: "all"},
-            {id: 12, text: "Cold shower refresh", type: "small", days: "all"},
-            {id: 13, text: "Mirror check (confidence boost)", type: "small", days: "all"},
-            {id: 14, text: "Stretch + relax session", type: "small", days: "all"},
-            {id: 15, text: "Deep breathing reset", type: "small", days: "all"},
-            {id: 16, text: "₹100-500 self-invest (skill/tool)", type: "big", days: "all"},
-            {id: 17, text: "Resume / profile upgrade", type: "big", days: "all"},
-            {id: 18, text: "Learn 1 useful micro-skill", type: "small", days: "all"},
-            {id: 19, text: "Plan next income step", type: "big", days: "all"},
-            {id: 20, text: "Talk to growth-minded person", type: "small", days: "all"},
-            {id: 21, text: "Solo outing (no phone dependency)", type: "big", days: "all"},
-            {id: 22, text: "Grooming / outfit upgrade", type: "big", days: "all"},
-            {id: 23, text: "Record yourself (confidence practice)", type: "small", days: "all"},
-            {id: 24, text: "Help someone (real impact)", type: "small", days: "all"},
-            {id: 25, text: "Improve room/setup", type: "big", days: "all"},
-            {id: 26, text: "2-3h no-guilt chill", type: "king", days: [5,6]},
-            {id: 27, text: "Buy something meaningful", type: "king", days: "all"},
-            {id: 28, text: "Full rest day (earned)", type: "king", days: [5,6]},
-            {id: 29, text: "Weekly self-review (progress check)", type: "king", days: "all"},
-            {id: 30, text: "'I'm in control' moment (sit + feel it)", type: "king", days: "all"},
-            {id: 31, text: "Movie Night", type: "king", days: [5,6]}, 
-            {id: 32, text: "Extra Sleep Tomorrow", type: "king", days: [5,6]},
-            {id: 33, text: "Nostalgia Trip - Ranchi", type: "big", days: "all"}
+        const PENALTIES_DB = [
+            "SENSORY DEPRIVATION: 2 HOURS COMPLETE SILENCE", "IRON CORE: 5 MINUTE TOTAL PLANK HOLDS", "TACTICAL CLEANUP: 20 MINS STERILIZING THE WORKSPACE",
+            "WEEKLY BLUEPRINT: WRITE DOWN THE NEXT 7 DAYS, HOUR BY HOUR", "THERMAL SHOCK: NEXT SHOWER IS 100% COLD WATER", "EGO DEATH: ASK A MENTOR OR FRIEND FOR BRUTAL CRITICISM",
+            "EAT THE FROG: IMMEDIATELY EXECUTE THE MOST DREADED TASK", "THE GRIND: 1 HOUR STUDYING THE MOST BORING EXAM TOPIC", "STANDING DESK ONLY: NO SITTING FOR THE NEXT 2 HOURS",
+            "MANUAL LABOR: WASH CLOTHES BY HAND OR SCRUB FLOORS", "PAIN TOLERANCE: 15 MINS OF INTENSE MOBILITY OR STRETCHING", "ZERO INBOX: REPLY TO EVERY SINGLE PENDING MESSAGE INSTANTLY",
+            "DROP AND GIVE ME 50: 50 STRICT PUSHUPS RIGHT NOW", "NO CAFFEINE: ZERO COFFEE OR ENERGY DRINKS FOR 24 HOURS", "DIGITAL FAST: DELETE THE MOST USED SOCIAL APP FOR 48 HOURS",
+            "RRB SPRINT: SOLVE 50 MATH QUESTIONS WITHOUT A BREAK", "READ THE MANUAL: READ 15 PAGES OF DRY DOCUMENTATION", "THE VAULT: 6 HOURS DEVICE LOCKDOWN (PHONE IN ANOTHER ROOM)",
+            "THE MANIFESTO: WRITE 'DISCIPLINE OVER WEAKNESS' 200 TIMES", "MONK MODE: 24 HOURS ZERO ENTERTAINMENT (NO YT, NO GAMES)", "THE POST-MORTEM: WRITE A 5-PAGE ESSAY ON WHY YOU FAILED TODAY",
+            "EXAM HELL: COMPLETE 1 FULL RRB MOCK EXAM PLUS ANALYSIS", "ANALOG MEMORY: WRITE 20 PAGES OF STUDY NOTES BY HAND", "AGGRESSIVE EXPANSION: APPLY TO 10 HIGH-TIER JOBS WITH CUSTOM COVER LETTERS",
+            "SUGAR PURGE: 72 HOURS STRICT NO JUNK, NO SUGAR", "SOCIAL DISCOMFORT: INITIATE CONVERSATIONS WITH 5 STRANGERS", "REJECTION THERAPY: COLD CALL 3 PLACES UNTIL YOU GET A 'NO'",
+            "MICRO-TRACKING: LOG EVERY 15 MINUTES OF TOMORROW ON PAPER", "FINANCIAL BLEED: DONATE ₹500 TO CHARITY IMMEDIATELY", "TASTELESS FUEL: NEXT 3 MEALS ARE COMPLETELY BLAND",
+            "AMBIDEXTROUS TRAINING: USE LEFT HAND ONLY FOR 4 HOURS", "VISION DRILL: WRITE OUT 5-YEAR GOALS 20 TIMES FLAWLESSLY", "CODE IN THE DARK: BUILD A FEATURE FOR THE PAYSLIP APP WITHOUT GOOGLING",
+            "SLEEP DEPRIVATION PREP: SET ALARM FOR 4:00 AM TOMORROW", "100 BURPEES CHIN-TO-FLOOR: DO NOT STOP UNTIL FINISHED", "THE IRON MARATHON: 6 HOURS UNBROKEN DEEP WORK",
+            "SKILL FORGE: 3 HOURS CONTINUOUS EXCEL OR CODING DRILL", "THE 300 PROTOCOL: 300 PUSHUPS BEFORE SLEEP", "THE 500 PROTOCOL: 500 SQUATS BEFORE SLEEP",
+            "THE RANGER WALK: 10 KM RUN OR WALK CARRYING A BACKPACK", "BLACKOUT DRONE: 24 HOURS COMPLETE PHONE ABSTINENCE", "DOPAMINE RESET: 24 HOURS NO SCREENS, NO SUGAR, NO MUSIC, NO TALKING",
+            "THE TITAN SHIFT: 10 HOURS CONTINUOUS WORK OR STUDY MARATHON", "CHART PURGATORY: MANUALLY BACKTEST 50 XAUUSD CHARTS AND LOG THEM", "1000 REP HELL: 1000 TOTAL REPS (MIX OF PUSHUPS, SQUATS, CRUNCHES)",
+            "FASTING PROTOCOL: 24 HOUR WATER FAST", "SLEEP ON THE FLOOR: NO MATTRESS TONIGHT, JUST THE FLOOR", "PUBLIC ACCOUNTABILITY: POST YOUR FAILURE ON SOCIAL MEDIA OR STATUS",
+            "NO HOT WATER: 1 WEEK COLD SHOWERS ONLY", "THE ISOLATOR: SPEND 5 HOURS IN A ROOM WITH NOTHING BUT A NOTEBOOK", "BURN THE SHIPS: DELETE A SAVE FILE OR RANKED ACCOUNT"
         ];
 
-        const karmaPenalties = [
-            {id: 1, text: "6h no phone (strict)", type: "big"},
-            {id: 2, text: "2h silence (no music/talking)", type: "small"},
-            {id: 3, text: "Write 200 lines: 'Discipline > Mood'", type: "big"},
-            {id: 4, text: "1 day no entertainment", type: "big"},
-            {id: 5, text: "10 pages self-analysis (why failed)", type: "big"},
-            {id: 6, text: "6h deep work session", type: "extreme"},
-            {id: 7, text: "100 MCQs + full analysis", type: "big"},
-            {id: 8, text: "20 pages handwritten notes", type: "big"},
-            {id: 9, text: "10 job applications (proper)", type: "big"},
-            {id: 10, text: "3h skill grind", type: "extreme"},
-            {id: 11, text: "300 pushups", type: "extreme"},
-            {id: 12, text: "500 squats", type: "extreme"},
-            {id: 13, text: "8-10 km walk/run", type: "extreme"},
-            {id: 14, text: "100 burpees", type: "big"},
-            {id: 15, text: "5 min plank total", type: "small"},
-            {id: 16, text: "Full room + digital clean", type: "small"},
-            {id: 17, text: "72h junk food ban", type: "big"},
-            {id: 18, text: "Next 7 days strict planning", type: "small"},
-            {id: 19, text: "Wake up 4:30 AM tomorrow", type: "extreme"},
-            {id: 20, text: "Cold shower compulsory", type: "small"},
-            {id: 21, text: "Talk to 5 strangers", type: "big"},
-            {id: 22, text: "Face 3 rejections (call/apply)", type: "big"},
-            {id: 23, text: "Ask honest feedback from someone", type: "small"},
-            {id: 24, text: "Do 1 task you're avoiding right now", type: "small"},
-            {id: 25, text: "1h uncomfortable learning", type: "small"},
-            {id: 26, text: "24h no phone completely", type: "extreme"},
-            {id: 27, text: "24h dopamine detox", type: "extreme"},
-            {id: 28, text: "10h deep work marathon", type: "extreme"},
-            {id: 29, text: "Full day strict productivity tracking", type: "big"},
-            {id: 30, text: "Life audit (brutal reality write)", type: "extreme"},
-            {id: 31, text: "Financial Hit (Donate ₹100)", type: "big"},
-            {id: 32, text: "Chart Hell (Backtest 50 Charts)", type: "extreme"}
+        const WORKOUTS = ["100 PUSHUPS", "50 PULLUPS", "200 SQUATS", "50 BURPEES", "5 MIN PLANK", "100 CRUNCHES", "8KM RANGER RUN", "100 LUNGES", "50 DIPS", "120S HOLLOW HOLD", "60S MOUNTAIN CLIMBERS"];
+        const LOOKS = ["MEWING (10 MINS)", "ICE FACE ROLL", "DEEP SKINCARE (CLEANSE + MOISTURIZE)", "JAWLINE DRILL", "POSTURE HOLD (5 MIN)", "TEETH WHITENING RITUAL", "GUA SHA MASSAGE"];
+
+        const TABS = [
+            { id: 'karma', icon: 'zap', name: 'KARMA' }, { id: 'tasks', icon: 'check-square', name: 'GRIND' },
+            { id: 'raids', icon: 'timer', name: 'RAIDS' }, { id: 'trading', icon: 'candlestick-chart', name: 'TRADE' },
+            { id: 'wallet', icon: 'wallet', name: 'LEDGER' }, { id: 'awaken', icon: 'flame', name: 'AWAKEN' },
+            { id: 'settings', icon: 'terminal', name: 'ROOT' }
         ];
 
-        function nukeSystem() {
-            if(confirm("DANGER: WIPE ALL DATA? THIS CANNOT BE UNDONE.")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+        // --- 2. STATE MANAGEMENT ---
+        let sys = JSON.parse(localStorage.getItem('monarch2026_final_v1')) || {
+            lastEvalDate: new Date().toLocaleDateString(),
+            lastPurgeMonth: new Date().getMonth(),
+            lastWipe: "NEVER",
+            tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
+            lastRelapse: "PURE", rewards: [], penalties: [], history: []
+        };
+        
+        let weekChartInst = null;
+        let raidInterval = null;
 
-        function save() { 
-            try { 
-                localStorage.setItem(CURRENT_VERSION, JSON.stringify(db)); 
-                render(); 
-                updateSystemVoice(); 
-            } catch (e) { 
-                let cleaned = false;
-                for (let i = db.trading.length - 1; i >= 0; i--) {
-                    if (db.trading[i].img) {
-                        db.trading[i].img = "";
-                        cleaned = true;
-                        break;
-                    }
-                }
-                if (cleaned) {
-                    save(); 
-                    showSystemAlert("STORAGE LIMIT", "Auto-cleaned oldest image to save space.", "warning");
-                } else {
-                    document.getElementById('storageWarning').classList.remove('hidden');
-                    showSystemAlert("SYSTEM FAILURE", "Storage 100% full. Factory Reset required.", "penalty");
-                }
-            } 
-        }
+        function saveState() { localStorage.setItem('monarch2026_final_v1', JSON.stringify(sys)); }
 
-        function toggleDiaryText(id, btn) {
-            let p = document.getElementById(id);
-            if(p.classList.contains('line-clamp-3')) { p.classList.remove('line-clamp-3'); btn.innerHTML = 'SHOW LESS <i data-lucide="chevron-up" size="14" class="inline"></i>'; } 
-            else { p.classList.add('line-clamp-3'); btn.innerHTML = 'READ MORE <i data-lucide="chevron-down" size="14" class="inline"></i>'; }
+        // --- 3. INIT & CORE PROTOCOLS ---
+        function init() {
+            Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#94a3b8';
+
+            const navEl = document.querySelector('.universal-nav');
+            navEl.innerHTML = TABS.map(t => `<button onclick="switchTab('${t.id}')" id="nav-${t.id}" class="nav-item"><i data-lucide="${t.icon}" class="w-7 h-7 mb-1"></i><span class="text-xs tracking-widest">${t.name}</span></button>`).join('');
             lucide.createIcons();
-        }
-        
-        function openImageZoom(tradeId) {
-            const t = db.trading.find(x => x.id == tradeId); if(!t || !t.img) return;
-            const zModal = document.getElementById('imageZoomModal'); const zImg = document.getElementById('zoomedImage');
-            zImg.src = t.img; zModal.classList.remove('hidden'); zModal.classList.add('flex');
-            setTimeout(() => { zImg.classList.remove('scale-95'); zImg.classList.add('scale-100'); }, 10);
-        }
-        function closeImageZoom() {
-            const zModal = document.getElementById('imageZoomModal'); const zImg = document.getElementById('zoomedImage');
-            zImg.classList.remove('scale-100'); zImg.classList.add('scale-95');
-            setTimeout(() => { zModal.classList.add('hidden'); zModal.classList.remove('flex'); }, 200);
-        }
-
-        function showSystemAlert(title, desc, type="info") {
-            const container = document.getElementById('toastContainer'); const alertBox = document.createElement('div');
-            let icon = "info"; let iconColor = "text-indigo-400"; let bgGlow = "border-indigo-500 shadow-lg";
-            if (type === "reward") { icon = "check-circle"; iconColor = "text-emerald-400"; bgGlow = "border-emerald-500 shadow-lg"; }
-            else if (type === "penalty") { icon = "skull"; iconColor = "text-rose-500"; bgGlow = "border-rose-500 shadow-lg"; }
-            else if (type === "warning") { icon = "alert-triangle"; iconColor = "text-amber-400"; bgGlow = "border-amber-500 shadow-lg"; }
             
-            alertBox.className = `bg-[#0c0c0e] text-white border-2 border-l-4 p-4 rounded-xl flex items-center gap-4 transition-all duration-500 toast-leave w-full md:w-96 mx-auto ${bgGlow}`;
-            alertBox.innerHTML = `<div class="bg-black p-3 rounded-lg flex-shrink-0 border-2 border-slate-800"><i data-lucide="${icon}" class="${iconColor}" size="24"></i></div><div><h4 class="font-black text-sm uppercase leading-tight text-white">${title}</h4><p class="text-xs font-bold text-slate-400 mt-1" style="text-transform:none;">${desc}</p></div>`;
-            container.appendChild(alertBox); lucide.createIcons();
-            requestAnimationFrame(() => { alertBox.classList.remove('toast-leave'); alertBox.classList.add('toast-enter'); });
-            setTimeout(() => { alertBox.classList.remove('toast-enter'); alertBox.classList.add('toast-leave'); setTimeout(() => alertBox.remove(), 500); }, 3500);
+            checkMonthlyPurge();
+            checkMidnightEval();
+            
+            if(sys.tasks.length === 0) populateDailyAwakenTasks();
+
+            switchTab('tasks');
+            setInterval(() => { document.getElementById('global-quote').innerText = QUOTES[Math.floor(Math.random() * QUOTES.length)]; }, 10000);
+            raidInterval = setInterval(tickRaids, 1000);
+            updateAllUI();
         }
 
-        function typeWriterEffect(text, elementId) {
-            const el = document.getElementById(elementId);
-            el.innerHTML = ''; let i = 0; clearTimeout(typewriterTimeout);
-            function type() { if (i < text.length) { el.innerHTML += text.charAt(i); i++; typewriterTimeout = setTimeout(type, 30); } }
-            type();
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const fileInput = document.getElementById('tImg'); const fileLabel = document.getElementById('fileLabel');
-            if(fileInput && fileLabel) {
-                fileInput.addEventListener('change', function(e) {
-                    if(e.target.files.length > 0) { fileLabel.innerText = "IMAGE ATTACHED ✅"; fileLabel.classList.add('text-emerald-400'); } 
-                    else { fileLabel.innerText = "ATTACH SCREENSHOT (OPTIONAL)"; fileLabel.classList.remove('text-emerald-400'); }
-                });
+        // MONTHLY PURGE (11:59 PM)
+        function checkMonthlyPurge() {
+            const now = new Date();
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            if (now.getDate() === lastDay && now.getHours() === 23 && now.getMinutes() >= 59) {
+                if(sys.lastPurgeMonth !== now.getMonth()) {
+                    localStorage.removeItem('monarch2026_final_v1');
+                    alert("MONTH END PURGE EXECUTED. THE SLATE IS WIPED CLEAN.");
+                    location.reload();
+                }
             }
-        });
-
-        function checkLoginStreak() {
-            const today = new Date().toLocaleDateString();
-            if(db.player.lastLogin === today) return; 
-            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-            if(db.player.lastLogin === yesterday.toLocaleDateString()) { 
-                db.player.streak++; showSystemAlert("STREAK INCREASED!", `${db.player.streak} Days Strong.`, "info"); 
-            } 
-            else if (db.player.lastLogin !== "") { 
-                db.player.streak = 1; showSystemAlert("STREAK BROKEN", "You missed a day.", "warning"); 
-            } 
-            else { db.player.streak = 1; }
-            db.player.lastLogin = today; save();
         }
 
-        function updateSystemVoice() {
-            let message = "";
-            let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
+        // AUTO-POPULATE AWAKEN TASKS TO GRIND
+        function populateDailyAwakenTasks() {
+            const dayNum = new Date().getDay();
+            const getItems = (arr, count, offset) => {
+                let res = [];
+                for(let i=0; i<count; i++) { res.push(arr[(dayNum + i + offset) % arr.length]); }
+                return res;
+            };
+            const dailyCombat = getItems(WORKOUTS, 4, 0);
+            const dailyLooks = getItems(LOOKS, 3, 2);
             
-            if (dailyLosses >= 2) { message = "CRITICAL WARNING: Drawdown Limit Breached! Cease Trading Immediately."; }
-            else if (db.player.hp <= 0) { message = "You have fallen. The System demands a penalty to rise again."; }
-            else if (db.activePenalties.length > 0) { message = "KARMA DEBT DETECTED. Endure the punishment to proceed."; }
-            else if (db.player.hp < 40) { message = "Weakness is a choice. Stand up."; }
-            else { message = soloQuotes[Math.floor(Math.random() * soloQuotes.length)]; }
-            
-            typeWriterEffect(message, 'systemVoice');
+            dailyCombat.forEach(w => sys.tasks.push({ t: `COMBAT: ${w} (MAX REPS)`, done: false }));
+            dailyLooks.forEach(l => sys.tasks.push({ t: `LOOKS: ${l}`, done: false }));
+            saveState();
+        }
+
+        // MIDNIGHT 00:01 AUTO EVALUATION
+        function checkMidnightEval() {
+            const today = new Date().toLocaleDateString();
+            if(sys.lastEvalDate !== today) {
+                const total = sys.tasks.length;
+                let score = total > 0 ? Math.round((sys.tasks.filter(t => t.done).length / total) * 100) : 0;
+
+                sys.history.push({ date: sys.lastEvalDate, score: score });
+                if(sys.history.length > 7) sys.history.shift();
+
+                const shuffle = (array) => array.slice().sort(() => Math.random() - 0.5);
+
+                if(score >= 80) {
+                    sys.rewards.push(...shuffle(REWARDS_DB).slice(0, 3));
+                } else if (total > 0) {
+                    sys.penalties.push(...shuffle(PENALTIES_DB).slice(0, 3).map(p => ({ text: p, type: 'DAY' })));
+                }
+
+                sys.tasks = []; 
+                sys.lastEvalDate = today;
+                sys.lastPurgeMonth = new Date().getMonth();
+                saveState();
+                populateDailyAwakenTasks();
+
+                alert(`SYSTEM UPDATED AT 00:01. PREVIOUS DAY SCORE: ${score}%. KARMA AND NEW DAILY COMBAT ASSIGNED.`);
+            }
         }
 
         function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`page-${id}`).classList.add('active');
+            document.getElementById(`nav-${id}`).classList.add('active');
+            if (id === 'karma') setTimeout(renderChart, 100);
+        }
+
+        function updateAllUI() {
+            updateTasksUI(); updateRaidsUI(); updateTradesUI(); updateWalletUI(); updateKarmaUI();
             
-            document.querySelectorAll('.d-nav-btn').forEach(b => { 
-                b.classList.remove('bg-slate-800', 'text-white', 'border-slate-700'); 
-                b.classList.add('text-slate-500', 'border-transparent'); 
-            });
-            let dBtn = Array.from(document.querySelectorAll('.d-nav-btn')).find(b => b.dataset.tab === id); 
-            if(dBtn) { dBtn.classList.remove('text-slate-500', 'border-transparent'); dBtn.classList.add('bg-slate-800', 'text-white', 'border-slate-700'); }
+            document.getElementById('last-relapse-text').innerText = `LAST BREACH: ${sys.lastRelapse}`;
+            document.getElementById('last-wipe-text').innerText = `LAST WIPE: ${sys.lastWipe}`;
+
+            const dayNum = new Date().getDay();
+            const getItems = (arr, count, offset) => {
+                let res = [];
+                for(let i=0; i<count; i++) { res.push(arr[(dayNum + i + offset) % arr.length]); }
+                return res;
+            };
+            document.getElementById('day-workout-list').innerHTML = getItems(WORKOUTS, 4, 0).map(w => `<li class="text-lg">⚔️ ${w} <span class="text-red-500">(TARGET: MAX REPS)</span></li>`).join('');
+            document.getElementById('day-looks-list').innerHTML = getItems(LOOKS, 3, 2).map(l => `<li class="text-lg">🧬 ${l}</li>`).join('');
+        }
+
+        // --- 4. KARMA UI & RELAPSE LOGIC ---
+        function updateKarmaUI() {
+            const total = sys.tasks.length;
+            const done = sys.tasks.filter(t => t.done).length;
+            const pct = total === 0 ? 0 : Math.round((done / total) * 100);
             
-            document.querySelectorAll('.m-nav-btn').forEach(b => { 
-                b.classList.remove('nav-active', 'bg-slate-800', 'border-slate-700');
-                b.classList.add('border-transparent');
-                let iconContainer = b.querySelector('.nav-icon-container');
-                if(iconContainer) { iconContainer.classList.remove('text-white'); iconContainer.classList.add('text-slate-500'); }
-            });
-            
-            let mBtn = Array.from(document.querySelectorAll('.m-nav-btn')).find(b => b.dataset.tab === id); 
-            if(mBtn) { 
-                mBtn.classList.remove('border-transparent');
-                mBtn.classList.add('nav-active', 'bg-slate-800', 'border-slate-700');
-                let iconContainer = mBtn.querySelector('.nav-icon-container');
-                if(iconContainer) { iconContainer.classList.remove('text-slate-500'); iconContainer.classList.add('text-white'); }
-            }
-            
-            document.getElementById(id).classList.remove('hidden'); 
-            if(id === 'history') renderChart(); 
-        }
+            document.getElementById('sync-rate-text').innerText = `${pct}%`;
+            document.getElementById('sync-bar').style.width = `${pct}%`;
+            document.getElementById('sync-bar').style.backgroundColor = pct >= 80 ? 'var(--neon-green)' : (pct < 50 ? 'var(--neon-red)' : 'var(--neon-blue)');
 
-        function updateStats(expChange, hpChange, isPenalty = false) { 
-            let finalExp = expChange;
-            if (expChange > 0 && db.player.streak >= 3) { finalExp = Math.round(expChange * 1.5); }
-            db.player.exp += finalExp; db.player.hp += hpChange; 
-            if(db.player.hp > 100) db.player.hp = 100; 
-            if(db.player.hp <= 0) { showSystemAlert("PENALTY ZONE", "HP HIT 0! LEVEL DOWNGRADED.", "penalty"); db.player.level = Math.max(1, db.player.level - 1); db.player.hp = 100; db.player.exp = 0; isPenalty = true; } 
-            if (isPenalty || hpChange < 0) { triggerSiren(); }
-            let maxExp = db.player.level * 50; 
-            if (db.player.exp >= maxExp) { db.player.level++; db.player.exp -= maxExp; db.player.hp = 100; showSystemAlert("LEVEL UP!", `YOU ARE NOW LEVEL ${db.player.level}`, "reward"); } 
-            else if (db.player.exp < 0) { db.player.exp = 0; }
-            save(); 
-        }
+            checkRelapsePenalties();
 
-        function claimReward(id) {
-            db.activeRewards = db.activeRewards.filter(r => r.id != id);
-            updateStats(10, 5); 
-            showSystemAlert("REWARD CLAIMED", "Enjoy your reward.", "reward");
-            save();
-        }
+            document.getElementById('active-rewards').innerHTML = sys.rewards.length ? sys.rewards.map((r,i) => `
+                <li class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 mb-2 gap-4">
+                    <span class="text-xl">${r}</span>
+                    <button onclick="clearReward(${i})" class="btn-interact btn-complete px-8 py-3 w-full md:w-auto text-lg tracking-widest">CLAIM</button>
+                </li>
+            `).join('') : '<li class="text-slate-600 text-lg">NO REWARDS AVAILABLE</li>';
 
-        function markPenaltyDone(id) {
-            db.activePenalties = db.activePenalties.filter(p => p.id != id);
-            updateStats(20, 0); 
-            showSystemAlert("PENALTY CLEARED", "Debt paid. Do not fail again.", "info");
-            save();
-        }
-
-        function addSimpleTask() { const val = document.getElementById('simpleTaskInp').value; if(!val) return; db.today.push({ id: Date.now(), text: val, done: false }); document.getElementById('simpleTaskInp').value = ''; save(); }
-        function toggleSimpleTask(id) { let task = db.today.find(t => t.id == id); if(!task) return; task.done = !task.done; if(task.done) { updateStats(20, 0); } else { updateStats(-20, 0); } save(); }
-        function deleteSimpleTask(id) { db.today = db.today.filter(t => t.id != id); save(); }
-
-        function addTimedTask() { const text = document.getElementById('timedInp').value; const val = parseInt(document.getElementById('raidTimeVal').value) || 0; const unit = document.getElementById('raidTimeUnit').value; if(!text) return; let multiplier = 0; if(unit === 'm') multiplier = 60000; else if(unit === 'h') multiplier = 3600000; else if(unit === 'd') multiplier = 86400000; let endTime = val > 0 ? Date.now() + (val * multiplier) : null; let displayDur = val > 0 ? `${val}${unit.toUpperCase()}` : 'No Limit'; db.timed.push({ id: Date.now(), text: text, durationStr: displayDur, endTime: endTime, status: 'active' }); document.getElementById('timedInp').value = ''; document.getElementById('raidTimeVal').value = ''; save(); }
-        function completeTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; t.status = 'done'; clearInterval(timerIntervals[id]); updateStats(50, 10); showSystemAlert("RAID CLEARED!", "+50 EXP | +10 HP", "reward"); save(); }
-        function abortTimedTask(id) { let t = db.timed.find(x => x.id == id); if(!t || t.status !== 'active') return; if(confirm("ABORT RAID? THIS DEALS 30 HP DAMAGE.")) { t.status = 'aborted'; clearInterval(timerIntervals[id]); updateStats(0, -30, true); showSystemAlert("RAID FAILED", "-30 HP DAMAGE!", "penalty"); save(); } }
-        function startTaskTimers() { db.timed.forEach(t => { if(t.status === 'active' && t.endTime) { if(timerIntervals[t.id]) clearInterval(timerIntervals[t.id]); timerIntervals[t.id] = setInterval(() => { const el = document.getElementById(`timer_${t.id}`); if(!el) return; const diff = t.endTime - Date.now(); if(diff <= 0) { el.innerText = "TIME UP"; el.classList.add('text-rose-500', 'animate-pulse'); clearInterval(timerIntervals[t.id]); } else { let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); let s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); if (d > 0) el.innerText = `${d}D ${h}:${m}:${s}`; else el.innerText = `${h}:${m}:${s}`; } }, 1000); } }); }
-
-        function addRoadmap() { const t = document.getElementById('rmTitleInp').value; if(!t) return; db.roadmaps.unshift({ id: Date.now(), title: t, steps: [] }); document.getElementById('rmTitleInp').value = ''; showSystemAlert("PATH CREATED", "New Path forged.", "info"); save(); }
-        function addRoadmapStep(rmId) { const t = document.getElementById(`rmStepText_${rmId}`).value; const d = document.getElementById(`rmStepDate_${rmId}`).value; if(!t || !d) { showSystemAlert("MISSING DATA", "Step desc and date required.", "warning"); return; } let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { rm.steps.push({ id: Date.now(), text: t, date: d, done: false }); save(); } }
-        function toggleRmStep(rmId, stepId) { let rm = db.roadmaps.find(r => r.id == rmId); if(rm) { let step = rm.steps.find(s => s.id == stepId); if(step && !step.done) { step.done = true; updateStats(50, 0); showSystemAlert("MILESTONE", "+50 EXP GAINED", "reward"); save(); } } }
-        function deleteRoadmap(rmId) { if(confirm("DELETE PATH?")) { db.roadmaps = db.roadmaps.filter(r => r.id != rmId); showSystemAlert("PATH DELETED", "Path erased.", "info"); save(); } }
-
-        function addBalance() { const amt = parseFloat(document.getElementById('addBalInp').value); if(!amt || amt <= 0) return; db.wallet.balance = parseFloat((db.wallet.balance + amt).toFixed(2)); db.expenses.unshift({ id: Date.now(), title: 'FUNDS ADDED', amt: amt, type: 'in', date: new Date().toLocaleDateString() }); document.getElementById('addBalInp').value = ''; showSystemAlert("FUNDS ADDED", `₹${amt} credited.`, "reward"); save(); }
-        function addExpense() { const t = document.getElementById('eTitle').value; const a = parseFloat(document.getElementById('eAmt').value); if(!t || !a || a <= 0) return; db.wallet.balance = parseFloat((db.wallet.balance - a).toFixed(2)); db.expenses.unshift({ id: Date.now(), title: t, amt: a, type: 'out', date: new Date().toLocaleDateString() }); document.getElementById('eTitle').value = ''; document.getElementById('eAmt').value = ''; showSystemAlert("FUNDS DEDUCTED", `₹${a} spent.`, "warning"); save(); }
-        function deleteExpense(id) { let e = db.expenses.find(x => x.id == id); if(e) { if(e.type === 'in') { db.wallet.balance = parseFloat((parseFloat(db.wallet.balance) - parseFloat(e.amt)).toFixed(2)); } else { db.wallet.balance = parseFloat((parseFloat(db.wallet.balance) + parseFloat(e.amt)).toFixed(2)); } db.expenses = db.expenses.filter(x => x.id != id); showSystemAlert("LOG REVERTED", `Balance Updated.`, "info"); save(); } }
-        function editBalance() { let newBal = prompt("ENTER EXACT CURRENT BALANCE (₹):", db.wallet.balance); if(newBal !== null && !isNaN(newBal) && newBal.trim() !== "") { db.wallet.balance = parseFloat(Number(newBal).toFixed(2)); showSystemAlert("BALANCE UPDATED", `Wallet override successful.`, "info"); save(); } }
-        function editTradeCapital() { let newCap = prompt("ENTER EXACT TRADING CAPITAL (₹):", db.tradeCapital); if(newCap !== null && !isNaN(newCap) && newCap.trim() !== "") { db.tradeCapital = parseFloat(Number(newCap).toFixed(2)); showSystemAlert("CAPITAL UPDATED", "Trading balance updated.", "info"); save(); } }
-        
-        async function addTrade() { 
-            const fileInput = document.getElementById('tImg'); const file = fileInput.files[0]; let imgData = ""; 
-            
-            // MAXIMUM AGGRESSIVE COMPRESSION TO SAVE 5MB QUOTA
-            if (file) { try { imgData = await new Promise((res, reject) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = (event) => { const img = new Image(); img.src = event.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const MAX_WIDTH = 300; const MAX_HEIGHT = 300; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); res(canvas.toDataURL('image/jpeg', 0.2)); }; img.onerror = reject; }; r.onerror = reject; }); } catch(err) { console.log(err); } } 
-            
-            let setups = []; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => setups.push(cb.value));
-            let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
-            const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
-            db.trading.unshift(newTrade);
-            try { 
-                localStorage.setItem(CURRENT_VERSION, JSON.stringify(db)); 
-                document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; fileInput.value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); 
-                const fileLabel = document.getElementById('fileLabel'); if(fileLabel) { fileLabel.innerText = "ATTACH SCREENSHOT (OPTIONAL)"; fileLabel.classList.remove('text-emerald-400'); }
-                showSystemAlert("MARKET LOGGED", "Trade intel archived.", "info"); render(); updateSystemVoice(); 
-            } catch(e) { 
-                let cleaned = false;
-                for (let i = db.trading.length - 1; i >= 0; i--) {
-                    if (db.trading[i].img) { db.trading[i].img = ""; cleaned = true; break; }
-                }
-                if (cleaned) {
-                    save(); showSystemAlert("STORAGE LIMIT", "Auto-cleaned oldest image.", "warning");
-                } else {
-                    db.trading.shift(); showSystemAlert("SYSTEM FAILURE", "Storage completely full. Use Factory Reset.", "penalty");
-                }
-            }
-        }
-        function deleteTrade(id) { if(confirm("DELETE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
-        function openTradeModal(id) { 
-            const t = db.trading.find(x => x.id == id); if(!t) return; 
-            let imgHtml = '<p class="text-center text-slate-600 text-xs font-bold mt-4 border-t-2 border-slate-800 pt-4">NO IMAGE ATTACHED</p>'; if (t.img && t.img.length > 20) { imgHtml = `<div class="mt-4 relative group cursor-zoom-in border-t-2 border-slate-800 pt-4" onclick="openImageZoom(${t.id})"><img src="${t.img}" class="w-full rounded-xl border-2 border-slate-800 hover:border-indigo-500 transition"><div class="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition pointer-events-none"><div class="bg-black/80 p-4 rounded-xl text-white shadow-lg"><i data-lucide="zoom-in" size="24"></i></div></div></div>`; } 
-            let setupBadges = ''; if(t.setups && t.setups.length > 0) { setupBadges = `<div class="mt-4"><p class="text-[10px] text-slate-500 font-bold mb-2 tracking-widest">SETUP TRIGGERED:</p><div class="flex flex-wrap gap-2">${t.setups.map(s => `<span class="bg-slate-800 text-slate-300 border-2 border-slate-700 px-3 py-1.5 rounded-lg text-[10px] font-black">${s}</span>`).join('')}</div></div>`; }
-            let htmlContent = `<div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><div><p class="text-[10px] text-slate-500 font-bold tracking-widest">ASSET</p><p class="text-2xl font-black text-white hud-text">${t.index}</p></div><div class="text-right"><p class="text-[10px] text-slate-500 font-bold tracking-widest">RESULT</p><p class="text-2xl font-black hud-text ${t.result === 'WIN' ? 'text-emerald-500' : 'text-rose-500'}">${t.result} ${t.pnl ? `[₹${t.pnl}]` : ''}</p></div></div><div class="flex justify-between text-xs font-black text-slate-400 px-2 mt-4 font-mono"><span>ENT: ${t.entry || 'N/A'}</span><span>EXT: ${t.exit || 'N/A'}</span></div><div class="bg-black p-5 rounded-xl border-2 border-slate-800 mt-4"><p class="text-[10px] text-indigo-400 font-bold mb-3 tracking-widest"><i data-lucide="brain" class="inline" size="14"></i> TRADE LOGIC</p><p class="text-sm font-bold text-slate-300 leading-relaxed" style="text-transform: none;">${t.logic}</p></div>${setupBadges}${imgHtml}<p class="text-right text-[10px] text-slate-600 font-black mt-6 mb-2 tracking-widest">LOGGED: ${t.date}</p><button onclick="deleteTrade(${t.id})" class="w-full bg-rose-950 hover:bg-rose-600 text-rose-500 hover:text-white py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm transition-all border-b-4 border-rose-800"><i data-lucide="trash-2" size="18"></i> DELETE RECORD</button>`;
-            document.getElementById('tradeModalContent').innerHTML = htmlContent; lucide.createIcons(); document.getElementById('tradeModal').classList.remove('hidden'); document.getElementById('tradeModal').classList.add('flex'); 
-        }
-        function closeTradeModal() { document.getElementById('tradeModal').classList.add('hidden'); document.getElementById('tradeModal').classList.remove('flex'); }
-
-        function addJob() { const c = document.getElementById('jobCompInp').value; const r = document.getElementById('jobRoleInp').value; const s = document.getElementById('jobStatusInp').value; if(!c || !r) return; db.career.unshift({ id: Date.now(), comp: c, role: r, status: s, date: new Date().toLocaleDateString() }); document.getElementById('jobCompInp').value = ''; document.getElementById('jobRoleInp').value = ''; save(); }
-        function updateJobStatus(id, s) { let j = db.career.find(x => x.id == id); if(j) { j.status = s; save(); } }
-        function deleteJob(id) { if(confirm("DELETE THIS RECORD?")) { db.career = db.career.filter(x => x.id != id); showSystemAlert("JOB LOG DELETED", "Record erased.", "info"); save(); } }
-        function saveDiary() { const text = document.getElementById('diaryInp').value.trim(); if(!text) return; db.diary[new Date().toLocaleDateString()] = text; showSystemAlert("LOG SAVED", "Memory archived.", "info"); save(); }
-        function addNewSkill() { const name = document.getElementById('newSkillInp').value; if(!name) return; db.skills.push({ id: Date.now(), name: name, level: 1, exp: 0, lastRemark: "NO REMARKS YET" }); document.getElementById('newSkillInp').value = ''; save(); }
-        function trainSkill(id) { const remark = document.getElementById(`skillRemark_${id}`).value; let s = db.skills.find(x => x.id == id); if(!s) return; s.exp += 20; s.lastRemark = remark || "PRACTICED HARD!"; let maxExp = s.level * 100; if(s.exp >= maxExp) { s.level++; s.exp -= maxExp; } save(); }
-        function deleteSkill(id) { if(confirm("DELETE THIS SKILL?")) { db.skills = db.skills.filter(x => x.id != id); showSystemAlert("SKILL DELETED", "Skill purged.", "info"); save(); } }
-
-        function saveCombat() { db.awakening.combat.pushups = parseInt(document.getElementById('combatPushups').value) || 0; db.awakening.combat.pullups = parseInt(document.getElementById('combatPullups').value) || 0; db.awakening.combat.squats = parseInt(document.getElementById('combatSquats').value) || 0; db.awakening.combat.core = parseInt(document.getElementById('combatCore').value) || 0; showSystemAlert("COMBAT SAVED", "Protocol updated.", "info"); save(); }
-        function toggleLooks(key) { db.awakening.looks[key] = !db.awakening.looks[key]; save(); }
-        function resetHaircut() { db.awakening.lastHaircut = new Date().toLocaleDateString(); showSystemAlert("MAINTENANCE LOGGED", "Timeline reset.", "info"); save(); }
-        
-        function triggerRelapse() { 
-            if(confirm("Are you sure you relapsed? This deals -40 HP and adds 2 Extreme Penalties!")) { 
-                db.awakening.noFapStreak = 0; 
-                db.awakening.noFapLastDate = new Date().toLocaleDateString();
-                
-                let extremePens = karmaPenalties.filter(p => p.type === 'extreme');
-                for(let i=0; i<2; i++) {
-                    let rdm = extremePens[Math.floor(Math.random() * extremePens.length)];
-                    db.activePenalties.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
-                }
-                
-                updateStats(0, -40, true); 
-                showSystemAlert("STREAK BROKEN", `Extreme Karma added.`, "penalty"); 
-                save(); 
-            } 
-        }
-
-        function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
-        function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v50_infinity.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem(CURRENT_VERSION, JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
-        function renderChart() {
-            const ctx = document.getElementById('historyChart').getContext('2d');
-            let labels = []; let data = [];
-            for(let i=6; i>=0; i--) { let d = new Date(); d.setDate(d.getDate() - i); let dStr = d.toLocaleDateString(); labels.push(d.getDate() + "/" + (d.getMonth()+1)); let count = 0; if(dStr === new Date().toLocaleDateString()) { count = db.today.filter(t=>t.done).length + db.timed.filter(t=>t.status==='done').length; } else if (db.history[dStr]) { count = db.history[dStr].filter(t=>t.state==='done').length; } data.push(count); }
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderWidth: 4, tension: 0.4, fill: true, pointBackgroundColor: '#09090b', pointBorderColor: '#6366f1', pointRadius: 6 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#18181b' }, ticks: { color: '#a1a1aa', stepSize: 1, font: {family: 'Orbitron', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: {family: 'Orbitron', weight: 'bold'} } } } } });
-        }
-        
-        function checkReset() {
-            const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
-            if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
-            
-            if (db.lastDate !== currDate) {
-                let totalTasks = db.today.length + db.timed.filter(t => t.status === 'active').length;
-                let completedTasks = db.today.filter(t => t.done).length + db.timed.filter(t => t.status === 'done').length;
-                let scorePercent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
-
-                let unfinSimple = db.today.filter(t => !t.done).length; if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
-                
-                let dailyHistory = []; 
-                db.today.forEach(t => dailyHistory.push({text: t.text, state: t.done ? 'done' : 'failed'}));
-                db.timed = db.timed.filter(t => { if(t.status !== 'active') { dailyHistory.push({text: t.text + ` (${t.durationStr})`, state: t.status === 'done' ? 'done' : 'aborted'}); return false; } return true; });
-                
-                let combatStr = `COMBAT: ${db.awakening.combat.pushups}PU | ${db.awakening.combat.pullups}PL | ${db.awakening.combat.squats}SQ | ${db.awakening.combat.core}s`;
-                dailyHistory.push({text: combatStr, state: (db.awakening.combat.pushups>0||db.awakening.combat.pullups>0||db.awakening.combat.squats>0||db.awakening.combat.core>0) ? 'done':'failed'});
-                
-                let looksArr = [];
-                if(db.awakening.looks.oil) looksArr.push("WASH");
-                if(db.awakening.looks.water) looksArr.push("WATER");
-                if(db.awakening.looks.mewing) looksArr.push("MEWING");
-                if(db.awakening.looks.skin) looksArr.push("SKIN");
-                if(db.awakening.looks.posture) looksArr.push("POSTURE");
-                let looksStr = looksArr.length > 0 ? `LOOKS: ${looksArr.join(', ')}` : `LOOKS: FAILED`;
-                dailyHistory.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'failed'});
-
-                if (dailyHistory.length > 0) db.history[db.lastDate] = dailyHistory;
-                
-                db.activeRewards = []; 
-                
-                if (totalTasks > 0) {
-                    if (scorePercent >= 80) {
-                        let numRewards = scorePercent === 100 ? 5 : 4; 
-                        let availableNormals = karmaRewards.filter(r => r.type === "small" || r.type === "big");
-                        
-                        for(let i=0; i<numRewards; i++) {
-                            let rdm = availableNormals[Math.floor(Math.random() * availableNormals.length)];
-                            db.activeRewards.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
-                        }
-
-                        if (db.player.streak >= 3) {
-                            let availableKings = karmaRewards.filter(r => r.type === "king" && (r.days === "all" || r.days.includes(dayOfWeek)));
-                            if(availableKings.length > 0) {
-                                let rdmKing = availableKings[Math.floor(Math.random() * availableKings.length)];
-                                db.activeRewards.push({ id: Date.now() + 100, text: rdmKing.text, type: "king" });
-                            }
-                        }
+            document.getElementById('active-penalties').innerHTML = sys.penalties.length ? sys.penalties.map((p,i) => {
+                if(p.type === 'RELAPSE') {
+                    const now = Date.now();
+                    const unlockStart = p.targetTime; 
+                    const unlockEnd = new Date(p.targetTime); unlockEnd.setHours(23, 59, 59, 999);
+                    
+                    if(now >= unlockStart && now <= unlockEnd.getTime()) {
+                        return `<li class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-red-900 pb-4 mb-2 gap-4 text-red-500">
+                            <span class="text-xl">${p.text}</span>
+                            <button onclick="clearPenalty(${i})" class="btn-interact btn-complete px-8 py-3 w-full md:w-auto text-lg tracking-widest">COMPLETE (UNLOCKED)</button>
+                        </li>`;
                     } else {
-                        let numPenalties = scorePercent <= 50 ? 5 : 4; 
-                        let availableSmallBig = karmaPenalties.filter(p => p.type === "small" || p.type === "big");
-                        let availableExtreme = karmaPenalties.filter(p => p.type === "extreme");
+                        const unlockStr = new Date(p.targetTime).toLocaleString();
+                        return `<li class="flex flex-col border-b border-red-900 pb-4 mb-2 gap-2 text-red-500 opacity-80">
+                            <span class="text-xl">${p.text}</span>
+                            <span class="text-sm text-slate-500 tracking-widest">LOCKED. UNLOCKS ON 7TH DAY AFTER: ${unlockStr}</span>
+                        </li>`;
+                    }
+                } else {
+                    return `<li class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-red-900 pb-4 mb-2 gap-4 text-red-400">
+                        <span class="text-xl">${p.text}</span>
+                        <button onclick="clearPenalty(${i})" class="btn-interact btn-complete px-8 py-3 w-full md:w-auto text-lg tracking-widest">COMPLETE</button>
+                    </li>`;
+                }
+            }).join('') : '<li class="text-slate-600 text-lg">SYSTEM CLEAR</li>';
 
-                        for(let i=0; i<numPenalties; i++) {
-                            let isExtreme = Math.random() < 0.2 && scorePercent <= 50; 
-                            let pool = isExtreme ? availableExtreme : availableSmallBig;
-                            let rdm = pool[Math.floor(Math.random() * pool.length)];
-                            db.activePenalties.push({ id: Date.now() + i, text: rdm.text, type: rdm.type });
-                        }
+            if (document.getElementById('page-karma').classList.contains('active')) renderChart();
+        }
+
+        // 7 DAY RELAPSE LOCK & EXTEND LOGIC
+        function checkRelapsePenalties() {
+            let changed = false;
+            sys.penalties.forEach(p => {
+                if (p.type === 'RELAPSE') {
+                    const now = Date.now();
+                    const targetEnd = new Date(p.targetTime);
+                    targetEnd.setHours(23, 59, 59, 999);
+                    
+                    if (now > targetEnd.getTime()) {
+                        p.targetTime += 7 * 24 * 60 * 60 * 1000;
+                        changed = true;
                     }
                 }
-
-                db.today = []; db.lastDate = currDate; 
-                db.awakening.combat = { pushups: 0, pullups: 0, squats: 0, core: 0 }; db.awakening.looks = { oil: false, water: false, mewing: false, skin: false, posture: false };
-                
-                save();
-            }
+            });
+            if(changed) saveState();
         }
 
-        function forceDayReset() { 
-            if(confirm("Force Day Reset? Will calculate 80% Law and update Karma.")) { 
-                let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-                db.lastDate = yesterday.toLocaleDateString(); 
-                checkReset(); closeStatusModal(); showSystemAlert("SYSTEM RESET", "Time advanced.", "info"); 
-            } 
-        }
-        
-        function updateDayTimer() { 
-            const now = new Date(); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); const diff = tomorrow - now; 
-            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0'); 
-            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0'); 
-            const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0'); 
-            document.querySelectorAll('.dayCountdownText').forEach(el => el.innerText = `${h}:${m}:${s}`); 
+        function renderChart() {
+            const ctx = document.getElementById('weekChart').getContext('2d');
+            if(weekChartInst) weekChartInst.destroy();
+            const labels = sys.history.map(h => h.date.substring(0,5));
+            const data = sys.history.map(h => h.score);
+            weekChartInst = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: labels.length ? labels : ['NO DATA'], datasets: [{ label: 'SYNC %', data: data.length ? data : [0], backgroundColor: '#3b82f6', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }
+            });
         }
 
-        // ==========================================
-        // RENDER DOM
-        // ==========================================
-        function render() {
-            document.getElementById('playerLvl').innerText = db.player.level; document.getElementById('playerStreak').innerText = db.player.streak; document.getElementById('hpText').innerText = db.player.hp + '/100'; document.getElementById('hpBar').style.width = db.player.hp + '%'; 
-            let maxExp = db.player.level * 50; document.getElementById('expText').innerText = db.player.exp + '/' + maxExp; document.getElementById('expBar').style.width = ((db.player.exp / maxExp) * 100) + '%';
-            
-            document.getElementById('nofapDays').innerText = db.awakening.noFapStreak;
-            document.getElementById('lastRelapseDateDisplay').innerText = db.awakening.noFapLastDate || "NEVER";
-            
-            let dailyLosses = db.trading.filter(t => t.date === new Date().toLocaleDateString() && t.result === 'LOSS').length;
-            const alertBox = document.getElementById('drawdownAlertBox');
-            if(dailyLosses >= 2) { alertBox.classList.remove('hidden'); if(!alertBox.dataset.alarmPlayed) { triggerSiren(); alertBox.dataset.alarmPlayed = "true"; } } else { alertBox.classList.add('hidden'); alertBox.dataset.alarmPlayed = ""; }
-            
-            // RENDERING KARMA ENGINE (REWARDS & PENALTIES)
-            const pactSec = document.getElementById('pactSection');
-            let karmaHtml = '';
-            
-            if(db.activeRewards.length === 0 && db.activePenalties.length === 0) {
-                karmaHtml = `<div class="bento-card p-6 text-center border-slate-800 opacity-60"><p class="font-bold text-slate-500 tracking-widest"><i data-lucide="scale" size="18" class="inline mr-2"></i> NO KARMA PENDING. COMPLETE TASKS TODAY TO UNLOCK TOMORROW.</p></div>`;
-            } else {
-                let rewardsHtml = db.activeRewards.map(r => `
-                    <div class="p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3 border-l-4 border-emerald-500 bg-black border-y-2 border-r-2 border-slate-800">
-                        <div class="flex items-center gap-4 w-full">
-                            <div class="bg-emerald-500/10 p-2 rounded-lg text-emerald-400"><i data-lucide="gift" size="20"></i></div>
-                            <div class="flex-1"><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${r.text}</p><p class="text-[10px] text-emerald-500 font-bold tracking-widest mt-1">EXPIRES AT MIDNIGHT</p></div>
-                        </div>
-                        <button onclick="claimReward(${r.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-black text-xs tracking-widest btn-interact w-full md:w-auto flex-shrink-0 border-b-4 border-emerald-800">CLAIM</button>
-                    </div>
-                `).join('');
-                
-                let penaltiesHtml = db.activePenalties.map(p => `
-                    <div class="p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3 border-l-4 border-rose-500 bg-[#0a0505] border-y-2 border-r-2 border-rose-900/30">
-                        <div class="flex items-center gap-4 w-full">
-                            <div class="bg-rose-500/10 p-2 rounded-lg text-rose-500"><i data-lucide="skull" size="20"></i></div>
-                            <div class="flex-1"><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${p.text}</p><p class="text-[10px] text-rose-500 font-bold tracking-widest mt-1">CARRY FORWARD (STACKS)</p></div>
-                        </div>
-                        <button onclick="markPenaltyDone(${p.id})" class="bg-rose-700 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-black text-xs tracking-widest btn-interact w-full md:w-auto flex-shrink-0 border-b-4 border-rose-900">MARK DONE</button>
-                    </div>
-                `).join('');
+        function clearReward(i) { sys.rewards.splice(i, 1); saveState(); updateAllUI(); }
+        function clearPenalty(i) { sys.penalties.splice(i, 1); saveState(); updateAllUI(); }
 
-                karmaHtml = `
-                    <div class="flex flex-col gap-4">
-                        ${db.activePenalties.length > 0 ? `<div><h4 class="text-sm font-black text-rose-500 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" size="18"></i> ACTIVE PENALTIES (DO NOT IGNORE)</h4><div class="flex flex-col gap-3">${penaltiesHtml}</div></div>` : ''}
-                        ${db.activeRewards.length > 0 ? `<div class="${db.activePenalties.length > 0 ? 'mt-4 pt-4 border-t-2 border-slate-800' : ''}"><h4 class="text-sm font-black text-emerald-400 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="star" size="18"></i> UNLOCKED REWARDS (EXPIRES TODAY)</h4><div class="flex flex-col gap-3">${rewardsHtml}</div></div>` : ''}
+        // --- 5. GRIND (TASKS) ---
+        function addTask() {
+            const val = document.getElementById('task-input').value.trim();
+            if(!val) return;
+            sys.tasks.push({ t: val, done: false });
+            document.getElementById('task-input').value = '';
+            saveState(); updateAllUI();
+        }
+        function toggleTask(i) { sys.tasks[i].done = !sys.tasks[i].done; saveState(); updateAllUI(); }
+        function delTask(i) { sys.tasks.splice(i, 1); saveState(); updateAllUI(); }
+        function updateTasksUI() {
+            document.getElementById('task-list').innerHTML = sys.tasks.map((t, i) => `
+                <div class="bento p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${t.done ? 'border-emerald-900 bg-emerald-900/10 opacity-60' : ''}">
+                    <span class="text-2xl ${t.done ? 'line-through text-emerald-500' : 'text-white'} break-words flex-1">${t.t}</span>
+                    <div class="flex gap-4 w-full md:w-auto shrink-0">
+                        <button onclick="toggleTask(${i})" class="btn-interact btn-complete px-8 py-4 flex-1 md:flex-none text-lg tracking-widest">${t.done ? 'UNDO' : 'COMPLETE'}</button>
+                        <button onclick="delTask(${i})" class="btn-interact btn-delete px-8 py-4 flex-1 md:flex-none text-lg tracking-widest">DELETE</button>
                     </div>
-                `;
-            }
-            
-            pactSec.innerHTML = `<div class="flex flex-col gap-2"><p class="text-xs font-bold text-indigo-400 tracking-widest mb-3"><i data-lucide="dices" size="14" class="inline"></i> KARMA ENGINE</p>${karmaHtml}</div>`;
-            
-            document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="bento-card p-4 md:p-5 flex justify-between items-center group relative z-10 hover:bg-white/[0.02] transition-colors border border-transparent hover:border-white/10"><div class="flex items-center gap-4 w-full"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-2 border-slate-700 bg-black flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-600 border-indigo-500 text-white' : 'text-transparent'} transition-all">${t.done ? '<i data-lucide="check" size="20"></i>' : ''}</button><p class="font-bold text-base md:text-lg leading-snug flex-1 ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}" style="text-transform:none;">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact flex-shrink-0"><i data-lucide="x" size="24"></i></button></div>`).join('');
-            document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { 
-                let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; 
-                let contentClass = isDone ? 'raid-card-done' : (isAborted ? 'raid-card-failed' : 'raid-card-active'); 
-                let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-black py-2 px-4 rounded-xl text-rose-500 font-black tracking-widest text-sm flex items-center gap-2 border-2 border-rose-900/50"><i data-lucide="target" size="16" class="animate-pulse"></i><span id="timer_${t.id}" class="tabular-nums hud-text">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-slate-500 font-black text-[10px] tracking-widest">ABORTED</div>` : '')); 
-                let buttons = t.status === 'active' ? `<div class="flex flex-col sm:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600 text-white hover:bg-emerald-500 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-800 flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="check" size="20"></i> CLEAR RAID</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black border-2 border-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-500 hover:border-rose-900 py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="x" size="20"></i> ABORT</button></div>` : ``; 
-                return `<div class="raid-card p-6 md:p-8 ${contentClass} transition-all"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-base md:text-lg tracking-wide text-white ${isAborted ? 'text-slate-500 line-through' : ''} ${isDone ? 'text-emerald-400' : ''}" style="text-transform:none;">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; 
-            }).join(''); startTaskTimers();
+                </div>
+            `).join('');
+        }
 
-            document.getElementById('roadmapsContainer').innerHTML = db.roadmaps.map(rm => {
-                let stepsHtml = rm.steps.map((s, idx) => { let isPrevDone = idx === 0 ? true : rm.steps[idx-1].done; let isLocked = !isPrevDone && !s.done; let statusIcon = s.done ? '<i data-lucide="check-circle" class="text-emerald-400" size="24"></i>' : (isLocked ? '<i data-lucide="lock" class="text-slate-700" size="20"></i>' : '<i data-lucide="circle" class="text-amber-500" size="20"></i>'); let textClass = s.done ? 'text-slate-600 line-through' : (isLocked ? 'text-slate-500' : 'text-white'); let btnHtml = (isLocked || s.done) ? '' : `<button onclick="toggleRmStep(${rm.id}, ${s.id})" class="h-12 w-12 bg-amber-500 text-black flex items-center justify-center rounded-xl hover:bg-white transition-all ml-auto btn-interact border-b-4 border-amber-700"><i data-lucide="check" size="24"></i></button>`; return `<div class="flex items-stretch gap-5 relative">${idx !== rm.steps.length - 1 ? `<div class="absolute top-8 left-[11px] w-[2px] h-[calc(100%-1.5rem)] bg-slate-800"></div>` : ''}<div class="mt-4 z-10 rounded-full flex items-center justify-center h-6 w-6 bg-[#0c0c0e]">${statusIcon}</div><div class="flex-1 bg-black border-2 border-slate-800 p-5 rounded-2xl mb-4 flex items-center justify-between"><div><p class="font-black text-sm md:text-base ${textClass}" style="text-transform:none;">${s.text}</p><p class="text-[10px] font-bold text-amber-500 mt-2 tracking-widest">TARGET: ${s.date}</p></div>${btnHtml}</div></div>`; }).join('');
-                return `<div class="bento-card p-6 md:p-8 border-t-4 border-amber-500 relative group z-10"><button onclick="deleteRoadmap(${rm.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="24"></i></button><h3 class="text-2xl font-black text-amber-400 mb-8 flex items-center gap-3"><i data-lucide="flag" size="28"></i> ${rm.title}</h3><div class="mb-8 pl-2">${stepsHtml}</div><div class="flex flex-col sm:flex-row gap-3 border-t-2 border-slate-800 pt-6"><input type="text" id="rmStepText_${rm.id}" placeholder="Next Milestone..." class="w-full sm:flex-1" style="text-transform:none;"><input type="date" id="rmStepDate_${rm.id}" class="w-full sm:w-48"><button onclick="addRoadmapStep(${rm.id})" class="bg-amber-500 text-black px-8 py-4 rounded-xl font-black btn-interact text-sm w-full sm:w-auto border-b-4 border-amber-700">ADD</button></div></div>`;
+        // --- 6. RAIDS ---
+        function startRaid() {
+            const name = document.getElementById('raid-name').value;
+            const d = parseInt(document.getElementById('raid-d').value) || 0;
+            const h = parseInt(document.getElementById('raid-h').value) || 0;
+            const m = parseInt(document.getElementById('raid-m').value) || 0;
+            if(!name || (d===0 && h===0 && m===0)) return;
+            const totalMs = (d * 86400000) + (h * 3600000) + (m * 60000);
+            sys.raids.push({ name, target: Date.now() + totalMs, failed: false });
+            
+            document.getElementById('raid-name').value = ''; document.getElementById('raid-d').value = ''; document.getElementById('raid-h').value = ''; document.getElementById('raid-m').value = '';
+            saveState(); updateRaidsUI();
+        }
+        function clearRaid(idx) { sys.raids.splice(idx, 1); saveState(); updateRaidsUI(); }
+        function tickRaids() {
+            if(!document.getElementById('page-raids').classList.contains('active')) return;
+            let changed = false;
+            sys.raids.forEach(r => { const left = r.target - Date.now(); if(left <= 0 && !r.failed) { r.failed = true; changed = true; } });
+            if(changed) saveState(); updateRaidsUI();
+        }
+        function updateRaidsUI() {
+            document.getElementById('raid-list').innerHTML = sys.raids.map((r, i) => {
+                const left = Math.max(0, r.target - Date.now());
+                const d = Math.floor(left / 86400000), h = Math.floor((left % 86400000) / 3600000), m = Math.floor((left % 3600000) / 60000), s = Math.floor((left % 60000) / 1000);
+                const timeStr = r.failed ? "MISSION FAILED" : `${d}D : ${h}H : ${m}M : ${s}S`;
+                const color = r.failed ? "text-red-500" : "text-yellow-400";
+                return `
+                <div class="bento p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 ${r.failed ? 'border-red-900 bg-red-900/10' : ''}">
+                    <div class="flex-1"><div class="text-2xl text-white mb-2">${r.name}</div><div class="text-3xl ${color} font-black tracking-widest">${timeStr}</div></div>
+                    <button onclick="clearRaid(${i})" class="btn-interact btn-delete px-10 py-4 w-full md:w-auto text-xl tracking-widest">DELETE</button>
+                </div>`;
             }).join('');
-            let balEl = document.getElementById('walletBalanceDisplay'); balEl.innerText = db.wallet.balance;
-            if(db.wallet.balance < 0) { balEl.parentElement.classList.remove('text-white'); balEl.parentElement.classList.add('text-rose-500'); } else { balEl.parentElement.classList.add('text-white'); balEl.parentElement.classList.remove('text-rose-500'); }
-            document.getElementById('expensesList').innerHTML = db.expenses.map(e => `<div class="bento-card p-5 flex justify-between items-center border-l-4 ${e.type === 'in' ? 'border-emerald-500' : 'border-rose-500'} transition-all hover:bg-[#18181b] border-t-0 border-r-0 border-b-0"><div class="flex flex-col"><span class="font-black text-base text-white" style="text-transform:none;">${e.title}</span><span class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${e.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-2xl ${e.type === 'in' ? 'text-emerald-400' : 'text-rose-400'} tabular-nums hud-text">${e.type === 'in' ? '+' : '-'} ₹${e.amt}</span><button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact"><i data-lucide="trash-2" size="24"></i></button></div></div>`).join('');
-            document.getElementById('careerList').innerHTML = db.career.map(j => { let sColor = j.status === 'APPLIED' ? 'text-white' : j.status === 'INTERVIEW' ? 'text-amber-400' : j.status === 'OFFERED' ? 'text-emerald-400' : 'text-rose-500'; return `<div class="bento-card p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 transition-colors hover:border-slate-700"><div class="flex-1"><h3 class="font-black text-base text-white" style="text-transform:none;">${j.comp}</h3><p class="text-[10px] text-slate-500 font-bold tracking-widest mt-1">${j.role} &nbsp;|&nbsp; ${j.date}</p></div><div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto"><select onchange="updateJobStatus(${j.id}, this.value)" class="w-full sm:w-auto font-black text-sm ${sColor} cursor-pointer bg-black border-2 border-slate-800"><option value="APPLIED" ${j.status==='APPLIED'?'selected':''}>APPLIED</option><option value="INTERVIEW" ${j.status==='INTERVIEW'?'selected':''}>INTERVIEW</option><option value="OFFERED" ${j.status==='OFFERED'?'selected':''}>OFFERED</option><option value="REJECTED" ${j.status==='REJECTED'?'selected':''}>REJECTED</option></select><button onclick="deleteJob(${j.id})" class="w-full sm:w-auto text-slate-600 hover:text-rose-500 p-4 bg-black border-2 border-slate-800 rounded-xl transition btn-interact flex items-center justify-center"><i data-lucide="trash-2" size="20"></i></button></div></div>`; }).join('');
-            document.getElementById('tradeCapitalDisplay').innerText = db.tradeCapital;
-            document.getElementById('tradingList').innerHTML = db.trading.map(t => `<div onclick="openTradeModal(${t.id})" class="bento-card p-6 border-l-4 ${t.result === 'WIN' ? 'border-emerald-500' : 'border-rose-500'} flex justify-between items-center cursor-pointer transition-colors hover:border-slate-700 border-t-0 border-r-0 border-b-0"><div class="flex items-center gap-4"><span class="font-black text-base text-white">${t.index}</span><span class="text-[10px] bg-black px-3 py-1.5 rounded-lg border-2 border-slate-800 text-slate-400 font-bold hidden md:block tracking-widest">${t.date}</span></div><div class="flex items-center gap-4"><span class="font-black text-xl hud-text ${t.result === 'WIN' ? 'text-emerald-400' : 'text-rose-500'}">${t.result}</span><i data-lucide="chevron-right" class="text-slate-600" size="24"></i></div></div>`).join('');
-            document.getElementById('combatPushups').value = db.awakening.combat.pushups; document.getElementById('combatPullups').value = db.awakening.combat.pullups; document.getElementById('combatSquats').value = db.awakening.combat.squats; document.getElementById('combatCore').value = db.awakening.combat.core;
-            
-            let hDate = new Date(db.awakening.lastHaircut); 
-            if (isNaN(hDate.getTime())) { let parts = db.awakening.lastHaircut.split('/'); if(parts.length === 3) hDate = new Date(parts[2], parts[1]-1, parts[0]); else hDate = new Date(); }
-            let daysPassed = Math.floor((new Date() - hDate) / (1000*60*60*24)); 
-            if (isNaN(daysPassed) || daysPassed < 0) daysPassed = 0;
-            let hcDisplay = document.getElementById('haircutDaysDisplay'); hcDisplay.innerHTML = `${daysPassed}`; if(daysPassed >= 20) hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-rose-500 hud-text"; else hcDisplay.className = "text-7xl font-black tabular-nums my-4 text-white hud-text";
-            
-            const looksMap = [ {id: 'oil', label: 'FACE WASH (AM/PM)'}, {id: 'water', label: 'HYDRATION (4L)'}, {id: 'mewing', label: 'JAWLINE MEWING'}, {id: 'skin', label: 'SKINCARE'}, {id: 'posture', label: 'POSTURE CHECK'} ]; document.getElementById('looksChecklist').innerHTML = looksMap.map(l => `<label class="flex items-center justify-between bg-black p-5 rounded-xl border-2 border-slate-800 hover:border-slate-600 transition-colors cursor-pointer group"><span class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">${l.label}</span><input type="checkbox" onchange="toggleLooks('${l.id}')" ${db.awakening.looks[l.id] ? 'checked' : ''} class="w-6 h-6 accent-indigo-600 cursor-pointer rounded"></label>`).join('');
-            const sortedDiaryDates = Object.keys(db.diary).sort((a,b) => new Date(b) - new Date(a)); document.getElementById('diaryDisplay').innerHTML = sortedDiaryDates.map(date => { let safeId = 'diary_' + date.replace(/[^a-zA-Z0-9]/g, '_'); return `<div class="bento-card p-6 md:p-8 border-t-4 border-indigo-500 transition-all"><p class="text-[10px] text-indigo-400 font-bold mb-4 flex items-center gap-2 tracking-widest"><i data-lucide="calendar" size="16"></i> ${date}</p><p id="${safeId}" class="text-base font-bold text-slate-200 line-clamp-3 transition-all leading-relaxed" style="text-transform: none; white-space: pre-wrap;">${db.diary[date]}</p><button onclick="toggleDiaryText('${safeId}', this)" class="text-[10px] font-black text-white mt-5 flex items-center gap-2 bg-slate-800 px-5 py-3 rounded-xl border-2 border-slate-700 btn-interact tracking-widest border-b-4 border-slate-900">READ MORE <i data-lucide="chevron-down" size="14"></i></button></div>`; }).join('');
-            document.getElementById('skillsContainer').innerHTML = db.skills.map(s => { let sMax = s.level * 100; let sPercent = (s.exp / sMax) * 100; return `<div class="bento-card p-6 md:p-8 border-t-4 border-purple-500 relative group z-10"><button onclick="deleteSkill(${s.id})" class="absolute top-6 right-6 text-slate-600 hover:text-rose-500 transition-colors btn-interact"><i data-lucide="trash-2" size="24"></i></button><div class="flex justify-between items-end mb-6 pr-10"><div><h3 class="font-black text-2xl text-white" style="text-transform:none;">${s.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-2 tracking-widest">LATEST: <span class="text-white" style="text-transform:none;">${s.lastRemark}</span></p></div><div class="text-right"><p class="text-[10px] font-bold text-slate-500 tracking-widest mb-1">LEVEL</p><p class="text-5xl font-black text-purple-400 hud-text">${s.level}</p></div></div><div class="flex justify-between text-xs font-bold mb-2 text-slate-400"><span>EXPERIENCE</span><span>${s.exp}/${sMax}</span></div><div class="bar-bg mb-6"><div class="skill-fill" style="width: ${sPercent}%;"></div></div><div class="flex flex-col sm:flex-row gap-3"><input type="text" id="skillRemark_${s.id}" placeholder="Log Progress..." class="w-full sm:flex-1" style="text-transform:none;"><button onclick="trainSkill(${s.id})" class="w-full sm:w-auto bg-white text-black px-8 py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-slate-300">GRIND</button></div></div>`; }).join('');
-            
-            const dates = [...new Set([...Object.keys(db.history), db.lastDate])].sort((a,b) => new Date(b) - new Date(a)); 
-            document.getElementById('historyContainer').innerHTML = dates.map(date => { 
-                let logArray = []; 
-                if(date === db.lastDate) { 
-                    db.today.forEach(t => logArray.push({text: t.text, state: t.done ? 'done' : 'active'})); 
-                    db.timed.forEach(t => logArray.push({text: t.text + ` (${t.durationStr})`, state: t.status})); 
-                    let combatStr = `COMBAT: ${db.awakening.combat.pushups}PU | ${db.awakening.combat.pullups}PL | ${db.awakening.combat.squats}SQ | ${db.awakening.combat.core}s`;
-                    logArray.push({text: combatStr, state: (db.awakening.combat.pushups>0||db.awakening.combat.pullups>0||db.awakening.combat.squats>0||db.awakening.combat.core>0) ? 'done':'active'});
-                    let looksArr = [];
-                    if(db.awakening.looks.oil) looksArr.push("WASH");
-                    if(db.awakening.looks.water) looksArr.push("WATER");
-                    if(db.awakening.looks.mewing) looksArr.push("MEWING");
-                    if(db.awakening.looks.skin) looksArr.push("SKIN");
-                    if(db.awakening.looks.posture) looksArr.push("POSTURE");
-                    let looksStr = looksArr.length > 0 ? `LOOKS: ${looksArr.join(', ')}` : `LOOKS: PENDING`;
-                    logArray.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'active'});
-                } else { logArray = db.history[date] || []; } 
-                if(logArray.length === 0) return ''; 
-                return `<div class="bento-card p-6 md:p-8 border-l-4 border-indigo-500 border-t-0 border-r-0 border-b-0"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-4">${logArray.map(t => `<p class="font-bold text-sm tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug" style="text-transform:none;">${t.text}</span></p>`).join('')}</div></div>`; 
-            }).join('');
-            lucide.createIcons();
         }
 
-        checkLoginStreak(); checkReset(); render(); updateSystemVoice(); setInterval(checkReset, 60000); setInterval(updateDayTimer, 1000); updateDayTimer();
+        // --- 7. TRADING (STRICT BLOCKER) ---
+        function logTrade() {
+            const asset = document.getElementById('trade-asset').value;
+            const status = document.getElementById('trade-status').value;
+            if(!asset) return;
+            if(sys.trades.length > 0 && sys.trades[0].status === 'CONTINUE' && status === 'CONTINUE') { alert("SYSTEM BLOCK: YOU MUST CLOSE YOUR PREVIOUS ACTIVE POSITION FIRST."); return; }
+            sys.trades.unshift({ asset, status, pnl: document.getElementById('trade-pnl').value || '0', date: new Date().toLocaleString() });
+            saveState(); updateAllUI();
+        }
+        function updateTradesUI() {
+            document.getElementById('trade-history').innerHTML = sys.trades.map(t => {
+                let col = t.status === 'WIN' ? 'text-emerald-500' : (t.status === 'LOSS' ? 'text-red-500' : 'text-yellow-500');
+                return `<div class="bento p-4 mb-4 flex justify-between items-center"><div class="flex flex-col"><span class="text-white text-2xl mb-1">${t.asset}</span><span class="text-sm text-slate-500 tracking-widest">${t.date}</span></div><div class="text-right flex flex-col"><span class="${col} font-bold text-2xl tracking-widest mb-1">${t.status}</span><span class="text-slate-400 text-xl">$${t.pnl}</span></div></div>`;
+            }).join('');
+        }
+
+        // --- 8. WALLET ---
+        function transact(type) {
+            const amt = parseFloat(document.getElementById('wallet-amt').value);
+            if(!amt || amt <= 0) return;
+            sys.balance += (type === 'IN' ? amt : -amt);
+            sys.wallet.unshift({ type, amt, tag: document.getElementById('wallet-tag').value || "UNSPECIFIED", date: new Date().toLocaleString() });
+            document.getElementById('wallet-amt').value = ''; document.getElementById('wallet-tag').value = '';
+            saveState(); updateAllUI();
+        }
+        function updateWalletUI() {
+            document.getElementById('wallet-balance').innerText = `₹${sys.balance.toLocaleString()}`;
+            document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `<div class="bento p-4 mb-4 flex justify-between items-center"><div class="flex flex-col"><span class="text-white text-xl mb-1">${w.tag}</span><span class="text-sm text-slate-500 tracking-widest">${w.date}</span></div><div class="${w.type === 'IN' ? 'text-emerald-500' : 'text-red-500'} text-3xl font-black tracking-widest">${w.type === 'IN' ? '+' : '-'}₹${w.amt}</div></div>`).join('');
+        }
+
+        // --- 9. AWAKEN RELAPSE ---
+        function reportRelapse() {
+            const now = new Date();
+            sys.lastRelapse = now.toLocaleString().toUpperCase();
+            
+            const targetDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            targetDate.setHours(22, 0, 0, 0);
+
+            const extremePool = PENALTIES_DB.slice(-16); 
+            const curse = extremePool[Math.floor(Math.random() * extremePool.length)];
+
+            sys.penalties.push({ text: `7-DAY RELAPSE LOCK: ${curse}`, type: 'RELAPSE', targetTime: targetDate.getTime() });
+            saveState(); updateAllUI(); 
+            alert("CRITICAL BREACH RECORDED. 7-DAY HARD LOCKDOWN INITIATED.");
+        }
+
+        // --- 10. SYSTEM ROOT (FACTORY RESET 50 WORD BLOCKER) ---
+        function factoryReset() {
+            const reason = document.getElementById('reset-reason').value.trim();
+            const wordCount = reason.split(/\s+/).filter(w => w.length > 0).length;
+
+            if(wordCount < 50) {
+                alert(`SYSTEM REJECTED: EXPLANATION TOO WEAK. MINIMUM 50 WORDS REQUIRED. CURRENT WORD COUNT: ${wordCount}`);
+                return;
+            }
+
+            const now = new Date().toLocaleString().toUpperCase();
+            localStorage.clear(); 
+            
+            // Re-init with just the wipe date
+            sys = { 
+                lastEvalDate: new Date().toLocaleDateString(),
+                lastPurgeMonth: new Date().getMonth(),
+                lastWipe: now,
+                tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
+                lastRelapse: "PURE", rewards: [], penalties: [], history: []
+            };
+            saveState();
+            alert("SYSTEM NUKED SUCCESSFULLY.");
+            location.reload();
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
