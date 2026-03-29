@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HappySam | Heavy Armor v48 (Fresh)</title>
+    <title>HappySam | Heavy Armor v50</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -78,9 +78,6 @@
         .checkbox-custom:checked + label span { color: #09090b; font-weight: 900;}
         .tab-content { animation: dropIn 0.3s ease-out; }
         @keyframes dropIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .karma-reward { border-left: 4px solid #10b981; background: #020617; }
-        .karma-penalty { border-left: 4px solid #e11d48; background: #1a0505; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen pb-24 md:pb-0 relative">
@@ -104,6 +101,11 @@
         <div class="bento-card p-6 md:p-8 w-full max-w-md modal-enter relative overflow-y-auto max-h-[90vh]">
             <button onclick="closeStatusModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl btn-interact"><i data-lucide="x" size="20"></i></button>
             <h2 class="text-2xl font-black mb-6 text-center border-b border-slate-800 pb-4">SYSTEM ROOT</h2>
+            
+            <div id="storageWarning" class="bg-rose-950/50 border border-rose-500 text-rose-500 p-3 rounded-xl mb-4 hidden font-bold text-xs text-center tracking-widest">
+                <i data-lucide="alert-triangle" size="14" class="inline mr-1"></i> HIGH STORAGE DETECTED!
+            </div>
+
             <div class="space-y-4 mb-8">
                 <div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="check-square" size="16"></i> TOTAL QUESTS</span><span id="statQuests" class="text-2xl font-black text-white tabular-nums hud-text">0</span></div>
                 <div class="flex justify-between items-center bg-black p-5 rounded-xl border-2 border-slate-800"><span class="text-xs font-bold text-slate-400 flex items-center gap-2"><i data-lucide="target" size="16"></i> WIN RATE</span><span id="statWinRate" class="text-2xl font-black text-emerald-400 tabular-nums hud-text">0%</span></div>
@@ -118,7 +120,7 @@
             </div>
             <div class="mt-6 flex flex-col gap-3">
                 <button onclick="forceDayReset()" class="w-full bg-rose-600 text-white py-4 rounded-xl font-black btn-interact text-sm border-b-4 border-rose-800"><i data-lucide="refresh-cw" size="18" class="inline mr-2"></i> FORCE DAY RESET</button>
-                <button onclick="nukeSystem()" class="w-full bg-black text-rose-500 border-2 border-rose-900 hover:bg-rose-950 py-4 rounded-xl font-black btn-interact text-sm"><i data-lucide="alert-triangle" size="18" class="inline mr-2"></i> FACTORY RESET (WIPE DATA)</button>
+                <button onclick="nukeSystem()" class="w-full bg-black text-rose-500 border-2 border-rose-900 hover:bg-rose-950 py-4 rounded-xl font-black btn-interact text-sm"><i data-lucide="alert-triangle" size="18" class="inline mr-2"></i> FACTORY RESET (WIPE ALL DATA)</button>
             </div>
         </div>
     </div>
@@ -134,7 +136,7 @@
             <button onclick="switchTab('diary')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="diary"><i data-lucide="book-open" size="20"></i> <span>DIARY</span></button>
             <button onclick="switchTab('history')" class="d-nav-btn flex items-center gap-4 p-4 rounded-xl text-slate-500 hover:bg-slate-900 hover:text-white transition-all border-2 border-transparent font-black" data-tab="history"><i data-lucide="pie-chart" size="20"></i> <span>STATS</span></button>
         </nav>
-        <div class="mt-auto bento-card p-5 text-center">
+        <div class="mt-auto bento-card p-5 text-center border-t-4 border-rose-900">
             <p class="text-xs text-slate-500 font-bold mb-1">DAY RESETS IN</p>
             <p class="dayCountdownText font-black text-rose-500 text-xl tabular-nums mt-1 hud-text">00:00:00</p>
         </div>
@@ -188,7 +190,7 @@
         <div id="systemVoiceBox" class="bento-card p-6 md:p-8 text-center flex flex-col items-center justify-center">
             <p class="text-xs font-bold text-indigo-500 mb-3 flex items-center gap-2"><i data-lucide="terminal" size="14"></i> SYSTEM LOG</p>
             <p id="systemVoice" class="text-lg md:text-xl font-bold text-white leading-relaxed system-voice">
-                "Arise."<span class="text-indigo-500 typewriter-cursor ml-1">|</span>
+                "Arise."<span class="text-indigo-500 typewriter-cursor">|</span>
             </p>
         </div>
 
@@ -449,23 +451,43 @@
 
     <script>
         // ==========================================
-        // DATABASE MIGRATION & INIT (V47 - Fully Fixed)
+        // DATABASE MIGRATION, CLEANUP & INIT (V50 - INFINITY)
         // ==========================================
-        let oldDb = JSON.parse(localStorage.getItem('happysam_v46_final')) || JSON.parse(localStorage.getItem('happysam_v45_karma'));
+        const CURRENT_VERSION = 'happysam_v50_infinity';
         let db;
+
+        // 1. EXTRACT LATEST DATA FROM ANY PREVIOUS VERSION (If exists)
+        let latestData = null;
+        let oldKeys = ['happysam_v49_phoenix', 'happysam_v48_fresh', 'happysam_v47_real', 'happysam_v46_final', 'happysam_v45_karma'];
+        for(let key of oldKeys) {
+            let data = localStorage.getItem(key);
+            if(data) {
+                try { latestData = JSON.parse(data); break; } catch(e){}
+            }
+        }
+        
+        // 2. LOAD OR MIGRATE
         try {
-            db = JSON.parse(localStorage.getItem('happysam_v48_fresh')) || {};
+            db = JSON.parse(localStorage.getItem(CURRENT_VERSION)) || latestData || {};
         } catch(e) {
             db = {};
         }
+
+        // 3. 🧹 THE DEEP CLEANER: NUKE ALL OLD VERSIONS TO FREE UP 5MB QUOTA!
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            let key = localStorage.key(i);
+            if (key && key.startsWith('happysam_') && key !== CURRENT_VERSION) {
+                localStorage.removeItem(key);
+                console.log("Deleted old ghost file: " + key);
+            }
+        }
         
-        // Remove old garbage if carrying over
-        if (db.pact) { delete db.pact; } 
         if (db.history) { Object.keys(db.history).forEach(key => { if (key.startsWith("Test_Reset_")) { delete db.history[key]; } }); }
         
         if (!db.player) db.player = { level: 1, exp: 0, hp: 100, streak: 0, lastLogin: "" };
         if (!db.activeRewards) db.activeRewards = [];
         if (!db.activePenalties) db.activePenalties = [];
+        if (db.pact) { delete db.pact; }
         
         if (!db.skills) db.skills = [];
         if (!db.career) db.career = [];
@@ -604,8 +626,27 @@
         }
 
         function save() { 
-            try { localStorage.setItem('happysam_v48_fresh', JSON.stringify(db)); render(); updateSystemVoice(); } 
-            catch (e) { showSystemAlert("STORAGE LIMIT", "Delete old trade logs.", "penalty"); }
+            try { 
+                localStorage.setItem(CURRENT_VERSION, JSON.stringify(db)); 
+                render(); 
+                updateSystemVoice(); 
+            } catch (e) { 
+                let cleaned = false;
+                for (let i = db.trading.length - 1; i >= 0; i--) {
+                    if (db.trading[i].img) {
+                        db.trading[i].img = "";
+                        cleaned = true;
+                        break;
+                    }
+                }
+                if (cleaned) {
+                    save(); 
+                    showSystemAlert("STORAGE LIMIT", "Auto-cleaned oldest image to save space.", "warning");
+                } else {
+                    document.getElementById('storageWarning').classList.remove('hidden');
+                    showSystemAlert("SYSTEM FAILURE", "Storage 100% full. Factory Reset required.", "penalty");
+                }
+            } 
         }
 
         function toggleDiaryText(id, btn) {
@@ -641,7 +682,6 @@
             setTimeout(() => { alertBox.classList.remove('toast-enter'); alertBox.classList.add('toast-leave'); setTimeout(() => alertBox.remove(), 500); }, 3500);
         }
 
-        let typewriterTimeout;
         function typeWriterEffect(text, elementId) {
             const el = document.getElementById(elementId);
             el.innerHTML = ''; let i = 0; clearTimeout(typewriterTimeout);
@@ -764,17 +804,30 @@
         
         async function addTrade() { 
             const fileInput = document.getElementById('tImg'); const file = fileInput.files[0]; let imgData = ""; 
-            if (file) { try { imgData = await new Promise((res, reject) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = (event) => { const img = new Image(); img.src = event.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const MAX_WIDTH = 500; const MAX_HEIGHT = 500; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); res(canvas.toDataURL('image/jpeg', 0.4)); }; img.onerror = reject; }; r.onerror = reject; }); } catch(err) { console.log(err); } } 
+            
+            // MAXIMUM AGGRESSIVE COMPRESSION TO SAVE 5MB QUOTA
+            if (file) { try { imgData = await new Promise((res, reject) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = (event) => { const img = new Image(); img.src = event.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const MAX_WIDTH = 300; const MAX_HEIGHT = 300; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); res(canvas.toDataURL('image/jpeg', 0.2)); }; img.onerror = reject; }; r.onerror = reject; }); } catch(err) { console.log(err); } } 
+            
             let setups = []; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => setups.push(cb.value));
             let pnl = parseFloat(document.getElementById('tPnL').value) || 0; if(pnl !== 0) { db.tradeCapital = parseFloat((db.tradeCapital + pnl).toFixed(2)); }
             const newTrade = { id: Date.now(), index: document.getElementById('tIndex').value || 'XAUUSD', entry: document.getElementById('tEntry').value, exit: document.getElementById('tExit').value, result: document.getElementById('tResult').value, logic: document.getElementById('tLogic').value || 'No logic provided.', pnl: pnl, setups: setups, img: imgData, date: new Date().toLocaleDateString() };
             db.trading.unshift(newTrade);
             try { 
-                localStorage.setItem('happysam_v48_fresh', JSON.stringify(db)); 
+                localStorage.setItem(CURRENT_VERSION, JSON.stringify(db)); 
                 document.getElementById('tLogic').value = ''; document.getElementById('tEntry').value = ''; document.getElementById('tExit').value = ''; fileInput.value = ''; document.getElementById('tPnL').value = ''; document.querySelectorAll('#tradeSetupChecklist input:checked').forEach(cb => cb.checked = false); 
                 const fileLabel = document.getElementById('fileLabel'); if(fileLabel) { fileLabel.innerText = "ATTACH SCREENSHOT (OPTIONAL)"; fileLabel.classList.remove('text-emerald-400'); }
                 showSystemAlert("MARKET LOGGED", "Trade intel archived.", "info"); render(); updateSystemVoice(); 
-            } catch(e) { db.trading.shift(); showSystemAlert("STORAGE FULL", "Image is too large. Clear old trades.", "penalty"); }
+            } catch(e) { 
+                let cleaned = false;
+                for (let i = db.trading.length - 1; i >= 0; i--) {
+                    if (db.trading[i].img) { db.trading[i].img = ""; cleaned = true; break; }
+                }
+                if (cleaned) {
+                    save(); showSystemAlert("STORAGE LIMIT", "Auto-cleaned oldest image.", "warning");
+                } else {
+                    db.trading.shift(); showSystemAlert("SYSTEM FAILURE", "Storage completely full. Use Factory Reset.", "penalty");
+                }
+            }
         }
         function deleteTrade(id) { if(confirm("DELETE LOG?")) { db.trading = db.trading.filter(x => x.id != id); closeTradeModal(); showSystemAlert("TRADE DELETED", "Market intel removed.", "info"); save(); } }
         function openTradeModal(id) { 
@@ -817,8 +870,8 @@
 
         function openStatusModal() { let totalTasksDone = db.today.filter(t => t.done).length + db.timed.filter(t => t.status==='done').length; Object.values(db.history).forEach(dayArr => { totalTasksDone += dayArr.filter(t => t.state==='done').length; }); let totalTrades = db.trading.length; let winTrades = db.trading.filter(t => t.result === 'WIN').length; let winRate = totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0; document.getElementById('statQuests').innerText = totalTasksDone; document.getElementById('statWinRate').innerText = winRate + '%'; document.getElementById('statusModal').classList.remove('hidden'); document.getElementById('statusModal').classList.add('flex'); }
         function closeStatusModal() { document.getElementById('statusModal').classList.add('hidden'); document.getElementById('statusModal').classList.remove('flex'); }
-        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v48_fresh.json"); dlAnchorElem.click(); }
-        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem('happysam_v48_fresh', JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
+        function exportSystem() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "HappySam_v50_infinity.json"); dlAnchorElem.click(); }
+        function importSystem(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedDB = JSON.parse(e.target.result); if(importedDB && importedDB.player) { localStorage.setItem(CURRENT_VERSION, JSON.stringify(importedDB)); location.reload(); } } catch(err) { showSystemAlert("IMPORT FAILED", "Corrupted File!", "warning"); } }; reader.readAsText(file); }
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
             let labels = []; let data = [];
@@ -827,16 +880,13 @@
             chartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Quests', data: data, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderWidth: 4, tension: 0.4, fill: true, pointBackgroundColor: '#09090b', pointBorderColor: '#6366f1', pointRadius: 6 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#18181b' }, ticks: { color: '#a1a1aa', stepSize: 1, font: {family: 'Orbitron', weight: 'bold'} } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: {family: 'Orbitron', weight: 'bold'} } } } } });
         }
         
-        // ==========================================
-        // V48 KARMA EVALUATOR (DAY RESET)
-        // ==========================================
         function checkReset() {
             const now = new Date(); const currDate = now.toLocaleDateString(); const currMonth = now.getMonth(); const dayOfWeek = now.getDay();
             if (db.savedMonth !== currMonth) { db.wallet.balance = db.wallet.balance; db.expenses = []; db.savedMonth = currMonth; }
             
             if (db.lastDate !== currDate) {
                 let totalTasks = db.today.length + db.timed.filter(t => t.status === 'active').length;
-                let completedTasks = db.today.filter(t => t.done).length; 
+                let completedTasks = db.today.filter(t => t.done).length + db.timed.filter(t => t.status === 'done').length;
                 let scorePercent = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
 
                 let unfinSimple = db.today.filter(t => !t.done).length; if(unfinSimple > 0) updateStats(0, -(unfinSimple * 20), true);
@@ -938,9 +988,9 @@
             } else {
                 let rewardsHtml = db.activeRewards.map(r => `
                     <div class="p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3 border-l-4 border-emerald-500 bg-black border-y-2 border-r-2 border-slate-800">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-4 w-full">
                             <div class="bg-emerald-500/10 p-2 rounded-lg text-emerald-400"><i data-lucide="gift" size="20"></i></div>
-                            <div><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${r.text}</p><p class="text-[10px] text-emerald-500 font-bold tracking-widest mt-1">EXPIRES AT MIDNIGHT</p></div>
+                            <div class="flex-1"><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${r.text}</p><p class="text-[10px] text-emerald-500 font-bold tracking-widest mt-1">EXPIRES AT MIDNIGHT</p></div>
                         </div>
                         <button onclick="claimReward(${r.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-black text-xs tracking-widest btn-interact w-full md:w-auto flex-shrink-0 border-b-4 border-emerald-800">CLAIM</button>
                     </div>
@@ -948,9 +998,9 @@
                 
                 let penaltiesHtml = db.activePenalties.map(p => `
                     <div class="p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 mb-3 border-l-4 border-rose-500 bg-[#0a0505] border-y-2 border-r-2 border-rose-900/30">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-4 w-full">
                             <div class="bg-rose-500/10 p-2 rounded-lg text-rose-500"><i data-lucide="skull" size="20"></i></div>
-                            <div><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${p.text}</p><p class="text-[10px] text-rose-500 font-bold tracking-widest mt-1">CARRY FORWARD (STACKS)</p></div>
+                            <div class="flex-1"><p class="font-black text-white text-base leading-snug" style="text-transform:none;">${p.text}</p><p class="text-[10px] text-rose-500 font-bold tracking-widest mt-1">CARRY FORWARD (STACKS)</p></div>
                         </div>
                         <button onclick="markPenaltyDone(${p.id})" class="bg-rose-700 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-black text-xs tracking-widest btn-interact w-full md:w-auto flex-shrink-0 border-b-4 border-rose-900">MARK DONE</button>
                     </div>
@@ -958,20 +1008,20 @@
 
                 karmaHtml = `
                     <div class="flex flex-col gap-4">
-                        ${db.activePenalties.length > 0 ? `<div><h4 class="text-xs font-black text-rose-500 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" size="14"></i> ACTIVE PENALTIES (DO NOT IGNORE)</h4>${penaltiesHtml}</div>` : ''}
-                        ${db.activeRewards.length > 0 ? `<div class="${db.activePenalties.length > 0 ? 'mt-4 pt-4 border-t border-slate-800' : ''}"><h4 class="text-xs font-black text-emerald-400 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="star" size="14"></i> UNLOCKED REWARDS (EXPIRES TODAY)</h4>${rewardsHtml}</div>` : ''}
+                        ${db.activePenalties.length > 0 ? `<div><h4 class="text-sm font-black text-rose-500 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" size="18"></i> ACTIVE PENALTIES (DO NOT IGNORE)</h4><div class="flex flex-col gap-3">${penaltiesHtml}</div></div>` : ''}
+                        ${db.activeRewards.length > 0 ? `<div class="${db.activePenalties.length > 0 ? 'mt-4 pt-4 border-t-2 border-slate-800' : ''}"><h4 class="text-sm font-black text-emerald-400 tracking-widest mb-3 flex items-center gap-2"><i data-lucide="star" size="18"></i> UNLOCKED REWARDS (EXPIRES TODAY)</h4><div class="flex flex-col gap-3">${rewardsHtml}</div></div>` : ''}
                     </div>
                 `;
             }
             
-            pactSec.innerHTML = `<div class="flex flex-col gap-2"><p class="text-xs font-bold text-indigo-400 tracking-widest mb-2"><i data-lucide="dices" size="14" class="inline"></i> KARMA ENGINE</p>${karmaHtml}</div>`;
+            pactSec.innerHTML = `<div class="flex flex-col gap-2"><p class="text-xs font-bold text-indigo-400 tracking-widest mb-3"><i data-lucide="dices" size="14" class="inline"></i> KARMA ENGINE</p>${karmaHtml}</div>`;
             
             document.getElementById('simpleTasksList').innerHTML = db.today.map(t => `<div class="bento-card p-4 md:p-5 flex justify-between items-center group relative z-10 hover:bg-white/[0.02] transition-colors border border-transparent hover:border-white/10"><div class="flex items-center gap-4 w-full"><button onclick="toggleSimpleTask(${t.id})" class="h-10 w-10 border-2 border-slate-700 bg-black flex-shrink-0 flex items-center justify-center rounded-xl btn-interact ${t.done ? 'bg-indigo-600 border-indigo-500 text-white' : 'text-transparent'} transition-all">${t.done ? '<i data-lucide="check" size="20"></i>' : ''}</button><p class="font-bold text-base md:text-lg leading-snug flex-1 ${t.done ? 'opacity-40 line-through text-slate-500' : 'text-white'}" style="text-transform:none;">${t.text}</p></div><button onclick="deleteSimpleTask(${t.id})" class="text-slate-600 hover:text-rose-500 p-2 transition btn-interact flex-shrink-0"><i data-lucide="x" size="24"></i></button></div>`).join('');
             document.getElementById('timedTasksList').innerHTML = db.timed.map(t => { 
                 let isDone = t.status === 'done'; let isAborted = t.status === 'aborted'; 
                 let contentClass = isDone ? 'raid-card-done' : (isAborted ? 'raid-card-failed' : 'raid-card-active'); 
                 let timerHtml = (t.endTime && t.status === 'active') ? `<div class="bg-black py-2 px-4 rounded-xl text-rose-500 font-black tracking-widest text-sm flex items-center gap-2 border-2 border-rose-900/50"><i data-lucide="target" size="16" class="animate-pulse"></i><span id="timer_${t.id}" class="tabular-nums hud-text">--:--</span></div>` : ((t.durationStr !== 'No Limit' && isDone) ? `<div class="text-emerald-500 font-black text-[10px] tracking-widest">CLEARED: ${t.durationStr}</div>` : ((t.durationStr !== 'No Limit' && isAborted) ? `<div class="text-slate-500 font-black text-[10px] tracking-widest">ABORTED</div>` : '')); 
-                let buttons = t.status === 'active' ? `<div class="flex flex-col sm:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600 text-white hover:bg-emerald-500 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-800 flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="check" size="20"></i> CLEAR</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black border-2 border-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-500 hover:border-rose-900 py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="x" size="20"></i> ABORT</button></div>` : ``; 
+                let buttons = t.status === 'active' ? `<div class="flex flex-col sm:flex-row gap-3 mt-6"><button onclick="completeTimedTask(${t.id})" class="flex-1 bg-emerald-600 text-white hover:bg-emerald-500 py-4 rounded-xl font-black btn-interact border-b-4 border-emerald-800 flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="check" size="20"></i> CLEAR RAID</button><button onclick="abortTimedTask(${t.id})" class="flex-1 bg-black border-2 border-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-500 hover:border-rose-900 py-4 rounded-xl font-black btn-interact flex justify-center items-center gap-2 text-sm tracking-widest"><i data-lucide="x" size="20"></i> ABORT</button></div>` : ``; 
                 return `<div class="raid-card p-6 md:p-8 ${contentClass} transition-all"><div class="flex justify-between items-start mb-2"><h3 class="font-black text-base md:text-lg tracking-wide text-white ${isAborted ? 'text-slate-500 line-through' : ''} ${isDone ? 'text-emerald-400' : ''}" style="text-transform:none;">${t.text}</h3>${timerHtml}</div>${buttons}</div>`; 
             }).join(''); startTaskTimers();
 
@@ -1015,7 +1065,7 @@
                     logArray.push({text: looksStr, state: looksArr.length > 0 ? 'done' : 'active'});
                 } else { logArray = db.history[date] || []; } 
                 if(logArray.length === 0) return ''; 
-                return `<div class="bento-card p-6 md:p-8 border-l-4 border-slate-500 border-t-0 border-r-0 border-b-0"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-4">${logArray.map(t => `<p class="font-bold text-sm tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug" style="text-transform:none;">${t.text}</span></p>`).join('')}</div></div>`; 
+                return `<div class="bento-card p-6 md:p-8 border-l-4 border-indigo-500 border-t-0 border-r-0 border-b-0"><h3 class="font-black text-sm text-white mb-5 tracking-widest">${date === db.lastDate ? 'TODAY\'S LOG' : date}</h3><div class="space-y-4">${logArray.map(t => `<p class="font-bold text-sm tracking-wide ${t.state==='done' ? 'text-emerald-400' : (t.state==='aborted'?'text-rose-500 line-through':(t.state==='failed'?'text-rose-500':'text-slate-400'))} flex items-start gap-3"><span class="mt-[2px] opacity-80">${t.state==='done' ? '✅' : (t.state==='aborted'||t.state==='failed'?'❌':'⏳')}</span> <span class="leading-snug" style="text-transform:none;">${t.text}</span></p>`).join('')}</div></div>`; 
             }).join('');
             lucide.createIcons();
         }
