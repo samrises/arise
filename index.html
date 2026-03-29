@@ -37,7 +37,7 @@
         body {
             background-color: var(--bg-void);
             color: #e2e8f0;
-            overflow: hidden; /* Prevent body scroll */
+            overflow: hidden; 
             -webkit-tap-highlight-color: transparent;
             background-image: 
                 linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
@@ -90,7 +90,7 @@
         .viewport-wrapper {
             height: 100vh;
             overflow-y: auto;
-            padding-bottom: 120px !important; /* Pushes content above nav */
+            padding-bottom: 120px !important; 
         }
 
         /* UNIVERSAL FLOATING NAV */
@@ -108,20 +108,21 @@
         .tab-page { display: none; animation: quantumSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); min-height: 100%; }
         .tab-page.active { display: block; }
         @keyframes quantumSlide { to { opacity: 1; transform: translateY(0); } }
-        .quote-box { animation: pulseText 8s infinite; color: var(--neon-blue); text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+        
+        .quote-box { animation: pulseText 8s infinite; color: var(--neon-blue); text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); min-height: 2rem; display: flex; align-items: center; justify-content: center;}
         @keyframes pulseText { 0% {opacity: 0.5;} 50% {opacity: 1;} 100% {opacity: 0.5;} }
     </style>
 </head>
 <body class="w-screen relative">
     <div class="scanlines"></div>
 
-    <div id="yt-player" class="hidden"></div>
+    <div id="yt-player" class="absolute w-0 h-0 opacity-0 pointer-events-none"></div>
 
     <main class="viewport-wrapper w-full max-w-5xl mx-auto p-4 md:p-6" id="pages-container">
         
         <header class="bento p-4 md:p-6 mb-6 border-blue-900/50 text-center">
             <h1 class="text-3xl md:text-4xl tracking-[0.3em] text-white mb-2" style="text-shadow: 0 0 15px rgba(255,255,255,0.5);">MONARCH</h1>
-            <div id="global-quote" class="quote-box text-xs md:text-sm tracking-widest h-5 overflow-hidden">SYSTEM INITIALIZING...</div>
+            <div id="global-quote" class="quote-box text-xs md:text-sm tracking-widest mt-2">SYSTEM INITIALIZING...</div>
         </header>
 
         <div id="page-karma" class="tab-page">
@@ -244,13 +245,14 @@
         let ytPlayer;
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('yt-player', {
-                height: '0', width: '0', videoId: 'bgl6re32FO0',
-                playerVars: { 'autoplay': 0, 'controls': 0 }
+                height: '1', width: '1', videoId: 'bgl6re32FO0',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1 }
             });
         }
         function playAlarm() {
             if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                 ytPlayer.seekTo(0);
+                ytPlayer.unMute();
                 ytPlayer.playVideo();
             }
         }
@@ -305,7 +307,7 @@
         ];
 
         const WORKOUTS = ["100 PUSHUPS", "50 PULLUPS", "200 SQUATS", "50 BURPEES", "5 MIN PLANK", "100 CRUNCHES", "8KM RANGER RUN", "100 LUNGES", "50 DIPS", "120S HOLLOW HOLD", "60S MOUNTAIN CLIMBERS"];
-        const LOOKS = ["MEWING (10 MINS)", "ICE FACE ROLL", "DEEP SKINCARE", "JAWLINE DRILL", "POSTURE HOLD (5 MIN)", "TEETH WHITENING", "GUA SHA MASSAGE"];
+        const LOOKS = ["MEWING (10 MINS)", "ICE FACE ROLL", "DEEP SKINCARE (CLEANSE + MOISTURIZE)", "JAWLINE DRILL", "POSTURE HOLD (5 MIN)", "TEETH WHITENING RITUAL", "GUA SHA MASSAGE"];
 
         const TABS = [
             { id: 'karma', icon: 'zap', name: 'KARMA' }, { id: 'tasks', icon: 'check-square', name: 'GRIND' },
@@ -315,7 +317,7 @@
         ];
 
         // --- 2. STATE MANAGEMENT ---
-        let sys = JSON.parse(localStorage.getItem('monarch2026_final_v2')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_final_v3')) || {
             lastEvalDate: new Date().toLocaleDateString(),
             lastPurgeMonth: new Date().getMonth(),
             lastWipe: "NEVER",
@@ -326,7 +328,7 @@
         let weekChartInst = null;
         let raidInterval = null;
 
-        function saveState() { localStorage.setItem('monarch2026_final_v2', JSON.stringify(sys)); }
+        function saveState() { localStorage.setItem('monarch2026_final_v3', JSON.stringify(sys)); }
 
         // --- 3. INIT & CORE PROTOCOLS ---
         function init() {
@@ -352,7 +354,7 @@
             const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
             if (now.getDate() === lastDay && now.getHours() === 23 && now.getMinutes() >= 59) {
                 if(sys.lastPurgeMonth !== now.getMonth()) {
-                    localStorage.removeItem('monarch2026_final_v2');
+                    localStorage.removeItem('monarch2026_final_v3');
                     alert("MONTH END PURGE EXECUTED. THE SLATE IS WIPED CLEAN.");
                     location.reload();
                 }
@@ -508,11 +510,20 @@
             document.getElementById('task-input').value = '';
             saveState(); updateAllUI();
         }
-        function toggleTask(i) { sys.tasks[i].done = !sys.tasks[i].done; saveState(); updateAllUI(); }
+        
+        // SORT LOGIC ADDED: Completed tasks go to the bottom automatically
+        function toggleTask(i) { 
+            sys.tasks[i].done = !sys.tasks[i].done; 
+            sys.tasks.sort((a, b) => a.done === b.done ? 0 : a.done ? 1 : -1);
+            saveState(); 
+            updateAllUI(); 
+        }
+        
         function delTask(i) { 
-            playAlarm(); // Play YT sound
+            playAlarm(); 
             sys.tasks.splice(i, 1); 
-            saveState(); updateAllUI(); 
+            saveState(); 
+            updateAllUI(); 
         }
         
         function updateTasksUI() {
@@ -593,7 +604,7 @@
 
         // --- 9. AWAKEN RELAPSE ---
         function reportRelapse() {
-            playAlarm(); // Play YT sound
+            playAlarm(); 
             
             const now = new Date();
             sys.lastRelapse = now.toLocaleString().toUpperCase();
