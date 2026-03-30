@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Be Ready Sam - We are About to Fly</title>
+    <title>Sam - Are you ?</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,14 +33,17 @@
             --neon-purple: #a855f7;
         }
 
+        /* IPHONE FONT SCALING & LINE HEIGHT FIX */
         body {
             background-color: var(--bg-void); color: #f8fafc; 
-            overflow: hidden; /* Body scroll locked */
+            overflow: hidden; 
             -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: 100%; /* Force Safari to respect font sizes */
+            line-height: 1.4; /* Prevents vertical overlapping */
             background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.05) 0%, transparent 80%);
-            height: 100dvh; /* Dynamic Viewport for iPhone */
-            width: 100vw;
+            height: 100dvh; width: 100vw;
         }
+        
         .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; opacity: 0.2; }
 
         .bento {
@@ -61,158 +64,145 @@
         .progress-track { background: rgba(0,0,0,0.8); border: 1px solid var(--border-crimson); border-radius: 20px; overflow: hidden; height: 1.5rem; position: relative;}
         .progress-fill { background: linear-gradient(90deg, #991b1b, #dc2626); height: 100%; transition: width 0.8s ease; box-shadow: 0 0 15px var(--neon-crimson); }
 
-        /* --- THE IPHONE SCROLL FIX --- */
         .main-viewport { 
-            height: 100%; 
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; /* Smooth iOS scroll */
-            padding-bottom: 0; /* Removed padding, using invisible spacer instead */
+            height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0; 
         }
-        /* This invisible block forces Safari to allow scrolling past the mobile menu */
-        .main-viewport::after {
-            content: '';
-            display: block;
-            height: 140px; /* Exact height of the mobile nav + extra space */
-            width: 100%;
-            flex-shrink: 0;
-        }
-        @media (min-width: 768px) {
-            .main-viewport::after { height: 40px; } /* Less space needed on PC */
-        }
-        /* ----------------------------- */
+        .main-viewport::after { content: ''; display: block; height: 140px; width: 100%; flex-shrink: 0; }
+        @media (min-width: 768px) { .main-viewport::after { height: 40px; } }
 
-        .nav-item { color: #7f1d1d; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px; min-width: 75px; border-radius: 12px;}
+        /* PREVENT NAV ITEMS FROM WRAPPING/OVERLAPPING ICONS */
+        .nav-item { color: #7f1d1d; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px; min-width: 70px; border-radius: 12px; white-space: nowrap;}
         .nav-item:hover { color: white; background: rgba(220,38,38,0.05); }
         .nav-item.active { color: var(--neon-crimson); background: rgba(220, 38, 38, 0.1); border-bottom: 2px solid var(--neon-crimson); box-shadow: inset 0 -10px 20px rgba(220, 38, 38, 0.1); text-shadow: 0 0 10px var(--neon-crimson);}
         .mobile-nav { background: rgba(5, 0, 0, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border-crimson); box-shadow: 0 -10px 40px rgba(220,38,38,0.1); }
 
-        .tab-page { display: none; animation: quantumSlide 0.4s forwards; opacity: 0; transform: translateY(15px); }
+        .tab-page { display: none; animation: quantumSlide 0.4s forwards; opacity: 0; transform: translateY(15px); min-height: 100%; }
         .tab-page.active { display: block; }
         @keyframes quantumSlide { to { opacity: 1; transform: translateY(0); } }
 
         .task-toggle { width: 1.5rem; height: 1.5rem; border: 2px solid var(--border-crimson); border-radius: 0.375rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
         .task-toggle.done { background-color: var(--neon-emerald); border-color: var(--neon-emerald); box-shadow: 0 0 15px rgba(16,185,129,0.6); }
-        .section-title { font-size: 1.5rem; color: var(--neon-crimson); letter-spacing: 1px; border-bottom: 2px solid rgba(220,38,38,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .section-title { font-size: 1.25rem; md:font-size: 1.5rem; color: var(--neon-crimson); letter-spacing: 1px; border-bottom: 2px solid rgba(220,38,38,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem; }
 
         .typewriter-text::after { content: '_'; animation: blink 1s step-end infinite; color: var(--neon-crimson); }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-<body class="w-screen relative flex">
+<body class="relative flex">
     <div class="scanlines"></div>
     <div id="yt-player" class="absolute w-0 h-0 opacity-0 pointer-events-none"></div>
 
-    <aside class="hidden md:flex flex-col w-72 h-screen bg-[#030000] border-r border-[#3a0000] z-40 fixed left-0 top-0 p-6 shadow-[10px_0_30px_rgba(220,38,38,0.05)]">
+    <aside class="hidden md:flex flex-col w-72 h-[100dvh] bg-[#030000] border-r border-[#3a0000] z-40 fixed left-0 top-0 p-6 shadow-[10px_0_30px_rgba(220,38,38,0.05)]">
         <div class="text-center border-b border-red-900/50 pb-6 mb-6">
-            <h1 class="text-5xl text-red-600 mb-2 drop-shadow-[0_0_15px_rgba(220,38,38,0.6)] tracking-widest uppercase">Monarch</h1>
-            <p class="text-sm text-red-900 tracking-[0.2em]">System V16</p>
+            <h1 class="text-5xl text-red-600 mb-2 drop-shadow-[0_0_15px_rgba(220,38,38,0.6)] tracking-widest uppercase">Sammm</h1>
+            <p class="text-sm text-red-900 tracking-[0.2em]">System V17</p>
         </div>
         <nav class="flex flex-col gap-3" id="desktop-nav"></nav>
     </aside>
 
     <main class="flex-1 w-full md:ml-72 main-viewport p-4 md:p-8" id="pages-container">
-        <header class="bento p-6 mb-8 text-center border-red-900/30">
-            <h1 class="md:hidden text-4xl text-red-600 mb-2 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)] tracking-widest uppercase">Samm_</h1>
-            <div id="global-quote" class="typewriter-text text-base md:text-xl text-white font-black tracking-wide min-h-[4rem] flex items-center justify-center">Loading directive...</div>
+        <header class="bento p-5 md:p-6 mb-6 md:mb-8 text-center border-red-900/30">
+            <h1 class="md:hidden text-3xl sm:text-4xl text-red-600 mb-3 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)] tracking-widest uppercase">Monarch</h1>
+            <div id="global-quote" class="typewriter-text text-sm sm:text-base md:text-xl text-white font-black tracking-wide flex items-center justify-center py-2 leading-relaxed">Loading directive...</div>
         </header>
 
         <div id="page-karma" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Karma Engine</h2>
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">Karma Engine</h2>
             
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-                <div class="bento p-8 text-center flex flex-col justify-center">
-                    <h3 class="text-red-400 mb-4 text-base tracking-widest">Today's Sync Rate</h3>
-                    <div class="text-8xl text-red-500 mb-6 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]" id="sync-rate-text">0%</div>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-6 mb-6 md:mb-8">
+                <div class="bento p-6 md:p-8 text-center flex flex-col justify-center">
+                    <h3 class="text-red-400 mb-3 md:mb-4 text-sm md:text-base tracking-widest">Today's Sync Rate</h3>
+                    <div class="text-6xl md:text-8xl text-red-500 mb-4 md:mb-6 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]" id="sync-rate-text">0%</div>
                     <div class="progress-track"><div id="sync-bar" class="progress-fill w-0"></div></div>
                 </div>
-                <div class="bento border-red-600/50 bg-red-950/20 p-8 text-center flex flex-col justify-center">
-                    <h3 class="text-3xl text-red-500 mb-3 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Iron Will Streak</h3>
-                    <p id="last-relapse-text" class="text-sm text-red-400 tracking-widest mb-6 uppercase">Last Breach: Pure</p>
-                    <button onclick="reportRelapse()" class="btn-interact bg-red-700/80 text-white border border-red-500 w-full py-5 hover:bg-red-600 tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] text-xl">Report System Breach</button>
+                <div class="bento border-red-600/50 bg-red-950/20 p-6 md:p-8 text-center flex flex-col justify-center">
+                    <h3 class="text-2xl md:text-3xl text-red-500 mb-2 md:mb-3 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Iron Will Streak</h3>
+                    <p id="last-relapse-text" class="text-xs md:text-sm text-red-400 tracking-widest mb-4 md:mb-6 uppercase">Last Breach: Pure</p>
+                    <button onclick="reportRelapse()" class="btn-interact bg-red-700/80 text-white border border-red-500 w-full py-4 md:py-5 hover:bg-red-600 tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] text-base md:text-xl">Report System Breach</button>
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bento p-6 border-emerald-900/40">
-                    <h3 class="text-emerald-500 text-2xl border-b border-emerald-900/50 pb-3 mb-4">Granted Drops</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
+                <div class="bento p-5 md:p-6 border-emerald-900/40">
+                    <h3 class="text-emerald-500 text-xl md:text-2xl border-b border-emerald-900/50 pb-2 md:pb-3 mb-4">Granted Drops</h3>
                     <ul id="active-rewards" class="space-y-4"></ul>
                 </div>
-                <div class="bento p-6 border-red-900/40">
-                    <h3 class="text-red-500 text-2xl border-b border-red-900/50 pb-3 mb-4">Active Curses</h3>
+                <div class="bento p-5 md:p-6 border-red-900/40">
+                    <h3 class="text-red-500 text-xl md:text-2xl border-b border-red-900/50 pb-2 md:pb-3 mb-4">Active Curses</h3>
                     <ul id="active-penalties" class="space-y-4"></ul>
                 </div>
             </div>
         </div>
 
         <div id="page-tasks" class="tab-page active">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">The Grind</h2>
-            <div class="flex flex-col md:flex-row gap-4 w-full mb-10">
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">The Grind</h2>
+            <div class="flex flex-col md:flex-row gap-3 md:gap-4 w-full mb-8 md:mb-10">
                 <input type="text" id="task-input" class="heavy-input flex-1" placeholder="Enter Daily Quest..." style="text-transform: none !important;">
-                <button onclick="addTask()" class="btn-interact bg-red-700/80 border border-red-500 text-white px-8 md:px-12 py-4 hover:bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase text-xl">Add</button>
+                <button onclick="addTask()" class="btn-interact bg-red-700/80 border border-red-500 text-white px-8 md:px-12 py-3 md:py-4 hover:bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase text-lg md:text-xl shrink-0">Add</button>
             </div>
-            <div class="mb-10"><h3 class="section-title">Daily Quests</h3><div id="task-list-quests" class="flex flex-col gap-4"></div></div>
-            <div class="mb-10"><h3 class="section-title text-orange-500 border-orange-900/30">Daily Combat</h3><div id="task-list-combat" class="flex flex-col gap-4"></div></div>
-            <div class="mb-10"><h3 class="section-title text-purple-500 border-purple-900/30">Looksmaxing</h3><div id="task-list-looks" class="flex flex-col gap-4"></div></div>
+            <div class="mb-8 md:mb-10"><h3 class="section-title">Daily Quests</h3><div id="task-list-quests" class="flex flex-col gap-3 md:gap-4"></div></div>
+            <div class="mb-8 md:mb-10"><h3 class="section-title text-orange-500 border-orange-900/30">Daily Combat</h3><div id="task-list-combat" class="flex flex-col gap-3 md:gap-4"></div></div>
+            <div class="mb-8 md:mb-10"><h3 class="section-title text-purple-500 border-purple-900/30">Looksmaxing</h3><div id="task-list-looks" class="flex flex-col gap-3 md:gap-4"></div></div>
         </div>
 
         <div id="page-report" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">System Reports</h2>
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">System Reports</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bento p-8 text-center border-slate-800">
-                    <h3 class="text-slate-400 mb-3 text-base tracking-widest">Yesterday</h3>
-                    <div class="text-5xl text-white mb-3" id="rep-yest-score">0%</div>
-                    <p class="text-sm text-slate-500" id="rep-yest-stats">Done: 0 | Missed: 0</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mb-6 md:mb-8">
+                <div class="bento p-6 md:p-8 text-center border-slate-800">
+                    <h3 class="text-slate-400 mb-2 md:mb-3 text-sm md:text-base tracking-widest">Yesterday</h3>
+                    <div class="text-4xl md:text-5xl text-white mb-2 md:mb-3" id="rep-yest-score">0%</div>
+                    <p class="text-xs md:text-sm text-slate-500" id="rep-yest-stats">Done: 0 | Missed: 0</p>
                 </div>
-                <div class="bento p-8 text-center border-indigo-900/40">
-                    <h3 class="text-indigo-400 mb-3 text-base tracking-widest">Last 7 Days</h3>
-                    <div class="text-5xl text-indigo-500 mb-3" id="rep-week-score">0%</div>
-                    <p class="text-sm text-indigo-800" id="rep-week-stats">Done: 0 | Missed: 0</p>
+                <div class="bento p-6 md:p-8 text-center border-indigo-900/40">
+                    <h3 class="text-indigo-400 mb-2 md:mb-3 text-sm md:text-base tracking-widest">Last 7 Days</h3>
+                    <div class="text-4xl md:text-5xl text-indigo-500 mb-2 md:mb-3" id="rep-week-score">0%</div>
+                    <p class="text-xs md:text-sm text-indigo-800" id="rep-week-stats">Done: 0 | Missed: 0</p>
                 </div>
-                <div class="bento p-8 text-center border-emerald-900/40">
-                    <h3 class="text-emerald-400 mb-3 text-base tracking-widest">Last 30 Days</h3>
-                    <div class="text-5xl text-emerald-500 mb-3" id="rep-month-score">0%</div>
-                    <p class="text-sm text-emerald-800" id="rep-month-stats">Done: 0 | Missed: 0</p>
+                <div class="bento p-6 md:p-8 text-center border-emerald-900/40">
+                    <h3 class="text-emerald-400 mb-2 md:mb-3 text-sm md:text-base tracking-widest">Last 30 Days</h3>
+                    <div class="text-4xl md:text-5xl text-emerald-500 mb-2 md:mb-3" id="rep-month-score">0%</div>
+                    <p class="text-xs md:text-sm text-emerald-800" id="rep-month-stats">Done: 0 | Missed: 0</p>
                 </div>
             </div>
 
-            <div class="bento p-8 flex flex-col h-96">
-                <h3 class="text-red-400 mb-6 text-center text-base tracking-widest shrink-0 uppercase">30-Day Trajectory Chart</h3>
+            <div class="bento p-6 md:p-8 flex flex-col h-72 md:h-96">
+                <h3 class="text-red-400 mb-4 md:mb-6 text-center text-sm md:text-base tracking-widest shrink-0 uppercase">30-Day Trajectory Chart</h3>
                 <div class="flex-1 relative w-full h-full"><canvas id="monthChart"></canvas></div>
             </div>
         </div>
 
         <div id="page-awaken" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Awaken Protocol</h2>
-            <div class="bento border-purple-600/50 bg-purple-950/20 p-8 mb-8 text-center shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-                <h3 class="text-4xl text-purple-500 mb-3 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">Grooming Tracker</h3>
-                <p id="last-grooming-text" class="text-base text-purple-400 tracking-widest mb-6 uppercase">Last Cut/Shave: Never</p>
-                <button id="btn-grooming" onclick="logGrooming()" class="btn-interact bg-purple-700/80 text-white border border-purple-500 w-full py-5 hover:bg-purple-600 tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.3)] uppercase text-xl">Log Haircut / Shave</button>
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">Awaken Protocol</h2>
+            <div class="bento border-purple-600/50 bg-purple-950/20 p-6 md:p-8 mb-6 md:mb-8 text-center shadow-[0_0_20px_rgba(168,85,247,0.1)]">
+                <h3 class="text-3xl md:text-4xl text-purple-500 mb-2 md:mb-3 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">Grooming Tracker</h3>
+                <p id="last-grooming-text" class="text-xs md:text-base text-purple-400 tracking-widest mb-4 md:mb-6 uppercase">Last Cut/Shave: Never</p>
+                <button id="btn-grooming" onclick="logGrooming()" class="btn-interact bg-purple-700/80 text-white border border-purple-500 w-full py-4 md:py-5 hover:bg-purple-600 tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.3)] uppercase text-base md:text-xl">Log Haircut / Shave</button>
             </div>
         </div>
 
         <div id="page-raids" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Timed Raids</h2>
-            <div class="bento p-8 mb-8">
-                <input type="text" id="raid-name" class="heavy-input mb-6" placeholder="Raid Objective">
-                <div class="flex flex-row gap-4 w-full mb-8">
-                    <input type="number" id="raid-d" class="heavy-input flex-1 text-center" placeholder="Days" min="0">
-                    <input type="number" id="raid-h" class="heavy-input flex-1 text-center" placeholder="Hours" min="0">
-                    <input type="number" id="raid-m" class="heavy-input flex-1 text-center" placeholder="Mins" min="0">
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">Timed Raids</h2>
+            <div class="bento p-6 md:p-8 mb-6 md:mb-8">
+                <input type="text" id="raid-name" class="heavy-input mb-4 md:mb-6" placeholder="Raid Objective">
+                <div class="flex flex-row gap-2 md:gap-4 w-full mb-6 md:mb-8">
+                    <input type="number" id="raid-d" class="heavy-input flex-1 text-center px-1 md:px-4" placeholder="Days" min="0">
+                    <input type="number" id="raid-h" class="heavy-input flex-1 text-center px-1 md:px-4" placeholder="Hrs" min="0">
+                    <input type="number" id="raid-m" class="heavy-input flex-1 text-center px-1 md:px-4" placeholder="Mins" min="0">
                 </div>
-                <button onclick="startRaid()" class="btn-interact bg-red-700/80 border border-red-500 w-full py-5 text-white hover:bg-red-600 tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase text-xl">Initiate Countdown</button>
+                <button onclick="startRaid()" class="btn-interact bg-red-700/80 border border-red-500 w-full py-4 md:py-5 text-white hover:bg-red-600 tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase text-base md:text-xl">Initiate Countdown</button>
             </div>
-            <div id="raid-list" class="flex flex-col gap-4"></div>
+            <div id="raid-list" class="flex flex-col gap-3 md:gap-4"></div>
         </div>
 
         <div id="page-trading" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Market Ledger</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bento p-8 flex flex-col gap-6">
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">Market Ledger</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <div class="bento p-6 md:p-8 flex flex-col gap-4 md:gap-6">
                     <input type="text" id="trade-asset" class="heavy-input" placeholder="Asset (e.g. XAUUSD)">
-                    <div class="flex flex-row gap-4 w-full">
-                        <input type="number" id="trade-entry" class="heavy-input flex-1" placeholder="Entry">
-                        <input type="number" id="trade-exit" class="heavy-input flex-1" placeholder="Exit">
+                    <div class="flex flex-row gap-3 md:gap-4 w-full">
+                        <input type="number" id="trade-entry" class="heavy-input flex-1 px-2 md:px-4" placeholder="Entry">
+                        <input type="number" id="trade-exit" class="heavy-input flex-1 px-2 md:px-4" placeholder="Exit">
                     </div>
                     <input type="number" id="trade-pnl" class="heavy-input" placeholder="Net PnL ($)">
                     <select id="trade-status" class="heavy-input text-white bg-black">
@@ -220,39 +210,39 @@
                         <option value="Win" class="text-emerald-400">Win (Profit)</option>
                         <option value="Loss" class="text-red-500">Loss (Stop Hit)</option>
                     </select>
-                    <button onclick="logTrade()" class="btn-interact bg-black border border-red-900 w-full py-5 text-red-500 hover:bg-red-950/30 tracking-widest mt-2 uppercase text-xl">Record Trade</button>
+                    <button onclick="logTrade()" class="btn-interact bg-black border border-red-900 w-full py-4 md:py-5 text-red-500 hover:bg-red-950/30 tracking-widest mt-2 uppercase text-base md:text-xl">Record Trade</button>
                 </div>
-                <div class="bento p-6 overflow-y-auto max-h-[500px]" id="trade-history"></div>
+                <div class="bento p-4 md:p-6 overflow-y-auto max-h-[400px] md:max-h-[500px]" id="trade-history"></div>
             </div>
         </div>
 
         <div id="page-wallet" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Capital Reserve</h2>
-            <div class="text-center mb-8 bento p-10 shadow-[inset_0_0_30px_rgba(16,185,129,0.05)]">
-                <div class="text-sm text-emerald-900 tracking-widest mb-4 uppercase">Current Balance</div>
-                <div class="text-7xl md:text-8xl text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" id="wallet-balance">₹0</div>
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">Capital Reserve</h2>
+            <div class="text-center mb-6 md:mb-8 bento p-6 md:p-10 shadow-[inset_0_0_30px_rgba(16,185,129,0.05)]">
+                <div class="text-xs md:text-sm text-emerald-900 tracking-widest mb-2 md:mb-4 uppercase">Current Balance</div>
+                <div class="text-5xl sm:text-6xl md:text-8xl text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" id="wallet-balance">₹0</div>
             </div>
-            <div class="bento p-8 mb-8">
-                <div class="flex flex-col md:flex-row gap-6 mb-6">
+            <div class="bento p-6 md:p-8 mb-6 md:mb-8">
+                <div class="flex flex-col md:flex-row gap-4 md:gap-6 mb-4 md:mb-6">
                     <input type="number" id="wallet-amt" class="heavy-input flex-1" placeholder="Amount (₹)">
                     <input type="text" id="wallet-tag" class="heavy-input flex-1" placeholder="Reason / Tag">
                 </div>
-                <div class="flex flex-row gap-6">
-                    <button onclick="transact('In')" class="btn-interact bg-emerald-900/30 text-emerald-400 border border-emerald-700 flex-1 py-5 hover:bg-emerald-800/50 uppercase text-xl">Deposit</button>
-                    <button onclick="transact('Out')" class="btn-interact bg-red-900/30 text-red-400 border border-red-700 flex-1 py-5 hover:bg-red-800/50 uppercase text-xl">Deduct</button>
+                <div class="flex flex-row gap-3 md:gap-6">
+                    <button onclick="transact('In')" class="btn-interact bg-emerald-900/30 text-emerald-400 border border-emerald-700 flex-1 py-4 md:py-5 hover:bg-emerald-800/50 uppercase text-base md:text-xl shrink-0">Deposit</button>
+                    <button onclick="transact('Out')" class="btn-interact bg-red-900/30 text-red-400 border border-red-700 flex-1 py-4 md:py-5 hover:bg-red-800/50 uppercase text-base md:text-xl shrink-0">Deduct</button>
                 </div>
             </div>
-            <div class="flex flex-col gap-4" id="wallet-history"></div>
+            <div class="flex flex-col gap-3 md:gap-4" id="wallet-history"></div>
         </div>
 
         <div id="page-settings" class="tab-page">
-            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">System Root</h2>
-            <div class="bento border-red-600/50 p-10 bg-black text-center shadow-[0_0_30px_rgba(220,38,38,0.1)]">
-                <h3 class="text-4xl text-red-600 mb-4 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Factory Reset Protocol</h3>
-                <p class="text-sm text-red-900 mb-8 leading-relaxed tracking-widest uppercase">Warning: Initiating purge sequence destroys all local data. Requires exactly 50+ words of justification to unlock the nuke.</p>
-                <p id="last-wipe-text" class="text-base text-red-500 mb-8 tracking-widest uppercase">Last Wipe: Never</p>
-                <textarea id="reset-reason" class="heavy-input h-40 mb-8 text-base" placeholder="Type justification here... (Min 50 Words)" style="text-transform: none !important;"></textarea>
-                <button onclick="factoryReset()" class="btn-interact bg-red-950 text-red-500 border border-red-800 w-full py-5 hover:bg-red-900 hover:text-white tracking-widest uppercase text-xl">Authorize Nuke</button>
+            <h2 class="text-3xl md:text-4xl border-b border-red-900/50 pb-3 mb-6 md:mb-8 text-white">System Root</h2>
+            <div class="bento border-red-600/50 p-6 md:p-10 bg-black text-center shadow-[0_0_30px_rgba(220,38,38,0.1)]">
+                <h3 class="text-2xl md:text-4xl text-red-600 mb-2 md:mb-4 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Factory Reset</h3>
+                <p class="text-xs md:text-sm text-red-900 mb-6 md:mb-8 leading-relaxed tracking-widest uppercase">Warning: Initiating purge sequence destroys all local data. Requires exactly 50+ words of justification to unlock the nuke.</p>
+                <p id="last-wipe-text" class="text-sm md:text-base text-red-500 mb-6 md:mb-8 tracking-widest uppercase">Last Wipe: Never</p>
+                <textarea id="reset-reason" class="heavy-input h-32 md:h-40 mb-6 md:mb-8 text-sm md:text-base" placeholder="Type justification here... (Min 50 Words)" style="text-transform: none !important;"></textarea>
+                <button onclick="factoryReset()" class="btn-interact bg-red-950 text-red-500 border border-red-800 w-full py-4 md:py-5 hover:bg-red-900 hover:text-white tracking-widest uppercase text-base md:text-xl">Authorize Nuke</button>
             </div>
         </div>
 
@@ -348,20 +338,20 @@
         ];
 
         // --- STATE ---
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v16')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v17')) || {
             lastEvalDate: new Date().toLocaleDateString(), lastPurgeMonth: new Date().getMonth(), lastWipe: "NEVER",
             tasks: [], raids: [], trades: [], wallet: [], balance: 0, lastRelapse: "PURE", lastGroomingTs: null, 
             rewards: [], curses: [], history: []
         };
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v16', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v17', JSON.stringify(sys)); }
 
         // --- INIT ---
         function init() {
             Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#991b1b';
             
-            const navStr = TABS.map(t => `<button onclick="go('${t.id}')" id="n-${t.id}" class="nav-item flex-1"><i data-lucide="${t.icon}" class="w-7 h-7 mb-1"></i><span class="text-xs tracking-widest uppercase">${t.name}</span></button>`).join('');
+            const navStr = TABS.map(t => `<button onclick="go('${t.id}')" id="n-${t.id}" class="nav-item flex-1"><i data-lucide="${t.icon}" class="w-6 h-6 md:w-7 md:h-7 mb-1"></i><span class="text-[10px] md:text-xs tracking-widest uppercase">${t.name}</span></button>`).join('');
             document.getElementById('desktop-nav').innerHTML = navStr;
             document.getElementById('mobile-nav').innerHTML = navStr;
             lucide.createIcons();
@@ -378,7 +368,7 @@
         function checkPurge() {
             const n = new Date(); const lastDay = new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate();
             if(n.getDate() === lastDay && n.getHours() === 23 && n.getMinutes() >= 59 && sys.lastPurgeMonth !== n.getMonth()) {
-                localStorage.removeItem('monarch2026_v16'); alert("Month End Purge Executed."); location.reload();
+                localStorage.removeItem('monarch2026_v17'); alert("Month End Purge Executed."); location.reload();
             }
         }
 
@@ -454,15 +444,15 @@
             const renderList = (type) => {
                 let filtered = sys.tasks.map((t, index) => ({...t, index})).filter(t => t.type === type);
                 filtered.sort((a, b) => (a.done === b.done) ? 0 : a.done ? 1 : -1);
-                if(filtered.length === 0 && type === 'QUEST') return '<div class="text-red-900 text-lg tracking-widest uppercase">No Quests Assigned</div>';
+                if(filtered.length === 0 && type === 'QUEST') return '<div class="text-red-900 text-sm md:text-lg tracking-widest uppercase">No Quests Assigned</div>';
                 if(filtered.length === 0) return '';
                 return filtered.map(t => `
-                    <div class="flex flex-row justify-between items-center bento p-5 rounded-2xl ${t.done ? 'opacity-40 border-emerald-900/50' : ''}">
-                        <div class="flex flex-row items-center gap-5 flex-1 overflow-hidden">
-                            <button onclick="togT(${t.index})" class="task-toggle flex-shrink-0 ${t.done ? 'done' : ''}">${t.done ? '<i data-lucide="check" class="text-white w-5 h-5"></i>' : ''}</button>
-                            <span class="truncate text-white text-lg md:text-xl ${t.done ? 'line-through text-emerald-500' : ''}">${t.t}</span>
+                    <div class="flex flex-row justify-between items-center bento p-4 md:p-5 rounded-2xl ${t.done ? 'opacity-40 border-emerald-900/50' : ''}">
+                        <div class="flex flex-row items-center gap-3 md:gap-5 flex-1 overflow-hidden">
+                            <button onclick="togT(${t.index})" class="task-toggle shrink-0 ${t.done ? 'done' : ''}">${t.done ? '<i data-lucide="check" class="text-white w-4 h-4 md:w-5 md:h-5"></i>' : ''}</button>
+                            <span class="text-white text-sm md:text-lg break-words whitespace-normal leading-snug ${t.done ? 'line-through text-emerald-500' : ''}">${t.t}</span>
                         </div>
-                        <button onclick="delT(${t.index})" class="btn-interact text-red-500 p-3 hover:bg-red-900/30 ml-3 rounded-xl"><i data-lucide="x" class="w-6 h-6"></i></button>
+                        <button onclick="delT(${t.index})" class="shrink-0 btn-interact text-red-500 p-2 md:p-3 hover:bg-red-900/30 ml-2 md:ml-3 rounded-xl"><i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i></button>
                     </div>
                 `).join('');
             };
@@ -486,30 +476,30 @@
             if(changed) save();
 
             document.getElementById('active-rewards').innerHTML = sys.rewards.length ? sys.rewards.map((r,i) => `
-                <li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-4 gap-3">
-                    <span class="text-lg text-emerald-400 flex-1">${r}</span>
-                    <button onclick="clrR(${i})" class="btn-interact text-xs bg-emerald-900/20 text-emerald-500 border border-emerald-900 px-8 py-3 hover:bg-emerald-900/50 tracking-widest uppercase">Claim</button>
-                </li>`).join('') : '<li class="text-red-900 text-lg tracking-widest uppercase">No Drops In Inventory</li>';
+                <li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-3 md:pb-4 gap-2 md:gap-3">
+                    <span class="text-sm md:text-lg text-emerald-400 flex-1 leading-snug break-words">${r}</span>
+                    <button onclick="clrR(${i})" class="shrink-0 btn-interact text-[10px] md:text-xs bg-emerald-900/20 text-emerald-500 border border-emerald-900 px-6 md:px-8 py-2 md:py-3 hover:bg-emerald-900/50 tracking-widest uppercase">Claim</button>
+                </li>`).join('') : '<li class="text-red-900 text-sm md:text-lg tracking-widest uppercase">No Drops In Inventory</li>';
 
             document.getElementById('active-penalties').innerHTML = sys.curses.length ? sys.curses.map((c,i) => {
                 if(c.type==='RELAPSE') {
                     const ul = Date.now()>=c.lock;
-                    return `<li class="flex flex-col border-b border-red-900/50 pb-4 gap-3">
-                        <span class="text-lg text-red-500">${c.t}</span>
-                        ${ul ? `<button onclick="clrC(${i})" class="btn-interact text-xs bg-red-900/30 text-red-400 border border-red-700 px-6 py-3 w-full tracking-widest uppercase">Complete Lockdown</button>` : `<span class="text-sm text-red-700 tracking-widest uppercase">Locked Till: ${new Date(c.lock).toLocaleString()}</span>`}
+                    return `<li class="flex flex-col border-b border-red-900/50 pb-3 md:pb-4 gap-2 md:gap-3">
+                        <span class="text-sm md:text-lg text-red-500 leading-snug break-words">${c.t}</span>
+                        ${ul ? `<button onclick="clrC(${i})" class="btn-interact text-[10px] md:text-xs bg-red-900/30 text-red-400 border border-red-700 px-4 md:px-6 py-2 md:py-3 w-full tracking-widest uppercase">Complete Lockdown</button>` : `<span class="text-xs md:text-sm text-red-700 tracking-widest uppercase">Locked Till: ${new Date(c.lock).toLocaleString()}</span>`}
                     </li>`;
                 } else if(c.type==='MULTI') {
-                    return `<li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-4 gap-3">
-                        <span class="text-lg text-amber-500 flex-1">${c.t} <span class="text-amber-700 ml-2">(${c.d} Days Left)</span></span>
-                        <button onclick="progC(${i})" class="btn-interact text-xs ${c.doneToday?'bg-black text-slate-600 border-slate-800 cursor-not-allowed':'bg-amber-900/20 text-amber-500 border border-amber-900 hover:bg-amber-900/50'} px-8 py-3 tracking-widest uppercase" ${c.doneToday?'disabled':''}>${c.doneToday?'Logged':'Complete Today'}</button>
+                    return `<li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-3 md:pb-4 gap-2 md:gap-3">
+                        <span class="text-sm md:text-lg text-amber-500 flex-1 leading-snug break-words">${c.t} <span class="text-amber-700 ml-1 md:ml-2">(${c.d} Days)</span></span>
+                        <button onclick="progC(${i})" class="shrink-0 btn-interact text-[10px] md:text-xs ${c.doneToday?'bg-black text-slate-600 border-slate-800 cursor-not-allowed':'bg-amber-900/20 text-amber-500 border border-amber-900 hover:bg-amber-900/50'} px-6 md:px-8 py-2 md:py-3 tracking-widest uppercase" ${c.doneToday?'disabled':''}>${c.doneToday?'Logged':'Complete Today'}</button>
                     </li>`;
                 } else {
-                    return `<li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-4 gap-3">
-                        <span class="text-lg text-red-400 flex-1">${c.t}</span>
-                        <button onclick="clrC(${i})" class="btn-interact text-xs bg-red-900/20 text-red-500 border border-red-900 px-8 py-3 hover:bg-red-900/50 tracking-widest uppercase">Complete</button>
+                    return `<li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-3 md:pb-4 gap-2 md:gap-3">
+                        <span class="text-sm md:text-lg text-red-400 flex-1 leading-snug break-words">${c.t}</span>
+                        <button onclick="clrC(${i})" class="shrink-0 btn-interact text-[10px] md:text-xs bg-red-900/20 text-red-500 border border-red-900 px-6 md:px-8 py-2 md:py-3 hover:bg-red-900/50 tracking-widest uppercase">Complete</button>
                     </li>`;
                 }
-            }).join('') : '<li class="text-red-900 text-lg tracking-widest uppercase">System Clear</li>';
+            }).join('') : '<li class="text-red-900 text-sm md:text-lg tracking-widest uppercase">System Clear</li>';
         }
 
         function uiGrooming() {
@@ -578,9 +568,9 @@
         function uiRaids() {
             document.getElementById('raid-list').innerHTML = sys.raids.map((r,i) => {
                 let l = Math.max(0, r.t - Date.now()), d = Math.floor(l/86400000), h = Math.floor((l%86400000)/3600000), m = Math.floor((l%3600000)/60000), s = Math.floor((l%60000)/1000);
-                return `<div class="bento p-5 flex flex-row items-center justify-between ${r.failed?'border-red-900 bg-red-950/20':''}">
-                    <div class="flex flex-col flex-1 overflow-hidden"><span class="text-lg truncate text-white">${r.n}</span><span class="text-xl ${r.failed?'text-red-600':'text-red-400'}">${r.failed?'Failed':`${d}D ${h}H ${m}M ${s}S`}</span></div>
-                    <button onclick="delR(${i})" class="btn-interact text-red-600 p-3 ml-3 hover:bg-red-900/30 rounded-xl"><i data-lucide="x" class="w-6 h-6"></i></button>
+                return `<div class="bento p-4 md:p-5 flex flex-row items-center justify-between ${r.failed?'border-red-900 bg-red-950/20':''}">
+                    <div class="flex flex-col flex-1 overflow-hidden"><span class="text-base md:text-lg text-white leading-snug break-words">${r.n}</span><span class="text-sm md:text-xl ${r.failed?'text-red-600':'text-red-400'}">${r.failed?'Failed':`${d}D ${h}H ${m}M ${s}S`}</span></div>
+                    <button onclick="delR(${i})" class="shrink-0 btn-interact text-red-600 p-2 md:p-3 ml-2 md:ml-3 hover:bg-red-900/30 rounded-xl"><i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i></button>
                 </div>`;
             }).join(''); lucide.createIcons();
         }
@@ -594,7 +584,7 @@
         function uiTrades() {
             document.getElementById('trade-history').innerHTML = sys.trades.map(t => {
                 let c = t.s==='Win'?'text-emerald-500':(t.s==='Loss'?'text-red-600':'text-amber-500');
-                return `<div class="bento p-5 flex justify-between items-center mb-4"><div class="flex flex-col"><span class="text-lg text-white">${t.a}</span><span class="text-xs text-red-900">${t.d}</span></div><div class="text-right flex flex-col"><span class="${c} text-lg">${t.s}</span><span class="text-slate-400 text-sm">$${t.pnl}</span></div></div>`;
+                return `<div class="bento p-4 md:p-5 flex justify-between items-center mb-3 md:mb-4"><div class="flex flex-col"><span class="text-base md:text-lg text-white leading-snug break-words">${t.a}</span><span class="text-[10px] md:text-xs text-red-900">${t.d}</span></div><div class="text-right flex flex-col"><span class="${c} text-base md:text-lg">${t.s}</span><span class="text-slate-400 text-xs md:text-sm">$${t.pnl}</span></div></div>`;
             }).join('');
         }
 
@@ -605,7 +595,7 @@
         }
         function uiWallet() {
             document.getElementById('wallet-balance').innerText = `₹${sys.balance.toLocaleString()}`;
-            document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `<div class="bento p-5 flex justify-between items-center mb-4"><div class="flex flex-col"><span class="text-lg text-white">${w.tag}</span><span class="text-xs text-red-900">${w.d}</span></div><span class="${w.t==='In'?'text-emerald-500':'text-red-600'} text-xl">${w.t==='In'?'+':'-'}₹${w.a}</span></div>`).join('');
+            document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `<div class="bento p-4 md:p-5 flex justify-between items-center mb-3 md:mb-4"><div class="flex flex-col"><span class="text-base md:text-lg text-white leading-snug break-words">${w.tag}</span><span class="text-[10px] md:text-xs text-red-900">${w.d}</span></div><span class="${w.t==='In'?'text-emerald-500':'text-red-600'} text-lg md:text-xl">${w.t==='In'?'+':'-'}₹${w.a}</span></div>`).join('');
         }
 
         function reportRelapse() {
@@ -622,7 +612,7 @@
         function factoryReset() {
             const r = document.getElementById('reset-reason').value.trim();
             if(r.split(/\s+/).filter(w=>w.length>0).length < 50) { alert(`Rejected: Minimum 50 Words Required.`); return; }
-            localStorage.removeItem('monarch2026_v16'); alert("System Nuked."); location.reload();
+            localStorage.removeItem('monarch2026_v17'); alert("System Nuked."); location.reload();
         }
 
         window.onload = init;
