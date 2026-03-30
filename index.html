@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Get Ready Sam - We are About to Fly</title>
+    <title>Be Ready Sam - We are About to Fly</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,7 @@
     <style>
         * {
             font-family: 'Jost', sans-serif !important;
-            font-weight: 800 !important; /* Bulk Bold Base */
+            font-weight: 800 !important;
             text-transform: capitalize !important; 
             margin: 0; padding: 0; box-sizing: border-box;
             user-select: none; scrollbar-width: none;
@@ -22,7 +22,7 @@
         *::-webkit-scrollbar { display: none; }
 
         h1, h2, h3, .font-black {
-            font-weight: 900 !important; /* Ultra Heavy Headings */
+            font-weight: 900 !important;
         }
 
         :root {
@@ -39,6 +39,8 @@
         body {
             background-color: var(--bg-void); color: #f8fafc; overflow: hidden; -webkit-tap-highlight-color: transparent;
             background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.05) 0%, transparent 80%);
+            height: 100dvh; /* FIX 1: DYNAMIC VIEWPORT */
+            width: 100vw;
         }
         .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; opacity: 0.2; }
 
@@ -60,15 +62,20 @@
         .progress-track { background: rgba(0,0,0,0.8); border: 1px solid var(--border-crimson); border-radius: 20px; overflow: hidden; height: 1.5rem; position: relative;}
         .progress-fill { background: linear-gradient(90deg, #991b1b, #dc2626); height: 100%; transition: width 0.8s ease; box-shadow: 0 0 15px var(--neon-crimson); }
 
-        .main-viewport { height: 100vh; overflow-y: auto; padding-bottom: 120px; }
-        @media (min-width: 768px) { .main-viewport { padding-bottom: 2rem; } }
+        /* FIX 2: MASSIVE BOTTOM PADDING FOR SCROLL ISSUE */
+        .main-viewport { 
+            height: 100dvh; 
+            overflow-y: auto; 
+            padding-bottom: 150px !important; /* Pushes content well above the floating nav */
+        }
+        @media (min-width: 768px) { .main-viewport { padding-bottom: 3rem !important; } }
 
         .nav-item { color: #7f1d1d; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px; min-width: 75px; border-radius: 12px;}
         .nav-item:hover { color: white; background: rgba(220,38,38,0.05); }
         .nav-item.active { color: var(--neon-crimson); background: rgba(220, 38, 38, 0.1); border-bottom: 2px solid var(--neon-crimson); box-shadow: inset 0 -10px 20px rgba(220, 38, 38, 0.1); text-shadow: 0 0 10px var(--neon-crimson);}
         .mobile-nav { background: rgba(5, 0, 0, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border-crimson); box-shadow: 0 -10px 40px rgba(220,38,38,0.1); }
 
-        .tab-page { display: none; animation: quantumSlide 0.4s forwards; opacity: 0; transform: translateY(15px); }
+        .tab-page { display: none; animation: quantumSlide 0.4s forwards; opacity: 0; transform: translateY(15px); min-height: 100%; }
         .tab-page.active { display: block; }
         @keyframes quantumSlide { to { opacity: 1; transform: translateY(0); } }
 
@@ -85,14 +92,14 @@
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-<body class="w-screen relative flex">
+<body class="relative flex">
     <div class="scanlines"></div>
     <div id="yt-player" class="absolute w-0 h-0 opacity-0 pointer-events-none"></div>
 
-    <aside class="hidden md:flex flex-col w-72 h-screen bg-[#030000] border-r border-[#3a0000] z-40 fixed left-0 top-0 p-6 shadow-[10px_0_30px_rgba(220,38,38,0.05)]">
+    <aside class="hidden md:flex flex-col w-72 h-[100dvh] bg-[#030000] border-r border-[#3a0000] z-40 fixed left-0 top-0 p-6 shadow-[10px_0_30px_rgba(220,38,38,0.05)]">
         <div class="text-center border-b border-red-900/50 pb-6 mb-6">
             <h1 class="text-5xl text-red-600 mb-2 drop-shadow-[0_0_15px_rgba(220,38,38,0.6)] tracking-widest uppercase">Monarch</h1>
-            <p class="text-sm text-red-900 tracking-[0.2em]">System V13</p>
+            <p class="text-sm text-red-900 tracking-[0.2em]">System V14</p>
         </div>
         <nav class="flex flex-col gap-3" id="desktop-nav"></nav>
     </aside>
@@ -323,14 +330,14 @@
         ];
 
         // --- STATE ---
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v13')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v14')) || {
             lastEvalDate: new Date().toLocaleDateString(), lastPurgeMonth: new Date().getMonth(), lastWipe: "NEVER",
             tasks: [], raids: [], trades: [], wallet: [], balance: 0, lastRelapse: "PURE", lastGroomingTs: null, 
             rewards: [], curses: [], history: []
         };
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v13', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v14', JSON.stringify(sys)); }
 
         // --- INIT ---
         function init() {
@@ -353,7 +360,7 @@
         function checkPurge() {
             const n = new Date(); const lastDay = new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate();
             if(n.getDate() === lastDay && n.getHours() === 23 && n.getMinutes() >= 59 && sys.lastPurgeMonth !== n.getMonth()) {
-                localStorage.removeItem('monarch2026_v13'); alert("Month End Purge Executed."); location.reload();
+                localStorage.removeItem('monarch2026_v14'); alert("Month End Purge Executed."); location.reload();
             }
         }
 
@@ -596,7 +603,7 @@
         function factoryReset() {
             const r = document.getElementById('reset-reason').value.trim();
             if(r.split(/\s+/).filter(w=>w.length>0).length < 50) { alert(`Rejected: Minimum 50 Words Required.`); return; }
-            localStorage.removeItem('monarch2026_v13'); alert("System Nuked."); location.reload();
+            localStorage.removeItem('monarch2026_v14'); alert("System Nuked."); location.reload();
         }
 
         window.onload = init;
