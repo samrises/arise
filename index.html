@@ -3,646 +3,600 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE MONARCH SYSTEM | 2026</title>
+    <title>Get Ready Sam - We are About to Fly</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
-        /* GLOBAL 2026 OG RULES - STRICTLY BOLD, UPPERCASE, NO ITALICS */
         * {
             font-family: 'Jost', sans-serif !important;
-            font-weight: 800 !important;
-            font-style: normal !important;
-            text-transform: uppercase !important;
+            font-weight: 800 !important; /* Bulk Bold Base */
+            text-transform: capitalize !important; 
             margin: 0; padding: 0; box-sizing: border-box;
-            user-select: none;
-            scrollbar-width: none;
+            user-select: none; scrollbar-width: none;
         }
         *::-webkit-scrollbar { display: none; }
 
+        h1, h2, h3, .font-black {
+            font-weight: 900 !important; /* Ultra Heavy Headings */
+        }
+
         :root {
-            --bg-void: #030303;
-            --armor-dark: rgba(12, 12, 15, 0.95);
-            --border-steel: #1e293b;
-            --neon-blue: #3b82f6;
-            --neon-red: #ef4444;
-            --neon-green: #10b981;
+            --bg-void: #050000;
+            --card-dark: rgba(15, 0, 0, 0.6);
+            --border-crimson: rgba(185, 28, 28, 0.4);
+            --neon-crimson: #dc2626;
+            --neon-emerald: #10b981;
+            --neon-amber: #fbbf24;
+            --neon-purple: #a855f7;
+            --neon-indigo: #6366f1;
         }
 
         body {
-            background-color: var(--bg-void);
-            color: #e2e8f0;
-            overflow: hidden; 
-            -webkit-tap-highlight-color: transparent;
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-color: var(--bg-void); color: #f8fafc; overflow: hidden; -webkit-tap-highlight-color: transparent;
+            background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.05) 0%, transparent 80%);
         }
-
-        .scanlines {
-            position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px; opacity: 0.3;
-        }
+        .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; opacity: 0.2; }
 
         .bento {
-            background: var(--armor-dark);
-            backdrop-filter: blur(12px);
-            border: 2px solid var(--border-steel);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,1), inset 0 0 20px rgba(255,255,255,0.02);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--card-dark); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-crimson); border-radius: 1rem;
+            box-shadow: inset 0 0 20px rgba(220,38,38,0.02), 0 8px 32px rgba(0,0,0,0.8); transition: all 0.3s;
         }
 
         .heavy-input {
-            background-color: #000;
-            border: 2px solid var(--border-steel);
-            color: white; padding: 1rem; border-radius: 8px; width: 100%; outline: none;
-            transition: all 0.3s ease; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); font-size: 1rem;
+            background-color: rgba(0,0,0,0.7); border: 1px solid var(--border-crimson); color: white; padding: 1rem; border-radius: 0.75rem; width: 100%; outline: none; transition: all 0.3s; font-size: 1.1rem; text-transform: none !important;
         }
-        @media (min-width: 768px) { .heavy-input { padding: 1.25rem; font-size: 1.2rem; } }
-        .heavy-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        .heavy-input:focus { border-color: var(--neon-crimson); box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
         
-        .btn-interact {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer; border-radius: 8px;
-            display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-            text-align: center; line-height: 1.2; letter-spacing: 0.1em;
-        }
-        .btn-interact:hover { transform: translateY(-4px); filter: brightness(1.3); }
+        .btn-interact { transition: all 0.2s; cursor: pointer; border-radius: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; text-align: center; line-height: 1.2; letter-spacing: 0.5px; border: 1px solid transparent; font-size: 1.1rem;}
         .btn-interact:active { transform: scale(0.95); }
+        .btn-interact:disabled { transform: none; filter: none; opacity: 0.5; cursor: not-allowed; }
 
-        .btn-complete { background: #064e3b; border: 2px solid var(--neon-green); color: white; box-shadow: 0 0 10px rgba(16,185,129,0.3); }
-        .btn-complete:hover { box-shadow: 0 0 25px rgba(16,185,129,0.8); }
-        .btn-delete { background: #7f1d1d; border: 2px solid var(--neon-red); color: white; box-shadow: 0 0 10px rgba(239,68,68,0.3); }
-        .btn-delete:hover { box-shadow: 0 0 25px rgba(239,68,68,0.8); }
+        .progress-track { background: rgba(0,0,0,0.8); border: 1px solid var(--border-crimson); border-radius: 20px; overflow: hidden; height: 1.5rem; position: relative;}
+        .progress-fill { background: linear-gradient(90deg, #991b1b, #dc2626); height: 100%; transition: width 0.8s ease; box-shadow: 0 0 15px var(--neon-crimson); }
 
-        .progress-track { background: #000; border: 2px solid var(--border-steel); border-radius: 20px; overflow: hidden; height: 1.5rem; position: relative;}
-        .progress-fill { background: var(--neon-blue); height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon-blue); }
+        .main-viewport { height: 100vh; overflow-y: auto; padding-bottom: 120px; }
+        @media (min-width: 768px) { .main-viewport { padding-bottom: 2rem; } }
 
-        /* SCROLL VIEWPORT FIX */
-        .viewport-wrapper {
-            height: 100vh;
-            overflow-y: auto;
-            padding-bottom: 120px !important; 
-        }
+        .nav-item { color: #7f1d1d; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px; min-width: 75px; border-radius: 12px;}
+        .nav-item:hover { color: white; background: rgba(220,38,38,0.05); }
+        .nav-item.active { color: var(--neon-crimson); background: rgba(220, 38, 38, 0.1); border-bottom: 2px solid var(--neon-crimson); box-shadow: inset 0 -10px 20px rgba(220, 38, 38, 0.1); text-shadow: 0 0 10px var(--neon-crimson);}
+        .mobile-nav { background: rgba(5, 0, 0, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border-crimson); box-shadow: 0 -10px 40px rgba(220,38,38,0.1); }
 
-        /* UNIVERSAL FLOATING NAV */
-        .universal-nav {
-            background: rgba(5, 5, 5, 0.98);
-            border-top: 2px solid var(--border-steel);
-            box-shadow: 0 -10px 40px rgba(59, 130, 246, 0.4);
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        .nav-item { color: #475569; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 14px; min-width: 75px;}
-        .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
-        .nav-item.active { color: var(--neon-blue); transform: scale(1.1); text-shadow: 0 0 10px var(--neon-blue); border-top: 2px solid var(--neon-blue); background: rgba(59, 130, 246, 0.1); }
-
-        .tab-page { display: none; animation: quantumSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); min-height: 100%; }
+        .tab-page { display: none; animation: quantumSlide 0.4s forwards; opacity: 0; transform: translateY(15px); }
         .tab-page.active { display: block; }
         @keyframes quantumSlide { to { opacity: 1; transform: translateY(0); } }
-        
-        .quote-box { animation: pulseText 8s infinite; color: var(--neon-blue); text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); min-height: 2rem; display: flex; align-items: center; justify-content: center;}
-        @keyframes pulseText { 0% {opacity: 0.5;} 50% {opacity: 1;} 100% {opacity: 0.5;} }
+
+        .task-toggle { width: 1.5rem; height: 1.5rem; border: 2px solid var(--border-crimson); border-radius: 0.375rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
+        .task-toggle.done { background-color: var(--neon-emerald); border-color: var(--neon-emerald); box-shadow: 0 0 15px rgba(16,185,129,0.6); }
+        .section-title { font-size: 1.5rem; color: var(--neon-crimson); letter-spacing: 1px; border-bottom: 2px solid rgba(220,38,38,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+
+        /* TYPEWRITER CURSOR */
+        .typewriter-text::after {
+            content: '_';
+            animation: blink 1s step-end infinite;
+            color: var(--neon-crimson);
+        }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-<body class="w-screen relative">
+<body class="w-screen relative flex">
     <div class="scanlines"></div>
-
     <div id="yt-player" class="absolute w-0 h-0 opacity-0 pointer-events-none"></div>
 
-    <main class="viewport-wrapper w-full max-w-5xl mx-auto p-4 md:p-6" id="pages-container">
-        
-        <header class="bento p-4 md:p-6 mb-6 border-blue-900/50 text-center">
-            <h1 class="text-3xl md:text-4xl tracking-[0.3em] text-white mb-2" style="text-shadow: 0 0 15px rgba(255,255,255,0.5);">MONARCH</h1>
-            <div id="global-quote" class="quote-box text-xs md:text-sm tracking-widest mt-2">SYSTEM INITIALIZING...</div>
+    <aside class="hidden md:flex flex-col w-72 h-screen bg-[#030000] border-r border-[#3a0000] z-40 fixed left-0 top-0 p-6 shadow-[10px_0_30px_rgba(220,38,38,0.05)]">
+        <div class="text-center border-b border-red-900/50 pb-6 mb-6">
+            <h1 class="text-5xl text-red-600 mb-2 drop-shadow-[0_0_15px_rgba(220,38,38,0.6)] tracking-widest uppercase">Monarch</h1>
+            <p class="text-sm text-red-900 tracking-[0.2em]">System V13</p>
+        </div>
+        <nav class="flex flex-col gap-3" id="desktop-nav"></nav>
+    </aside>
+
+    <main class="flex-1 w-full md:ml-72 main-viewport p-4 md:p-8" id="pages-container">
+        <header class="bento p-6 mb-8 text-center border-red-900/30">
+            <h1 class="md:hidden text-4xl text-red-600 mb-2 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)] tracking-widest uppercase">Monarch</h1>
+            <div id="global-quote" class="typewriter-text text-base md:text-xl text-white font-black tracking-wide min-h-[4rem] flex items-center justify-center">Loading directive...</div>
         </header>
 
         <div id="page-karma" class="tab-page">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">KARMA HUB</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
-                <div class="bento p-6 md:p-8 text-center border-blue-900 flex flex-col justify-center">
-                    <h3 class="text-slate-400 mb-2 text-lg md:text-xl tracking-widest">DAY SYNC RATE</h3>
-                    <div class="text-6xl md:text-7xl text-blue-500 mb-4 md:mb-6" id="sync-rate-text" style="text-shadow: 0 0 30px rgba(59,130,246,0.8);">0%</div>
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Karma Engine</h2>
+            
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                <div class="bento p-8 text-center flex flex-col justify-center">
+                    <h3 class="text-red-400 mb-4 text-base tracking-widest">Today's Sync Rate</h3>
+                    <div class="text-8xl text-red-500 mb-6 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]" id="sync-rate-text">0%</div>
                     <div class="progress-track"><div id="sync-bar" class="progress-fill w-0"></div></div>
                 </div>
-                <div class="bento p-4 md:p-6 border-slate-800 flex flex-col h-64 md:h-72">
-                    <h3 class="text-slate-400 mb-2 md:mb-4 text-center text-lg md:text-xl tracking-widest shrink-0">WEEK REPORT</h3>
-                    <div class="flex-1 relative w-full h-full"><canvas id="weekChart"></canvas></div>
+                <div class="bento border-red-600/50 bg-red-950/20 p-8 text-center flex flex-col justify-center">
+                    <h3 class="text-3xl text-red-500 mb-3 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Iron Will Streak</h3>
+                    <p id="last-relapse-text" class="text-sm text-red-400 tracking-widest mb-6 uppercase">Last Breach: Pure</p>
+                    <button onclick="reportRelapse()" class="btn-interact bg-red-700/80 text-white border border-red-500 w-full py-5 hover:bg-red-600 tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.3)] text-xl">Report System Breach</button>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div class="bento p-4 md:p-6 border-emerald-900/50">
-                    <h3 class="text-emerald-500 text-xl md:text-2xl border-b border-slate-800 pb-2 mb-4">GRANTED REWARDS</h3>
-                    <ul id="active-rewards" class="space-y-4 text-slate-300"></ul>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bento p-6 border-emerald-900/40">
+                    <h3 class="text-emerald-500 text-2xl border-b border-emerald-900/50 pb-3 mb-4">Granted Drops</h3>
+                    <ul id="active-rewards" class="space-y-4"></ul>
                 </div>
-                <div class="bento p-4 md:p-6 border-red-900/50">
-                    <h3 class="text-red-500 text-xl md:text-2xl border-b border-slate-800 pb-2 mb-4">ACTIVE CURSES</h3>
-                    <ul id="active-penalties" class="space-y-4 text-slate-300"></ul>
+                <div class="bento p-6 border-red-900/40">
+                    <h3 class="text-red-500 text-2xl border-b border-red-900/50 pb-3 mb-4">Active Curses</h3>
+                    <ul id="active-penalties" class="space-y-4"></ul>
                 </div>
             </div>
         </div>
 
         <div id="page-tasks" class="tab-page active">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">THE GRIND</h2>
-            <div class="flex flex-col md:flex-row gap-3 md:gap-4 mb-6">
-                <input type="text" id="task-input" class="heavy-input" placeholder="ENTER MISSION DETAILS...">
-                <button onclick="addTask()" class="btn-interact bg-blue-700 w-full md:w-auto md:px-12 py-4 md:py-5 text-white border-2 border-blue-400 text-lg md:text-xl">ADD TASK</button>
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">The Grind</h2>
+            <div class="flex flex-col md:flex-row gap-4 w-full mb-10">
+                <input type="text" id="task-input" class="heavy-input flex-1" placeholder="Enter Daily Quest..." style="text-transform: none !important;">
+                <button onclick="addTask()" class="btn-interact bg-red-700/80 border border-red-500 text-white px-8 md:px-12 py-4 hover:bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase text-xl">Add</button>
             </div>
-            <div id="task-list" class="flex flex-col gap-4"></div>
+            <div class="mb-10"><h3 class="section-title">Daily Quests</h3><div id="task-list-quests" class="flex flex-col gap-4"></div></div>
+            <div class="mb-10"><h3 class="section-title text-orange-500 border-orange-900/30">Daily Combat</h3><div id="task-list-combat" class="flex flex-col gap-4"></div></div>
+            <div class="mb-10"><h3 class="section-title text-purple-500 border-purple-900/30">Looksmaxing</h3><div id="task-list-looks" class="flex flex-col gap-4"></div></div>
+        </div>
+
+        <div id="page-report" class="tab-page">
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">System Reports</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bento p-8 text-center border-slate-800">
+                    <h3 class="text-slate-400 mb-3 text-base tracking-widest">Yesterday</h3>
+                    <div class="text-5xl text-white mb-3" id="rep-yest-score">0%</div>
+                    <p class="text-sm text-slate-500" id="rep-yest-stats">Done: 0 | Missed: 0</p>
+                </div>
+                <div class="bento p-8 text-center border-indigo-900/40">
+                    <h3 class="text-indigo-400 mb-3 text-base tracking-widest">Last 7 Days</h3>
+                    <div class="text-5xl text-indigo-500 mb-3" id="rep-week-score">0%</div>
+                    <p class="text-sm text-indigo-800" id="rep-week-stats">Done: 0 | Missed: 0</p>
+                </div>
+                <div class="bento p-8 text-center border-emerald-900/40">
+                    <h3 class="text-emerald-400 mb-3 text-base tracking-widest">Last 30 Days</h3>
+                    <div class="text-5xl text-emerald-500 mb-3" id="rep-month-score">0%</div>
+                    <p class="text-sm text-emerald-800" id="rep-month-stats">Done: 0 | Missed: 0</p>
+                </div>
+            </div>
+
+            <div class="bento p-8 flex flex-col h-96">
+                <h3 class="text-red-400 mb-6 text-center text-base tracking-widest shrink-0 uppercase">30-Day Trajectory Chart</h3>
+                <div class="flex-1 relative w-full h-full"><canvas id="monthChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="page-awaken" class="tab-page">
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Awaken Protocol</h2>
+            <div class="bento border-purple-600/50 bg-purple-950/20 p-8 mb-8 text-center shadow-[0_0_20px_rgba(168,85,247,0.1)]">
+                <h3 class="text-4xl text-purple-500 mb-3 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">Grooming Tracker</h3>
+                <p id="last-grooming-text" class="text-base text-purple-400 tracking-widest mb-6 uppercase">Last Cut/Shave: Never</p>
+                <button id="btn-grooming" onclick="logGrooming()" class="btn-interact bg-purple-700/80 text-white border border-purple-500 w-full py-5 hover:bg-purple-600 tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.3)] uppercase text-xl">Log Haircut / Shave</button>
+            </div>
         </div>
 
         <div id="page-raids" class="tab-page">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">RAID MISSIONS</h2>
-            <div class="bento p-4 md:p-6 bg-slate-900/50 mb-6">
-                <input type="text" id="raid-name" class="heavy-input mb-4" placeholder="TARGET OBJECTIVE...">
-                <div class="grid grid-cols-3 gap-2 md:gap-4 mb-4">
-                    <input type="number" id="raid-d" class="heavy-input text-center" placeholder="D" min="0">
-                    <input type="number" id="raid-h" class="heavy-input text-center" placeholder="H" min="0">
-                    <input type="number" id="raid-m" class="heavy-input text-center" placeholder="M" min="0">
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Timed Raids</h2>
+            <div class="bento p-8 mb-8">
+                <input type="text" id="raid-name" class="heavy-input mb-6" placeholder="Raid Objective">
+                <div class="flex flex-row gap-4 w-full mb-8">
+                    <input type="number" id="raid-d" class="heavy-input flex-1 text-center" placeholder="Days" min="0">
+                    <input type="number" id="raid-h" class="heavy-input flex-1 text-center" placeholder="Hours" min="0">
+                    <input type="number" id="raid-m" class="heavy-input flex-1 text-center" placeholder="Mins" min="0">
                 </div>
-                <button onclick="startRaid()" class="btn-interact bg-red-900 py-4 md:py-5 text-white border-2 border-red-500 w-full text-lg md:text-2xl tracking-widest">INITIATE RAID</button>
+                <button onclick="startRaid()" class="btn-interact bg-red-700/80 border border-red-500 w-full py-5 text-white hover:bg-red-600 tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase text-xl">Initiate Countdown</button>
             </div>
             <div id="raid-list" class="flex flex-col gap-4"></div>
         </div>
 
         <div id="page-trading" class="tab-page">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">MARKET LOG PRO</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                <div class="flex flex-col gap-3 md:gap-4">
-                    <input type="text" id="trade-asset" class="heavy-input" placeholder="ASSET NAME (E.G., XAUUSD)">
-                    <div class="grid grid-cols-2 gap-2 md:gap-4">
-                        <input type="number" id="trade-entry" class="heavy-input" placeholder="ENTRY PRICE">
-                        <input type="number" id="trade-exit" class="heavy-input" placeholder="EXIT PRICE">
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Market Ledger</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bento p-8 flex flex-col gap-6">
+                    <input type="text" id="trade-asset" class="heavy-input" placeholder="Asset (e.g. XAUUSD)">
+                    <div class="flex flex-row gap-4 w-full">
+                        <input type="number" id="trade-entry" class="heavy-input flex-1" placeholder="Entry">
+                        <input type="number" id="trade-exit" class="heavy-input flex-1" placeholder="Exit">
                     </div>
-                    <input type="number" id="trade-pnl" class="heavy-input" placeholder="NET PNL ($)">
+                    <input type="number" id="trade-pnl" class="heavy-input" placeholder="Net PnL ($)">
                     <select id="trade-status" class="heavy-input text-white bg-black">
-                        <option value="CONTINUE" class="text-yellow-500">CONTINUE (OPEN POSITION)</option>
-                        <option value="WIN" class="text-emerald-500">WIN (PROFIT ACHIEVED)</option>
-                        <option value="LOSS" class="text-red-500">LOSS (STOP HIT)</option>
+                        <option value="Continue" class="text-amber-400">Continue (Open)</option>
+                        <option value="Win" class="text-emerald-400">Win (Profit)</option>
+                        <option value="Loss" class="text-red-500">Loss (Stop Hit)</option>
                     </select>
-                    <button onclick="logTrade()" class="btn-interact bg-slate-900 border-2 border-slate-600 w-full py-4 md:py-6 text-lg md:text-2xl tracking-widest">RECORD TRADE</button>
+                    <button onclick="logTrade()" class="btn-interact bg-black border border-red-900 w-full py-5 text-red-500 hover:bg-red-950/30 tracking-widest mt-2 uppercase text-xl">Record Trade</button>
                 </div>
-                <div class="bento p-4 overflow-y-auto max-h-[500px]" id="trade-history"></div>
+                <div class="bento p-6 overflow-y-auto max-h-[500px]" id="trade-history"></div>
             </div>
         </div>
 
         <div id="page-wallet" class="tab-page">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">THE LEDGER</h2>
-            <div class="text-center mb-6 bento p-6 md:p-8 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-                <div class="text-xs md:text-sm text-slate-500 tracking-widest mb-2">CAPITAL RESERVE</div>
-                <div class="text-5xl md:text-7xl text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" id="wallet-balance">₹0</div>
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">Capital Reserve</h2>
+            <div class="text-center mb-8 bento p-10 shadow-[inset_0_0_30px_rgba(16,185,129,0.05)]">
+                <div class="text-sm text-emerald-900 tracking-widest mb-4 uppercase">Current Balance</div>
+                <div class="text-7xl md:text-8xl text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" id="wallet-balance">₹0</div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
-                <input type="number" id="wallet-amt" class="heavy-input" placeholder="AMOUNT (₹)">
-                <input type="text" id="wallet-tag" class="heavy-input" placeholder="REASON / TAG">
+            <div class="bento p-8 mb-8">
+                <div class="flex flex-col md:flex-row gap-6 mb-6">
+                    <input type="number" id="wallet-amt" class="heavy-input flex-1" placeholder="Amount (₹)">
+                    <input type="text" id="wallet-tag" class="heavy-input flex-1" placeholder="Reason / Tag">
+                </div>
+                <div class="flex flex-row gap-6">
+                    <button onclick="transact('In')" class="btn-interact bg-emerald-900/30 text-emerald-400 border border-emerald-700 flex-1 py-5 hover:bg-emerald-800/50 uppercase text-xl">Deposit</button>
+                    <button onclick="transact('Out')" class="btn-interact bg-red-900/30 text-red-400 border border-red-700 flex-1 py-5 hover:bg-red-800/50 uppercase text-xl">Deduct</button>
+                </div>
             </div>
-            <div class="flex flex-col md:flex-row gap-3 md:gap-4 mb-6">
-                <button onclick="transact('IN')" class="btn-interact bg-emerald-900 flex-1 border-2 border-emerald-500 text-white py-4 md:py-5 text-xl md:text-2xl">DEPOSIT</button>
-                <button onclick="transact('OUT')" class="btn-interact bg-red-900 flex-1 border-2 border-red-500 text-white py-4 md:py-5 text-xl md:text-2xl">DEDUCT</button>
-            </div>
-            <div class="bento p-4 md:p-6 flex flex-col gap-3 md:gap-4" id="wallet-history"></div>
-        </div>
-
-        <div id="page-awaken" class="tab-page">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">AWAKEN PROTOCOL</h2>
-            <div class="bento border-red-900 bg-red-950/20 p-6 md:p-8 mb-6 text-center shadow-[0_0_20px_rgba(239,68,68,0.1)]">
-                <h3 class="text-2xl md:text-3xl text-red-500 mb-2">IRON WILL STREAK</h3>
-                <p id="last-relapse-text" class="text-xs md:text-sm text-slate-400 mb-6">LAST BREACH: PURE</p>
-                <button onclick="reportRelapse()" class="btn-interact bg-red-900 w-full py-4 md:py-6 border-2 border-red-500 text-white text-lg md:text-2xl tracking-widest">REPORT SYSTEM BREACH</button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div class="bento p-4 md:p-6"><h3 class="text-emerald-500 text-xl md:text-2xl border-b border-slate-800 pb-2 mb-4">DAILY COMBAT LOG</h3><ul id="day-workout-list" class="space-y-4 text-slate-300"></ul></div>
-                <div class="bento p-4 md:p-6"><h3 class="text-blue-500 text-xl md:text-2xl border-b border-slate-800 pb-2 mb-4">LOOKSMAX LOG</h3><ul id="day-looks-list" class="space-y-4 text-slate-300"></ul></div>
-            </div>
+            <div class="flex flex-col gap-4" id="wallet-history"></div>
         </div>
 
         <div id="page-settings" class="tab-page">
-            <h2 class="text-2xl md:text-3xl border-b-2 border-slate-800 pb-2 md:pb-3 mb-4 md:mb-6 text-white tracking-wider">SYSTEM ROOT</h2>
-            <div class="bento border-red-900 p-6 md:p-8 bg-red-950/10 text-center">
-                <h3 class="text-2xl md:text-3xl text-red-500 mb-2">FACTORY RESET PROTOCOL</h3>
-                <p class="text-xs md:text-sm text-slate-400 mb-6 tracking-widest">WARNING: DESTROYS ALL LOCAL DATA. REQUIRES EXACTLY 50+ WORDS OF JUSTIFICATION TO UNLOCK.</p>
-                <p id="last-wipe-text" class="text-lg md:text-xl text-blue-500 mb-6">LAST WIPE: NEVER</p>
-                <textarea id="reset-reason" class="heavy-input h-32 md:h-48 mb-6" placeholder="TYPE YOUR EXPLANATION HERE... MINIMUM 50 WORDS REQUIRED."></textarea>
-                <button onclick="factoryReset()" class="btn-interact bg-red-900 w-full py-4 md:py-6 text-white border-2 border-red-600 text-xl md:text-2xl tracking-widest">NUKE SYSTEM</button>
+            <h2 class="text-4xl border-b border-red-900/50 pb-3 mb-8 text-white">System Root</h2>
+            <div class="bento border-red-600/50 p-10 bg-black text-center shadow-[0_0_30px_rgba(220,38,38,0.1)]">
+                <h3 class="text-4xl text-red-600 mb-4 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Factory Reset Protocol</h3>
+                <p class="text-sm text-red-900 mb-8 leading-relaxed tracking-widest uppercase">Warning: Initiating purge sequence destroys all local data. Requires exactly 50+ words of justification to unlock the nuke.</p>
+                <p id="last-wipe-text" class="text-base text-red-500 mb-8 tracking-widest uppercase">Last Wipe: Never</p>
+                <textarea id="reset-reason" class="heavy-input h-40 mb-8 text-base" placeholder="Type justification here... (Min 50 Words)" style="text-transform: none !important;"></textarea>
+                <button onclick="factoryReset()" class="btn-interact bg-red-950 text-red-500 border border-red-800 w-full py-5 hover:bg-red-900 hover:text-white tracking-widest uppercase text-xl">Authorize Nuke</button>
             </div>
         </div>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 md:bottom-4 md:left-1/2 md:transform md:-translate-x-1/2 universal-nav md:rounded-full px-2 py-2 flex items-center justify-between md:min-w-[800px] z-50">
-        </nav>
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex overflow-x-auto z-50 px-2 py-2" id="mobile-nav"></nav>
 
     <script>
-        // --- AUDIO INTEGRATION ---
+        // --- AUDIO ---
         let ytPlayer;
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('yt-player', {
-                height: '1', width: '1', videoId: 'bgl6re32FO0',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1 }
-            });
-        }
-        function playAlarm() {
-            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-                ytPlayer.seekTo(0);
-                ytPlayer.unMute();
-                ytPlayer.playVideo();
-            }
-        }
+        function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('yt-player', { height: '1', width: '1', videoId: 'bgl6re32FO0', playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1 } }); }
+        function playAlarm() { if(ytPlayer && ytPlayer.playVideo) { ytPlayer.seekTo(0); ytPlayer.unMute(); ytPlayer.playVideo(); } }
 
-        // --- 1. DATABASES ---
+        // --- TYPEWRITER QUOTES (HEAVY / BADE BADE) ---
         const QUOTES = [
-            "YOU ARE STANDING AT THE BOTTOM OF THE ABYSS. THE ONLY WAY OUT IS THROUGH SHEER, UNRELENTING FORCE.",
-            "THE SYSTEM DOES NOT CARE ABOUT YOUR FEELINGS. IT READS ONLY RESULTS.",
-            "TEARS AND REGRETS WILL NOT BUILD THE EMPIRE YOU ENVISION.",
-            "THE MATRIX IS A PRISON DESIGNED FOR THE WEAK. GRIND HARDER TO ESCAPE.",
-            "EVERY TIME YOU CHOOSE DISCIPLINE OVER PLEASURE, YOUR STATS LEVEL UP."
+            "You are standing at the bottom of the abyss. The only way out is through sheer, unrelenting force. Wake up and conquer.",
+            "The system does not care about your exhaustion or excuses. It reads only pure results. Arise or perish.",
+            "Tears and regrets will never build the empire you envision. Blood, sweat, and absolute discipline will.",
+            "The matrix is a comfortable prison designed to keep you weak. Grind harder every single day to escape the illusion.",
+            "Every time you choose hard work over temporary pleasure, your stats level up. Stay hard and relentless."
         ];
 
-        const REWARDS_DB = [
-            "30 MINUTE STRATEGIC GAMING (STRICT TIMER LOCKED)", "TACTICAL REST (30 MINS DARK ROOM, ZERO TECH)", "JOURNAL 'THE CONQUEST': DOCUMENT TODAY'S DOMINANCE",
-            "ICE COLD SHOWER: RAW SYSTEM REBOOT", "PHYSIQUE CHECK: 5 MINUTE MIRROR POSING & ASSESSMENT", "DEEP STRETCHING PROTOCOL: 15 MINS MOBILITY WORK",
-            "MICRO-SKILL ACQUISITION: 15 MINS TYPING/EXCEL DRILL", "VOCAL PROJECTION DRILL: RECORD 3 MINS SPEAKING WITH AUTHORITY", "POSTURE RESET: 10 MINS STRICT WALL-SIT OR PLANK",
-            "BREATHWORK: 10 MINS WIM HOF OR BOX BREATHING", "VISUALIZE THE EMPIRE: 10 MINS PURE GOAL MANIFESTATION", "TACTICAL REFUEL: HIGH PROTEIN & CLEAN CARBS SNACK",
-            "SUNLIGHT EXPOSURE: 15 MINS PURE ABSORPTION, NO PHONE", "CLEAN THE BATTLESTATION: WIPE DOWN DESK AND RIG", "REVIEW PREVIOUS TRADES: ANALYZE 3 PAST WINNING CHARTS",
-            "RRB QUICK DRILL: SOLVE 20 REASONING QUESTIONS FOR RAW SPEED", "READ 10 PAGES: HIGH-VALUE NON-FICTION ONLY", "FINANCIAL ALLOCATION: INVEST ₹500 IN ASSETS OR SKILLS",
-            "UPGRADE LINKEDIN: HIGHLIGHT 5 YEARS EXPERIENCE PROMINENTLY", "STRATEGIZE INCOME: 30 MINS MAPPING OUT MULTIPLE REVENUE STREAMS", "THE ARCHITECT: CODE 1 NEW MODULE FOR THE CERTIFICATE GENERATOR",
-            "ELITE NETWORKING: CONNECT WITH 2 HIGH-VALUE INDIVIDUALS IN YOUR FIELD", "SOLO PATROL: WALK AROUND PURULIA, OBSERVE THE MATRIX", "AESTHETIC UPGRADE: BUY OR RESEARCH A PREMIUM GROOMING PRODUCT",
-            "HIGH-TIER FUEL: ORDER A CLEAN, PREMIUM HIGH-PROTEIN MEAL", "PODCAST ABSORPTION: 1 HOUR OF ELITE TRADING OR MINDSET AUDIO", "RECONNECT WITH ORIGINS: CALL A DAY-ONE FRIEND, SHARE VISIONS",
-            "CRAFT THE NARRATIVE: UPDATE RESUME TO REFLECT SENIORITY", "SYSTEM DIAGNOSTIC: 1 HOUR REVIEWING MONTHLY FINANCES", "NEW ARSENAL: CREATE A FRESH, HIGH-BPM WORKOUT PLAYLIST",
-            "DIGITAL PURGE: UNFOLLOW WEAK INFLUENCES ON SOCIAL MEDIA", "RRB MASTERCLASS: WATCH 1 ELITE STRATEGY VIDEO FOR THE EXAM", "SLEEP OPTIMIZATION: BUY OR SET UP BLACKOUT CURTAINS OR SLEEP MASK",
-            "WARDROBE AUDIT: THROW OUT OR DONATE WEAK CLOTHING", "GROOMING RITUAL: FULL BEARD LINEUP, SKINCARE, NAILS", "SYSTEM OVERRIDE: 3 HOURS NO-GUILT RECOVERY",
-            "TACTICAL ACQUISITION: BUY THE HARDWARE OR SOFTWARE YOU NEED", "TOTAL SYSTEM SHUTDOWN: FULL REST DAY", "WEEKLY DEBRIEF: COFFEE SHOP, LAPTOP, FULL WEEK REVIEW",
-            "THE MONARCH VIEW: ROOFTOP, NO TECH, ACKNOWLEDGE THE EMPIRE", "MOVIE PROTOCOL: 1 HIGH-CINEMA FILM, NO MINDLESS SCROLLING", "THE LONG RIDE: NIGHT PATROL ON EMPTY ROADS",
-            "DEEP SLEEP PROTOCOL: NO ALARM, WAKE UP NATURALLY", "CULINARY REWARD: HIGH-CALORIE CHEAT MEAL, EARNED IN BLOOD", "UNPLUGGED WILDERNESS: SPEND 3 HOURS IN NATURE, ZERO TECH",
-            "VIP TREATMENT: BOOK A MASSAGE OR PREMIUM BARBER VISIT", "MENTORSHIP SESSION: EARN A 1-ON-1 WITH A PRO", "THE ALPHA FLEX: 1 DAY COMPLETELY OFF-GRID",
-            "THE CELEBRATION: BUY A QUALITY CIGAR OR COFFEE TO TOAST A MAJOR WIN", "UPGRADE THE RIG: BUY A NEW MONITOR OR PERIPHERAL FOR THE SETUP", "PORTFOLIO EXPANSION: OPEN A NEW ASSET CLASS ACCOUNT"
-        ];
+        let quoteIdx = 0, charIdx = 0, isDeleting = false;
+        function typeWriter() {
+            const quoteEl = document.getElementById('global-quote');
+            const currentText = QUOTES[quoteIdx];
+            
+            if(isDeleting) {
+                quoteEl.innerText = currentText.substring(0, charIdx - 1);
+                charIdx--;
+            } else {
+                quoteEl.innerText = currentText.substring(0, charIdx + 1);
+                charIdx++;
+            }
 
-        const PENALTIES_DB = [
-            "SENSORY DEPRIVATION: 2 HOURS COMPLETE SILENCE", "IRON CORE: 5 MINUTE TOTAL PLANK HOLDS", "TACTICAL CLEANUP: 20 MINS STERILIZING THE WORKSPACE",
-            "WEEKLY BLUEPRINT: WRITE DOWN THE NEXT 7 DAYS, HOUR BY HOUR", "THERMAL SHOCK: NEXT SHOWER IS 100% COLD WATER", "EGO DEATH: ASK A MENTOR OR FRIEND FOR BRUTAL CRITICISM",
-            "EAT THE FROG: IMMEDIATELY EXECUTE THE MOST DREADED TASK", "THE GRIND: 1 HOUR STUDYING THE MOST BORING EXAM TOPIC", "STANDING DESK ONLY: NO SITTING FOR THE NEXT 2 HOURS",
-            "MANUAL LABOR: WASH CLOTHES BY HAND OR SCRUB FLOORS", "PAIN TOLERANCE: 15 MINS OF INTENSE MOBILITY OR STRETCHING", "ZERO INBOX: REPLY TO EVERY SINGLE PENDING MESSAGE INSTANTLY",
-            "DROP AND GIVE ME 50: 50 STRICT PUSHUPS RIGHT NOW", "NO CAFFEINE: ZERO COFFEE OR ENERGY DRINKS FOR 24 HOURS", "DIGITAL FAST: DELETE THE MOST USED SOCIAL APP FOR 48 HOURS",
-            "RRB SPRINT: SOLVE 50 MATH QUESTIONS WITHOUT A BREAK", "READ THE MANUAL: READ 15 PAGES OF DRY DOCUMENTATION", "THE VAULT: 6 HOURS DEVICE LOCKDOWN (PHONE IN ANOTHER ROOM)",
-            "THE MANIFESTO: WRITE 'DISCIPLINE OVER WEAKNESS' 200 TIMES", "MONK MODE: 24 HOURS ZERO ENTERTAINMENT (NO YT, NO GAMES)", "THE POST-MORTEM: WRITE A 5-PAGE ESSAY ON WHY YOU FAILED TODAY",
-            "EXAM HELL: COMPLETE 1 FULL RRB MOCK EXAM PLUS ANALYSIS", "ANALOG MEMORY: WRITE 20 PAGES OF STUDY NOTES BY HAND", "AGGRESSIVE EXPANSION: APPLY TO 10 HIGH-TIER JOBS WITH CUSTOM COVER LETTERS",
-            "SUGAR PURGE: 72 HOURS STRICT NO JUNK, NO SUGAR", "SOCIAL DISCOMFORT: INITIATE CONVERSATIONS WITH 5 STRANGERS", "REJECTION THERAPY: COLD CALL 3 PLACES UNTIL YOU GET A 'NO'",
-            "MICRO-TRACKING: LOG EVERY 15 MINUTES OF TOMORROW ON PAPER", "FINANCIAL BLEED: DONATE ₹500 TO CHARITY IMMEDIATELY", "TASTELESS FUEL: NEXT 3 MEALS ARE COMPLETELY BLAND",
-            "AMBIDEXTROUS TRAINING: USE LEFT HAND ONLY FOR 4 HOURS", "VISION DRILL: WRITE OUT 5-YEAR GOALS 20 TIMES FLAWLESSLY", "CODE IN THE DARK: BUILD A FEATURE FOR THE PAYSLIP APP WITHOUT GOOGLING",
-            "SLEEP DEPRIVATION PREP: SET ALARM FOR 4:00 AM TOMORROW", "100 BURPEES CHIN-TO-FLOOR: DO NOT STOP UNTIL FINISHED", "THE IRON MARATHON: 6 HOURS UNBROKEN DEEP WORK",
-            "SKILL FORGE: 3 HOURS CONTINUOUS EXCEL OR CODING DRILL", "THE 300 PROTOCOL: 300 PUSHUPS BEFORE SLEEP", "THE 500 PROTOCOL: 500 SQUATS BEFORE SLEEP",
-            "THE RANGER WALK: 10 KM RUN OR WALK CARRYING A BACKPACK", "BLACKOUT DRONE: 24 HOURS COMPLETE PHONE ABSTINENCE", "DOPAMINE RESET: 24 HOURS NO SCREENS, NO SUGAR, NO MUSIC, NO TALKING",
-            "THE TITAN SHIFT: 10 HOURS CONTINUOUS WORK OR STUDY MARATHON", "CHART PURGATORY: MANUALLY BACKTEST 50 XAUUSD CHARTS AND LOG THEM", "1000 REP HELL: 1000 TOTAL REPS (MIX OF PUSHUPS, SQUATS, CRUNCHES)",
-            "FASTING PROTOCOL: 24 HOUR WATER FAST", "SLEEP ON THE FLOOR: NO MATTRESS TONIGHT, JUST THE FLOOR", "PUBLIC ACCOUNTABILITY: POST YOUR FAILURE ON SOCIAL MEDIA OR STATUS",
-            "NO HOT WATER: 1 WEEK COLD SHOWERS ONLY", "THE ISOLATOR: SPEND 5 HOURS IN A ROOM WITH NOTHING BUT A NOTEBOOK", "BURN THE SHIPS: DELETE A SAVE FILE OR RANKED ACCOUNT"
-        ];
+            let typeSpeed = isDeleting ? 20 : 50; 
 
-        const WORKOUTS = ["100 PUSHUPS", "50 PULLUPS", "200 SQUATS", "50 BURPEES", "5 MIN PLANK", "100 CRUNCHES", "8KM RANGER RUN", "100 LUNGES", "50 DIPS", "120S HOLLOW HOLD", "60S MOUNTAIN CLIMBERS"];
-        const LOOKS = ["MEWING (10 MINS)", "ICE FACE ROLL", "DEEP SKINCARE (CLEANSE + MOISTURIZE)", "JAWLINE DRILL", "POSTURE HOLD (5 MIN)", "TEETH WHITENING RITUAL", "GUA SHA MASSAGE"];
+            if(!isDeleting && charIdx === currentText.length) {
+                typeSpeed = 1200000; // WAIT 20 MINUTES
+                isDeleting = true;
+            } else if(isDeleting && charIdx === 0) {
+                isDeleting = false;
+                quoteIdx = (quoteIdx + 1) % QUOTES.length;
+                typeSpeed = 500; 
+            }
+
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        // --- DATABASES ---
+        const REWARDS_DAILY = [
+            "Gaming Night: Play without guilt.", "Reels or Fun Night: Mindless scrolling / pure entertainment.", 
+            "The 'I Am The Best' Log: Write in the diary exactly why you are the best.", "Fav Food Night: Treat yourself to your favorite meal.", 
+            "Productive Night: Update LinkedIn, Indeed, and plan the next career move.", "Night Travel + Fav Song: Go for a ride/walk with your favorite playlist.", 
+            "Shopping Night: Buy something for yourself.", "Coffee Night in Central: Vibe in a good cafe.", 
+            "Body Growth Fuel: Eat something specifically healthy/protein-rich to help your body grow.", "Emotional Release: Full feel free to remember her things and process emotions peacefully."
+        ];
+        const REWARDS_SAT = ["Movie Night: Watch a great movie without any task stress.", "Fly Free: Go to a place where you feel completely free to fly/breathe.", "Full Day Chill: Pure rest."];
+        const REWARD_RARE = "System Rules Se Chutti: Total freedom from the matrix for the day.";
+
+        const PENALTIES_SINGLE = [
+            "Necessary phone for the day.", "Honest feedback, jo kaam mostly me taal ta hu ushi ko krna pdega including most boring thing (ego break).", 
+            "Full day track and manage har ek cheez jo me kruga wo mere mann me honi chahiye.", "Lagatar 3h kuch learn krna (excel, english, coding, trading etc).", 
+            "24h social detox (only social media banned and music)."
+        ];
+        const PENALTIES_MULTI = [
+            { t: "5.00 AM task plan krna pdega (Deadline 5:00)", d: 7 }, { t: "Har roz 4.00 AM ko uth k daudna", d: 7 },
+            { t: "Write note book discipline > mood", d: 3 }, { t: "150 pushups", d: 7 }, { t: "350 squats", d: 5 }
+        ];
+        const PENALTY_SUN = "6h Deep Work Session: Bina uthe, bina phone dekhe 6 ghante kaam/padhai";
+        const EXTREME_CURSES = ["The Iron Marathon: 6 Hours Deep Work", "Skill Forge: 3 Hours Coding Drill", "The 300 Protocol: 300 Pushups Before Sleep", "The 500 Protocol: 500 Squats Before Sleep", "The Ranger Walk: 10 Km Run With Backpack", "Blackout Drone: 24 Hours No Phone", "Dopamine Reset: 24H No Screens/Music", "1000 Rep Hell: 1000 Total Reps (Pushups/Squats)", "Fasting Protocol: 24 Hour Water Fast", "Sleep On The Floor: No Mattress Tonight", "No Hot Water: 1 Week Cold Showers Only"];
+
+        const WORKOUTS = ["100 Pushups", "50 Pullups", "200 Squats", "50 Burpees", "5 Min Plank", "100 Crunches", "8km Ranger Run", "100 Lunges", "50 Dips", "120s Hollow Hold", "60s Mountain Climbers"];
+        const LOOKS = ["Mewing (10 Mins)", "Ice Face Roll", "Deep Skincare (Cleanse + Moisturize)", "Jawline Drill", "Posture Hold (5 Min)", "Teeth Whitening Ritual", "Gua Sha Massage"];
 
         const TABS = [
-            { id: 'karma', icon: 'zap', name: 'KARMA' }, { id: 'tasks', icon: 'check-square', name: 'GRIND' },
-            { id: 'raids', icon: 'timer', name: 'RAIDS' }, { id: 'trading', icon: 'candlestick-chart', name: 'TRADE' },
-            { id: 'wallet', icon: 'wallet', name: 'LEDGER' }, { id: 'awaken', icon: 'flame', name: 'AWAKEN' },
-            { id: 'settings', icon: 'terminal', name: 'ROOT' }
+            { id: 'tasks', icon: 'check-square', name: 'Grind' }, { id: 'karma', icon: 'zap', name: 'Karma' },
+            { id: 'report', icon: 'bar-chart-2', name: 'Report' }, { id: 'awaken', icon: 'flame', name: 'Awaken' },
+            { id: 'raids', icon: 'timer', name: 'Raids' }, { id: 'trading', icon: 'candlestick-chart', name: 'Trade' }, 
+            { id: 'wallet', icon: 'wallet', name: 'Ledger' }, { id: 'settings', icon: 'terminal', name: 'Root' }
         ];
 
-        // --- 2. STATE MANAGEMENT ---
-        let sys = JSON.parse(localStorage.getItem('monarch2026_final_v3')) || {
-            lastEvalDate: new Date().toLocaleDateString(),
-            lastPurgeMonth: new Date().getMonth(),
-            lastWipe: "NEVER",
-            tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
-            lastRelapse: "PURE", rewards: [], penalties: [], history: []
+        // --- STATE ---
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v13')) || {
+            lastEvalDate: new Date().toLocaleDateString(), lastPurgeMonth: new Date().getMonth(), lastWipe: "NEVER",
+            tasks: [], raids: [], trades: [], wallet: [], balance: 0, lastRelapse: "PURE", lastGroomingTs: null, 
+            rewards: [], curses: [], history: []
         };
-        
-        let weekChartInst = null;
-        let raidInterval = null;
+        let mChart = null;
 
-        function saveState() { localStorage.setItem('monarch2026_final_v3', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v13', JSON.stringify(sys)); }
 
-        // --- 3. INIT & CORE PROTOCOLS ---
+        // --- INIT ---
         function init() {
-            Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#94a3b8';
-
-            const navEl = document.querySelector('.universal-nav');
-            navEl.innerHTML = TABS.map(t => `<button onclick="switchTab('${t.id}')" id="nav-${t.id}" class="nav-item"><i data-lucide="${t.icon}" class="w-6 h-6 md:w-7 md:h-7 mb-1"></i><span class="text-[10px] md:text-xs tracking-widest">${t.name}</span></button>`).join('');
+            Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#991b1b';
+            
+            const navStr = TABS.map(t => `<button onclick="go('${t.id}')" id="n-${t.id}" class="nav-item flex-1"><i data-lucide="${t.icon}" class="w-7 h-7 mb-1"></i><span class="text-xs tracking-widest uppercase">${t.name}</span></button>`).join('');
+            document.getElementById('desktop-nav').innerHTML = navStr;
+            document.getElementById('mobile-nav').innerHTML = navStr;
             lucide.createIcons();
             
-            checkMonthlyPurge();
-            checkMidnightEval(); 
-            
-            if(sys.tasks.length === 0) populateDailyAwakenTasks();
+            checkPurge(); checkEval();
+            if(sys.tasks.filter(t=>t.type==='COMBAT'||t.type==='LOOKS').length === 0) populateAwaken();
 
-            switchTab('tasks');
-            setInterval(() => { document.getElementById('global-quote').innerText = QUOTES[Math.floor(Math.random() * QUOTES.length)]; }, 10000);
-            raidInterval = setInterval(tickRaids, 1000);
-            updateAllUI();
+            go('tasks');
+            typeWriter(); 
+            setInterval(tickRaids, 1000);
+            ui();
         }
 
-        function checkMonthlyPurge() {
-            const now = new Date();
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            if (now.getDate() === lastDay && now.getHours() === 23 && now.getMinutes() >= 59) {
-                if(sys.lastPurgeMonth !== now.getMonth()) {
-                    localStorage.removeItem('monarch2026_final_v3');
-                    alert("MONTH END PURGE EXECUTED. THE SLATE IS WIPED CLEAN.");
-                    location.reload();
-                }
+        function checkPurge() {
+            const n = new Date(); const lastDay = new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate();
+            if(n.getDate() === lastDay && n.getHours() === 23 && n.getMinutes() >= 59 && sys.lastPurgeMonth !== n.getMonth()) {
+                localStorage.removeItem('monarch2026_v13'); alert("Month End Purge Executed."); location.reload();
             }
         }
 
-        function populateDailyAwakenTasks() {
-            const dayNum = new Date().getDay();
-            const getItems = (arr, count, offset) => {
-                let res = [];
-                for(let i=0; i<count; i++) { res.push(arr[(dayNum + i + offset) % arr.length]); }
-                return res;
-            };
-            const dailyCombat = getItems(WORKOUTS, 4, 0);
-            const dailyLooks = getItems(LOOKS, 3, 2);
-            
-            dailyCombat.forEach(w => sys.tasks.push({ t: `COMBAT: ${w} (MAX REPS)`, done: false }));
-            dailyLooks.forEach(l => sys.tasks.push({ t: `LOOKS: ${l}`, done: false }));
-            saveState();
+        function populateAwaken() {
+            if(sys.rewards.includes("Full Day Chill: Pure rest.")) return;
+            const dNum = new Date().getDay();
+            const getI = (arr, c, off) => { let r=[]; for(let i=0;i<c;i++){r.push(arr[(dNum+i+off)%arr.length]);} return r; };
+            getI(WORKOUTS,4,0).forEach(w => sys.tasks.push({t: `${w} (Max Reps)`, done: false, type: 'COMBAT'}));
+            getI(LOOKS,3,2).forEach(l => sys.tasks.push({t: `${l}`, done: false, type: 'LOOKS'}));
+            save();
         }
 
-        function checkMidnightEval() {
+        function checkEval() {
             const today = new Date().toLocaleDateString();
             if(sys.lastEvalDate !== today) {
-                const total = sys.tasks.length;
-                let score = total > 0 ? Math.round((sys.tasks.filter(t => t.done).length / total) * 100) : 0;
+                const tot = sys.tasks.length;
+                const dn = sys.tasks.filter(t => t.done).length;
+                let score = tot > 0 ? Math.round((dn / tot) * 100) : 0;
+                
+                sys.history.push({ d: sys.lastEvalDate, s: score, t: tot, dn: dn, m: tot-dn }); 
+                if(sys.history.length>31) sys.history.shift(); 
 
-                sys.history.push({ date: sys.lastEvalDate, score: score });
-                if(sys.history.length > 7) sys.history.shift();
+                const shuf = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+                const dayOfWeek = new Date().getDay();
 
-                const shuffle = (array) => array.slice().sort(() => Math.random() - 0.5);
+                sys.curses.forEach(c => {
+                    if(c.type === 'MULTI') { if(c.doneToday) { c.d--; c.doneToday = false; } else { c.doneToday = false; } }
+                });
+                sys.curses = sys.curses.filter(c => c.type === 'RELAPSE' || (c.type === 'MULTI' && c.d > 0) || c.type === 'SINGLE');
 
                 if(score >= 80) {
-                    sys.rewards.push(...shuffle(REWARDS_DB).slice(0, 3));
-                } else if (total > 0) {
-                    sys.penalties.push(...shuffle(PENALTIES_DB).slice(0, 3).map(p => ({ text: p, type: 'DAY' })));
+                    let pool = [...REWARDS_DAILY];
+                    if (dayOfWeek === 0) pool.push(...REWARDS_SAT); 
+                    let sel = shuf(pool).slice(0, 3);
+                    if(Math.random() < 0.05) sel[0] = REWARD_RARE;
+                    sys.rewards.push(...sel);
+                } else if(tot > 0) {
+                    let pool = [...PENALTIES_SINGLE];
+                    if (dayOfWeek === 1) pool.push(PENALTY_SUN); 
+                    let sel = shuf(pool).slice(0, 2).map(p => ({t: p, type: 'SINGLE'}));
+                    let mSel = shuf(PENALTIES_MULTI)[0]; 
+                    sel.push({ t: mSel.t, type: 'MULTI', d: mSel.d, doneToday: false });
+                    sys.curses.push(...sel);
                 }
 
-                sys.tasks = []; 
-                sys.lastEvalDate = today;
-                sys.lastPurgeMonth = new Date().getMonth();
-                saveState();
-                populateDailyAwakenTasks();
+                if(sys.rewards.includes("Full Day Chill: Pure rest.")) {
+                    sys.tasks = [];
+                } else {
+                    sys.tasks = sys.tasks.filter(t => t.type === 'QUEST');
+                    sys.tasks.forEach(t => t.done = false);
+                }
 
-                alert(`SYSTEM UPDATED AT 00:01. PREVIOUS DAY SCORE: ${score}%. KARMA ASSIGNED.`);
+                sys.lastEvalDate = today; sys.lastPurgeMonth = new Date().getMonth();
+                save(); populateAwaken();
             }
         }
 
-        function switchTab(id) {
-            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        function go(id) {
+            document.querySelectorAll('.tab-page').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
             document.getElementById(`page-${id}`).classList.add('active');
-            document.getElementById(`nav-${id}`).classList.add('active');
-            if (id === 'karma') setTimeout(renderChart, 100);
+            document.querySelectorAll(`#n-${id}`).forEach(e=>e.classList.add('active'));
+            if(id === 'report') setTimeout(drawChart, 100);
         }
 
-        function updateAllUI() {
-            updateTasksUI(); updateRaidsUI(); updateTradesUI(); updateWalletUI(); updateKarmaUI();
-            
-            document.getElementById('last-relapse-text').innerText = `LAST BREACH: ${sys.lastRelapse}`;
-            document.getElementById('last-wipe-text').innerText = `LAST WIPE: ${sys.lastWipe}`;
+        // --- UI RENDER ---
+        function ui() {
+            uiTasks(); uiRaids(); uiTrades(); uiWallet(); uiKarma(); uiGrooming(); uiReport();
+            document.getElementById('last-relapse-text').innerText = `Last Breach: ${sys.lastRelapse}`;
+            document.getElementById('last-wipe-text').innerText = `Last Wipe: ${sys.lastWipe}`;
+        }
 
-            const dayNum = new Date().getDay();
-            const getItems = (arr, count, offset) => {
-                let res = [];
-                for(let i=0; i<count; i++) { res.push(arr[(dayNum + i + offset) % arr.length]); }
-                return res;
+        function uiTasks() {
+            const renderList = (type) => {
+                let filtered = sys.tasks.map((t, index) => ({...t, index})).filter(t => t.type === type);
+                filtered.sort((a, b) => (a.done === b.done) ? 0 : a.done ? 1 : -1);
+                if(filtered.length === 0 && type === 'QUEST') return '<div class="text-red-900 text-lg tracking-widest uppercase">No Quests Assigned</div>';
+                if(filtered.length === 0) return '';
+                return filtered.map(t => `
+                    <div class="flex flex-row justify-between items-center bento p-5 rounded-2xl ${t.done ? 'opacity-40 border-emerald-900/50' : ''}">
+                        <div class="flex flex-row items-center gap-5 flex-1 overflow-hidden">
+                            <button onclick="togT(${t.index})" class="task-toggle flex-shrink-0 ${t.done ? 'done' : ''}">${t.done ? '<i data-lucide="check" class="text-white w-5 h-5"></i>' : ''}</button>
+                            <span class="truncate text-white text-lg md:text-xl ${t.done ? 'line-through text-emerald-500' : ''}">${t.t}</span>
+                        </div>
+                        <button onclick="delT(${t.index})" class="btn-interact text-red-500 p-3 hover:bg-red-900/30 ml-3 rounded-xl"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    </div>
+                `).join('');
             };
-            document.getElementById('day-workout-list').innerHTML = getItems(WORKOUTS, 4, 0).map(w => `<li class="text-sm md:text-lg">⚔️ ${w} <span class="text-red-500">(TARGET: MAX REPS)</span></li>`).join('');
-            document.getElementById('day-looks-list').innerHTML = getItems(LOOKS, 3, 2).map(l => `<li class="text-sm md:text-lg">🧬 ${l}</li>`).join('');
+            document.getElementById('task-list-quests').innerHTML = renderList('QUEST');
+            document.getElementById('task-list-combat').innerHTML = renderList('COMBAT');
+            document.getElementById('task-list-looks').innerHTML = renderList('LOOKS');
+            lucide.createIcons();
         }
 
-        // --- 4. KARMA UI & RELAPSE LOGIC ---
-        function updateKarmaUI() {
-            const total = sys.tasks.length;
-            const done = sys.tasks.filter(t => t.done).length;
-            const pct = total === 0 ? 0 : Math.round((done / total) * 100);
-            
+        function uiKarma() {
+            const tot = sys.tasks.length, done = sys.tasks.filter(t=>t.done).length;
+            const pct = tot===0?0:Math.round((done/tot)*100);
             document.getElementById('sync-rate-text').innerText = `${pct}%`;
             document.getElementById('sync-bar').style.width = `${pct}%`;
-            document.getElementById('sync-bar').style.backgroundColor = pct >= 80 ? 'var(--neon-green)' : (pct < 50 ? 'var(--neon-red)' : 'var(--neon-blue)');
+            document.getElementById('sync-bar').style.background = pct>=80 ? 'linear-gradient(90deg, #064e3b, #10b981)' : (pct<50 ? 'linear-gradient(90deg, #7f1d1d, #dc2626)' : 'linear-gradient(90deg, #3730a3, #6366f1)');
 
-            checkRelapsePenalties();
+            let changed=false;
+            sys.curses.forEach(c => {
+                if(c.type==='RELAPSE' && Date.now() > (new Date(c.lock).setHours(23,59,59,999))) { c.lock += 7*86400000; changed=true; }
+            });
+            if(changed) save();
 
             document.getElementById('active-rewards').innerHTML = sys.rewards.length ? sys.rewards.map((r,i) => `
-                <li class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 mb-2 gap-3 md:gap-4">
-                    <span class="text-base md:text-xl">${r}</span>
-                    <button onclick="clearReward(${i})" class="btn-interact btn-complete w-full md:w-auto px-6 md:px-8 py-3 text-sm md:text-lg tracking-widest">CLAIM</button>
-                </li>
-            `).join('') : '<li class="text-slate-600 text-lg">NO REWARDS AVAILABLE</li>';
+                <li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-4 gap-3">
+                    <span class="text-lg text-emerald-400 flex-1">${r}</span>
+                    <button onclick="clrR(${i})" class="btn-interact text-xs bg-emerald-900/20 text-emerald-500 border border-emerald-900 px-8 py-3 hover:bg-emerald-900/50 tracking-widest uppercase">Claim</button>
+                </li>`).join('') : '<li class="text-red-900 text-lg tracking-widest uppercase">No Drops In Inventory</li>';
 
-            document.getElementById('active-penalties').innerHTML = sys.penalties.length ? sys.penalties.map((p,i) => {
-                if(p.type === 'RELAPSE') {
-                    const now = Date.now();
-                    const unlockStart = p.targetTime; 
-                    const unlockEnd = new Date(p.targetTime); unlockEnd.setHours(23, 59, 59, 999);
-                    
-                    if(now >= unlockStart && now <= unlockEnd.getTime()) {
-                        return `<li class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-red-900 pb-4 mb-2 gap-3 md:gap-4 text-red-500">
-                            <span class="text-base md:text-xl">${p.text}</span>
-                            <button onclick="clearPenalty(${i})" class="btn-interact btn-complete w-full md:w-auto px-6 md:px-8 py-3 text-sm md:text-lg tracking-widest">COMPLETE (UNLOCKED)</button>
-                        </li>`;
-                    } else {
-                        const unlockStr = new Date(p.targetTime).toLocaleString();
-                        return `<li class="flex flex-col border-b border-red-900 pb-4 mb-2 gap-2 text-red-500 opacity-80">
-                            <span class="text-base md:text-xl">${p.text}</span>
-                            <span class="text-xs md:text-sm text-slate-500 tracking-widest">LOCKED. UNLOCKS ON 7TH DAY AFTER: ${unlockStr}</span>
-                        </li>`;
-                    }
+            document.getElementById('active-penalties').innerHTML = sys.curses.length ? sys.curses.map((c,i) => {
+                if(c.type==='RELAPSE') {
+                    const ul = Date.now()>=c.lock;
+                    return `<li class="flex flex-col border-b border-red-900/50 pb-4 gap-3">
+                        <span class="text-lg text-red-500">${c.t}</span>
+                        ${ul ? `<button onclick="clrC(${i})" class="btn-interact text-xs bg-red-900/30 text-red-400 border border-red-700 px-6 py-3 w-full tracking-widest uppercase">Complete Lockdown</button>` : `<span class="text-sm text-red-700 tracking-widest uppercase">Locked Till: ${new Date(c.lock).toLocaleString()}</span>`}
+                    </li>`;
+                } else if(c.type==='MULTI') {
+                    return `<li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-4 gap-3">
+                        <span class="text-lg text-amber-500 flex-1">${c.t} <span class="text-amber-700 ml-2">(${c.d} Days Left)</span></span>
+                        <button onclick="progC(${i})" class="btn-interact text-xs ${c.doneToday?'bg-black text-slate-600 border-slate-800 cursor-not-allowed':'bg-amber-900/20 text-amber-500 border border-amber-900 hover:bg-amber-900/50'} px-8 py-3 tracking-widest uppercase" ${c.doneToday?'disabled':''}>${c.doneToday?'Logged':'Complete Today'}</button>
+                    </li>`;
                 } else {
-                    return `<li class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-red-900 pb-4 mb-2 gap-3 md:gap-4 text-red-400">
-                        <span class="text-base md:text-xl">${p.text}</span>
-                        <button onclick="clearPenalty(${i})" class="btn-interact btn-complete w-full md:w-auto px-6 md:px-8 py-3 text-sm md:text-lg tracking-widest">COMPLETE</button>
+                    return `<li class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-red-900/30 pb-4 gap-3">
+                        <span class="text-lg text-red-400 flex-1">${c.t}</span>
+                        <button onclick="clrC(${i})" class="btn-interact text-xs bg-red-900/20 text-red-500 border border-red-900 px-8 py-3 hover:bg-red-900/50 tracking-widest uppercase">Complete</button>
                     </li>`;
                 }
-            }).join('') : '<li class="text-slate-600 text-lg">SYSTEM CLEAR</li>';
-
-            if (document.getElementById('page-karma').classList.contains('active')) renderChart();
+            }).join('') : '<li class="text-red-900 text-lg tracking-widest uppercase">System Clear</li>';
         }
 
-        function checkRelapsePenalties() {
-            let changed = false;
-            sys.penalties.forEach(p => {
-                if (p.type === 'RELAPSE') {
-                    const now = Date.now();
-                    const targetEnd = new Date(p.targetTime); targetEnd.setHours(23, 59, 59, 999);
-                    if (now > targetEnd.getTime()) { p.targetTime += 7 * 24 * 60 * 60 * 1000; changed = true; }
-                }
-            });
-            if(changed) saveState();
-        }
-
-        function renderChart() {
-            const ctx = document.getElementById('weekChart').getContext('2d');
-            if(weekChartInst) weekChartInst.destroy();
-            const labels = sys.history.map(h => h.date.substring(0,5));
-            const data = sys.history.map(h => h.score);
-            weekChartInst = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: labels.length ? labels : ['NO DATA'], datasets: [{ label: 'SYNC %', data: data.length ? data : [0], backgroundColor: '#3b82f6', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }
-            });
-        }
-
-        function clearReward(i) { sys.rewards.splice(i, 1); saveState(); updateAllUI(); }
-        function clearPenalty(i) { sys.penalties.splice(i, 1); saveState(); updateAllUI(); }
-
-        // --- 5. GRIND (TASKS) ---
-        function addTask() {
-            const val = document.getElementById('task-input').value.trim();
-            if(!val) return;
-            sys.tasks.push({ t: val, done: false });
-            document.getElementById('task-input').value = '';
-            saveState(); updateAllUI();
-        }
-        
-        // SORT LOGIC ADDED: Completed tasks go to the bottom automatically
-        function toggleTask(i) { 
-            sys.tasks[i].done = !sys.tasks[i].done; 
-            sys.tasks.sort((a, b) => a.done === b.done ? 0 : a.done ? 1 : -1);
-            saveState(); 
-            updateAllUI(); 
-        }
-        
-        function delTask(i) { 
-            playAlarm(); 
-            sys.tasks.splice(i, 1); 
-            saveState(); 
-            updateAllUI(); 
-        }
-        
-        function updateTasksUI() {
-            document.getElementById('task-list').innerHTML = sys.tasks.map((t, i) => `
-                <div class="bento p-5 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${t.done ? 'border-emerald-900 bg-emerald-900/10 opacity-60' : ''}">
-                    <span class="text-xl md:text-2xl ${t.done ? 'line-through text-emerald-500' : 'text-white'} break-words flex-1 w-full">${t.t}</span>
-                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0 mt-2 md:mt-0">
-                        <button onclick="toggleTask(${i})" class="btn-interact btn-complete px-6 md:px-8 py-3 md:py-4 w-full md:w-auto text-sm md:text-lg tracking-widest">${t.done ? 'UNDO' : 'COMPLETE'}</button>
-                        <button onclick="delTask(${i})" class="btn-interact btn-delete px-6 md:px-8 py-3 md:py-4 w-full md:w-auto text-sm md:text-lg tracking-widest">DELETE</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- 6. RAIDS ---
-        function startRaid() {
-            const name = document.getElementById('raid-name').value;
-            const d = parseInt(document.getElementById('raid-d').value) || 0;
-            const h = parseInt(document.getElementById('raid-h').value) || 0;
-            const m = parseInt(document.getElementById('raid-m').value) || 0;
-            if(!name || (d===0 && h===0 && m===0)) return;
-            const totalMs = (d * 86400000) + (h * 3600000) + (m * 60000);
-            sys.raids.push({ name, target: Date.now() + totalMs, failed: false });
+        function uiGrooming() {
+            const btn = document.getElementById('btn-grooming');
+            const txt = document.getElementById('last-grooming-text');
+            if(!sys.lastGroomingTs) { txt.innerText = "Last Cut/Shave: Never"; return; }
             
-            document.getElementById('raid-name').value = ''; document.getElementById('raid-d').value = ''; document.getElementById('raid-h').value = ''; document.getElementById('raid-m').value = '';
-            saveState(); updateRaidsUI();
+            const left = (15 * 86400000) - (Date.now() - sys.lastGroomingTs);
+            const d = new Date(sys.lastGroomingTs).toLocaleDateString();
+            txt.innerText = `Last Cut: ${d}`;
+
+            if(left > 0) {
+                const days = Math.ceil(left / 86400000);
+                btn.disabled = true; btn.innerText = `LOCKED (${days} DAYS LEFT)`;
+                btn.classList.add('bg-black', 'text-slate-600', 'border-slate-800', 'cursor-not-allowed');
+                btn.classList.remove('bg-purple-700/80', 'text-white', 'border-purple-500', 'hover:bg-purple-600');
+            } else {
+                btn.disabled = false; btn.innerText = `Log Haircut / Shave`;
+                btn.classList.remove('bg-black', 'text-slate-600', 'border-slate-800', 'cursor-not-allowed');
+                btn.classList.add('bg-purple-700/80', 'text-white', 'border-purple-500', 'hover:bg-purple-600');
+            }
         }
-        function clearRaid(idx) { sys.raids.splice(idx, 1); saveState(); updateRaidsUI(); }
+        function logGrooming() { sys.lastGroomingTs = Date.now(); save(); uiGrooming(); }
+
+        function uiReport() {
+            if(sys.history.length === 0) return;
+            const yest = sys.history[sys.history.length-1];
+            document.getElementById('rep-yest-score').innerText = yest.s + '%';
+            document.getElementById('rep-yest-stats').innerText = `Done: ${yest.dn} | Missed: ${yest.m}`;
+
+            const week = sys.history.slice(-7);
+            const wTot = week.reduce((a,b)=>a+b.t, 0), wDn = week.reduce((a,b)=>a+b.dn, 0);
+            document.getElementById('rep-week-score').innerText = (wTot ? Math.round((wDn/wTot)*100) : 0) + '%';
+            document.getElementById('rep-week-stats').innerText = `Done: ${wDn} | Missed: ${wTot-wDn}`;
+
+            const month = sys.history;
+            const mTot = month.reduce((a,b)=>a+b.t, 0), mDn = month.reduce((a,b)=>a+b.dn, 0);
+            document.getElementById('rep-month-score').innerText = (mTot ? Math.round((mDn/mTot)*100) : 0) + '%';
+            document.getElementById('rep-month-stats').innerText = `Done: ${mDn} | Missed: ${mTot-mDn}`;
+        }
+        function drawChart() {
+            const ctx = document.getElementById('monthChart').getContext('2d');
+            if(mChart) mChart.destroy();
+            mChart = new Chart(ctx, { type: 'line', data: { labels: sys.history.map(h=>h.d.slice(0,5)), datasets: [{ label: 'Score %', data: sys.history.map(h=>h.s), borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)', fill: true, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }});
+        }
+
+        function addTask() { let v = document.getElementById('task-input').value.trim(); if(v){ sys.tasks.push({t:v, done:false, type: 'QUEST'}); document.getElementById('task-input').value=''; save(); ui(); } }
+        function togT(i) { sys.tasks[i].done = !sys.tasks[i].done; save(); ui(); }
+        function delT(i) { playAlarm(); sys.tasks.splice(i,1); save(); ui(); }
+        function clrR(i) { sys.rewards.splice(i,1); save(); ui(); }
+        function clrC(i) { sys.curses.splice(i,1); save(); ui(); }
+        function progC(i) { sys.curses[i].doneToday = true; save(); ui(); } 
+
+        function startRaid() {
+            const n = document.getElementById('raid-name').value, d = parseInt(document.getElementById('raid-d').value)||0, h = parseInt(document.getElementById('raid-h').value)||0, m = parseInt(document.getElementById('raid-m').value)||0;
+            if(!n || (d===0&&h===0&&m===0)) return;
+            sys.raids.push({ n, t: Date.now() + (d*86400000+h*3600000+m*60000), failed: false });
+            ['raid-name','raid-d','raid-h','raid-m'].forEach(id=>document.getElementById(id).value=''); save(); uiRaids();
+        }
+        function delR(i) { sys.raids.splice(i,1); save(); uiRaids(); }
         function tickRaids() {
             if(!document.getElementById('page-raids').classList.contains('active')) return;
-            let changed = false;
-            sys.raids.forEach(r => { const left = r.target - Date.now(); if(left <= 0 && !r.failed) { r.failed = true; changed = true; } });
-            if(changed) saveState(); updateRaidsUI();
+            let c=false; sys.raids.forEach(r => { if(r.t - Date.now() <= 0 && !r.failed) { r.failed = true; c = true; } });
+            if(c) save(); uiRaids();
         }
-        function updateRaidsUI() {
-            document.getElementById('raid-list').innerHTML = sys.raids.map((r, i) => {
-                const left = Math.max(0, r.target - Date.now());
-                const d = Math.floor(left / 86400000), h = Math.floor((left % 86400000) / 3600000), m = Math.floor((left % 3600000) / 60000), s = Math.floor((left % 60000) / 1000);
-                const timeStr = r.failed ? "MISSION FAILED" : `${d}D : ${h}H : ${m}M : ${s}S`;
-                const color = r.failed ? "text-red-500" : "text-yellow-400";
-                return `
-                <div class="bento p-5 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6 ${r.failed ? 'border-red-900 bg-red-900/10' : ''}">
-                    <div class="flex-1 w-full"><div class="text-xl md:text-2xl text-white mb-2">${r.name}</div><div class="text-2xl md:text-3xl ${color} font-black tracking-widest">${timeStr}</div></div>
-                    <button onclick="clearRaid(${i})" class="btn-interact btn-delete w-full md:w-auto px-8 md:px-10 py-3 md:py-4 text-base md:text-xl tracking-widest">DELETE</button>
+        function uiRaids() {
+            document.getElementById('raid-list').innerHTML = sys.raids.map((r,i) => {
+                let l = Math.max(0, r.t - Date.now()), d = Math.floor(l/86400000), h = Math.floor((l%86400000)/3600000), m = Math.floor((l%3600000)/60000), s = Math.floor((l%60000)/1000);
+                return `<div class="bento p-5 flex flex-row items-center justify-between ${r.failed?'border-red-900 bg-red-950/20':''}">
+                    <div class="flex flex-col flex-1 overflow-hidden"><span class="text-lg truncate text-white">${r.n}</span><span class="text-xl ${r.failed?'text-red-600':'text-red-400'}">${r.failed?'Failed':`${d}D ${h}H ${m}M ${s}S`}</span></div>
+                    <button onclick="delR(${i})" class="btn-interact text-red-600 p-3 ml-3 hover:bg-red-900/30 rounded-xl"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>`;
-            }).join('');
+            }).join(''); lucide.createIcons();
         }
 
-        // --- 7. TRADING ---
         function logTrade() {
-            const asset = document.getElementById('trade-asset').value;
-            const status = document.getElementById('trade-status').value;
-            if(!asset) return;
-            if(sys.trades.length > 0 && sys.trades[0].status === 'CONTINUE' && status === 'CONTINUE') { alert("SYSTEM BLOCK: YOU MUST CLOSE YOUR PREVIOUS ACTIVE POSITION FIRST."); return; }
-            sys.trades.unshift({ asset, status, pnl: document.getElementById('trade-pnl').value || '0', date: new Date().toLocaleString() });
-            saveState(); updateAllUI();
+            const a=document.getElementById('trade-asset').value, st=document.getElementById('trade-status').value;
+            if(!a) return;
+            if(sys.trades.length>0 && sys.trades[0].s==='Continue' && st==='Continue') { alert("System Block: Close Previous Open Position."); return; }
+            sys.trades.unshift({ a, s:st, pnl: document.getElementById('trade-pnl').value||'0', d: new Date().toLocaleString() }); save(); ui();
         }
-        function updateTradesUI() {
+        function uiTrades() {
             document.getElementById('trade-history').innerHTML = sys.trades.map(t => {
-                let col = t.status === 'WIN' ? 'text-emerald-500' : (t.status === 'LOSS' ? 'text-red-500' : 'text-yellow-500');
-                return `<div class="bento p-4 mb-4 flex justify-between items-center"><div class="flex flex-col"><span class="text-white text-xl md:text-2xl mb-1">${t.asset}</span><span class="text-xs md:text-sm text-slate-500 tracking-widest">${t.date}</span></div><div class="text-right flex flex-col"><span class="${col} font-bold text-xl md:text-2xl tracking-widest mb-1">${t.status}</span><span class="text-slate-400 text-lg md:text-xl">$${t.pnl}</span></div></div>`;
+                let c = t.s==='Win'?'text-emerald-500':(t.s==='Loss'?'text-red-600':'text-amber-500');
+                return `<div class="bento p-5 flex justify-between items-center mb-4"><div class="flex flex-col"><span class="text-lg text-white">${t.a}</span><span class="text-xs text-red-900">${t.d}</span></div><div class="text-right flex flex-col"><span class="${c} text-lg">${t.s}</span><span class="text-slate-400 text-sm">$${t.pnl}</span></div></div>`;
             }).join('');
         }
 
-        // --- 8. WALLET ---
-        function transact(type) {
-            const amt = parseFloat(document.getElementById('wallet-amt').value);
-            if(!amt || amt <= 0) return;
-            sys.balance += (type === 'IN' ? amt : -amt);
-            sys.wallet.unshift({ type, amt, tag: document.getElementById('wallet-tag').value || "UNSPECIFIED", date: new Date().toLocaleString() });
-            document.getElementById('wallet-amt').value = ''; document.getElementById('wallet-tag').value = '';
-            saveState(); updateAllUI();
+        function transact(t) {
+            const a = parseFloat(document.getElementById('wallet-amt').value); if(!a||a<=0) return;
+            sys.balance += (t==='In'?a:-a); sys.wallet.unshift({ t, a, tag: document.getElementById('wallet-tag').value||"Unknown", d: new Date().toLocaleString() });
+            document.getElementById('wallet-amt').value=''; document.getElementById('wallet-tag').value=''; save(); ui();
         }
-        function updateWalletUI() {
+        function uiWallet() {
             document.getElementById('wallet-balance').innerText = `₹${sys.balance.toLocaleString()}`;
-            document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `<div class="bento p-4 mb-4 flex justify-between items-center"><div class="flex flex-col"><span class="text-white text-lg md:text-xl mb-1">${w.tag}</span><span class="text-xs md:text-sm text-slate-500 tracking-widest">${w.date}</span></div><div class="${w.type === 'IN' ? 'text-emerald-500' : 'text-red-500'} text-2xl md:text-3xl font-black tracking-widest">${w.type === 'IN' ? '+' : '-'}₹${w.amt}</div></div>`).join('');
+            document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `<div class="bento p-5 flex justify-between items-center mb-4"><div class="flex flex-col"><span class="text-lg text-white">${w.tag}</span><span class="text-xs text-red-900">${w.d}</span></div><span class="${w.t==='In'?'text-emerald-500':'text-red-600'} text-xl">${w.t==='In'?'+':'-'}₹${w.a}</span></div>`).join('');
         }
 
-        // --- 9. AWAKEN RELAPSE ---
         function reportRelapse() {
             playAlarm(); 
-            
-            const now = new Date();
-            sys.lastRelapse = now.toLocaleString().toUpperCase();
-            
-            const targetDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-            targetDate.setHours(22, 0, 0, 0);
-
-            const extremePool = PENALTIES_DB.slice(-16); 
-            const curse = extremePool[Math.floor(Math.random() * extremePool.length)];
-
-            sys.penalties.push({ text: `7-DAY RELAPSE LOCK: ${curse}`, type: 'RELAPSE', targetTime: targetDate.getTime() });
-            saveState(); updateAllUI(); 
-            alert("CRITICAL BREACH RECORDED. 7-DAY HARD LOCKDOWN INITIATED.");
+            const n = new Date(); sys.lastRelapse = n.toLocaleString();
+            let tD = new Date(n.getTime() + 7*86400000); tD.setHours(22,0,0,0);
+            const curse = EXTREME_CURSES[Math.floor(Math.random() * EXTREME_CURSES.length)];
+            sys.curses.push({ t: `7-Day Relapse Lock: ${curse}`, type: 'RELAPSE', lock: tD.getTime() });
+            save(); ui(); alert("Breach Recorded. 7-Day Hard Lockdown Initiated.");
         }
 
-        // --- 10. SYSTEM ROOT (FACTORY RESET 50 WORD BLOCKER) ---
         function factoryReset() {
-            const reason = document.getElementById('reset-reason').value.trim();
-            const wordCount = reason.split(/\s+/).filter(w => w.length > 0).length;
-
-            if(wordCount < 50) {
-                alert(`SYSTEM REJECTED: EXPLANATION TOO WEAK. MINIMUM 50 WORDS REQUIRED. CURRENT WORD COUNT: ${wordCount}`);
-                return;
-            }
-
-            const now = new Date().toLocaleString().toUpperCase();
-            localStorage.clear(); 
-            
-            sys = { 
-                lastEvalDate: new Date().toLocaleDateString(),
-                lastPurgeMonth: new Date().getMonth(),
-                lastWipe: now,
-                tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
-                lastRelapse: "PURE", rewards: [], penalties: [], history: []
-            };
-            saveState();
-            alert("SYSTEM NUKED SUCCESSFULLY.");
-            location.reload();
+            const r = document.getElementById('reset-reason').value.trim();
+            if(r.split(/\s+/).filter(w=>w.length>0).length < 50) { alert(`Rejected: Minimum 50 Words Required.`); return; }
+            localStorage.removeItem('monarch2026_v13'); alert("System Nuked."); location.reload();
         }
 
         window.onload = init;
