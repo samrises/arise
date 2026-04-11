@@ -26,9 +26,9 @@
         h1, h2, h3, .font-black { font-weight: 900 !important; }
 
         :root {
-            --bg-void: #030000;
-            --surface-dark: #0a0101;
-            --border-glow: #3a0505;
+            --bg-void: #030101;
+            --surface-dark: rgba(10, 2, 2, 0.85);
+            --border-glow: #4a0505;
             --neon-blood: #ff1100;
             --neon-fire: #ff6600;
             --text-muted: #884444;
@@ -42,78 +42,103 @@
         /* REALISTIC FLAME CANVAS LAYER */
         #fire-canvas { 
             position: fixed; top: 0; left: 0; pointer-events: none; z-index: 0; 
-            filter: blur(4px) contrast(1.2); /* Creates the continuous gooey flame effect */
+            filter: blur(3px) contrast(1.3); 
         }
-        
+
         .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9000; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; opacity: 0.3; }
 
+        /* UPGRADED TACTICAL PANELS */
         .titan-panel {
-            background: rgba(10, 1, 1, 0.85);
-            backdrop-filter: blur(10px);
+            background: var(--surface-dark);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--border-glow);
-            box-shadow: inset 0 0 20px rgba(255,17,0,0.05), 0 10px 40px rgba(0,0,0,0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.05);
             border-radius: 8px;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative; z-index: 10;
         }
-        .titan-panel:hover {
-            border-color: rgba(255, 17, 0, 0.4);
-            box-shadow: inset 0 0 30px rgba(255,17,0,0.1), 0 15px 50px rgba(255,17,0,0.15);
-        }
 
+        /* UPGRADED INPUTS */
         .inferno-input {
-            background: transparent; border: none; border-bottom: 2px solid var(--border-glow);
-            color: var(--neon-fire); padding: 1rem 0.5rem; width: 100%; outline: none; 
-            font-size: 1.2rem; transition: all 0.3s;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border-glow); border-bottom: 2px solid var(--border-glow);
+            color: var(--neon-fire); padding: 1rem 0.8rem; width: 100%; outline: none; border-radius: 6px;
+            font-size: 1.2rem; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .inferno-input:focus { border-bottom-color: var(--neon-blood); box-shadow: 0 15px 20px -10px rgba(255,17,0,0.5); }
+        .inferno-input:focus { border-color: var(--neon-blood); box-shadow: 0 10px 20px -5px rgba(255,17,0,0.4); background: rgba(20,0,0,0.8); }
         .inferno-input::placeholder { color: var(--text-muted); }
 
-        /* INTENSE BUTTON TRANSITIONS */
+        /* 🚀 NEW ATTRACTIVE BUTTON HOVERS */
         .btn-inferno {
-            background: var(--neon-blood); color: #000; padding: 1.2rem 2rem;
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #7a0000 0%, #d80e0e 100%); 
+            color: #fff; padding: 1.2rem 2rem;
             font-weight: 900; letter-spacing: 1px; cursor: pointer; 
             display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-            box-shadow: 0 0 15px rgba(255,17,0,0.3); border-radius: 6px; 
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s;
-            position: relative; z-index: 10; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(255,17,0,0.3); border-radius: 6px; 
+            border: 1px solid #ff3300;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .btn-inferno:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(255,17,0,0.8);
-            background: #ff3300;
+        .btn-inferno:hover { 
+            background: linear-gradient(135deg, #ff1100 0%, #ff6600 100%); 
+            color: #fff; 
+            border-color: #ffcc00;
+            box-shadow: 0 10px 25px rgba(255,85,0,0.7), inset 0 0 15px rgba(255,255,255,0.3); 
+            transform: translateY(-3px) scale(1.02);
         }
-        .btn-inferno:active { 
-            transform: scale(0.95); 
+        .btn-inferno:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(255,17,0,0.8); }
+        
+        .btn-inferno.outline { 
+            background: rgba(20,0,0,0.5); border: 1px solid var(--neon-blood); color: var(--neon-blood); 
+            box-shadow: none;
         }
-        .btn-inferno.outline { background: transparent; border: 2px solid var(--neon-blood); color: var(--neon-blood); }
-        .btn-inferno.outline:hover { background: var(--neon-blood); color: #000; }
+        .btn-inferno.outline:hover { 
+            background: var(--neon-blood); color: #000; border-color: #fff;
+            box-shadow: 0 0 20px rgba(255,17,0,0.6);
+        }
+        .btn-inferno:disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; pointer-events: none; }
 
-        .progress-track { background: #1a0000; height: 8px; width: 100%; overflow: hidden; border-radius: 4px; }
-        .progress-fill { background: linear-gradient(90deg, #880000, var(--neon-fire), var(--neon-blood)); height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon-blood); }
+        /* BUTTON CLICK RIPPLE */
+        .ripple {
+            position: absolute; border-radius: 50%; transform: scale(0);
+            animation: ripple-anim 600ms linear; background-color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+        }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+        .progress-track { background: #1a0000; height: 8px; width: 100%; overflow: hidden; border-radius: 4px; border: 1px solid #3a0000;}
+        .progress-fill { background: linear-gradient(90deg, #880000, #ff1100, #ff6600); height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon-blood); }
 
         .main-container { display: flex; flex-direction: column; height: 100dvh; z-index: 10; position: relative; }
         .main-viewport { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1rem; padding-bottom: 120px; }
         @media (min-width: 768px) { .main-viewport { padding: 2.5rem; padding-bottom: 2.5rem; } }
 
-        .nav-item { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; gap: 4px; cursor: pointer; transition: all 0.3s; }
+        /* NAV STYLES */
+        .nav-item { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; gap: 4px; cursor: pointer; transition: all 0.3s; }
         .nav-item:hover { color: var(--neon-fire); transform: translateY(-3px); }
-        .nav-item.active { color: var(--neon-blood); filter: drop-shadow(0 0 10px rgba(255,17,0,0.6)); transform: scale(1.1); }
+        .nav-item.active { color: var(--neon-blood); filter: drop-shadow(0 0 10px rgba(255,17,0,0.8)); }
+        .nav-item.active i { transform: scale(1.15); }
         .mobile-nav { background: rgba(5, 1, 1, 0.98); border-top: 1px solid var(--border-glow); padding-bottom: env(safe-area-inset-bottom); z-index: 50; }
 
         .tab-page { display: none; }
         .tab-page.active { display: block; }
 
-        .task-toggle { width: 26px; height: 26px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        /* TASK CHECKBOX */
+        .task-toggle { position: relative; overflow: hidden; width: 26px; height: 26px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); background: rgba(0,0,0,0.5);}
         .task-toggle:hover { border-color: var(--neon-fire); transform: scale(1.1); }
         .task-toggle:active { transform: scale(0.8); }
-        .task-toggle.done { border-color: var(--neon-blood); background: var(--neon-blood); box-shadow: 0 0 20px rgba(255,17,0,0.6); transform: scale(1.05); }
+        .task-toggle.done { border-color: #10b981; background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.5); }
 
         .superb-title { display: flex; align-items: center; gap: 0.5rem; border-bottom: 2px solid var(--border-glow); padding-bottom: 0.5rem; margin-bottom: 1rem; }
         .title-sub { color: #fff; font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; }
 
         .typewriter-text::after { content: '█'; animation: blink 1s step-end infinite; color: var(--neon-blood); }
         @keyframes blink { 50% { opacity: 0; } }
+
+        /* TRADING BREACH SHAKE */
+        .breach-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; border: 2px solid var(--neon-blood) !important; box-shadow: 0 0 30px rgba(255,17,0,0.3) !important;}
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+
+        /* RR DASHBOARD MINI CARDS */
+        .rr-card { background: rgba(0,0,0,0.6); border: 1px solid var(--border-glow); border-radius: 6px; padding: 10px; text-align: center; }
     </style>
 </head>
 <body class="relative flex">
@@ -122,7 +147,7 @@
 
     <aside class="hidden md:flex flex-col w-72 h-[100dvh] bg-[#030101] border-r border-[#220000] z-40 fixed left-0 top-0 p-8">
         <div class="mb-12">
-            <h1 class="text-5xl text-[#ff1100] font-black drop-shadow-[0_0_25px_rgba(255,17,0,0.6)]">Sammm.</h1>
+            <h1 class="text-4xl text-[#ff1100] font-black drop-shadow-[0_0_15px_rgba(255,17,0,0.5)]">Sammm.</h1>
             <p class="text-xs text-red-800 mt-2 tracking-widest">Give up Or Stand up With Me And Show them What Your Father Raised !</p>
         </div>
         <nav class="flex flex-col gap-4" id="desktop-nav"></nav>
@@ -132,27 +157,27 @@
         <main class="main-viewport" id="pages-container">
             
             <header class="mb-8 md:mb-12 gsap-header">
-                <h1 class="md:hidden text-5xl text-[#ff1100] mb-4 drop-shadow-[0_0_20px_rgba(255,17,0,0.6)]">Sam Ready ?</h1>
-                <div id="global-quote" class="typewriter-text text-sm md:text-xl text-white leading-relaxed min-h-[4rem] flex items-center">igniting system...</div>
+                <h1 class="md:hidden text-4xl text-[#ff1100] mb-4 drop-shadow-[0_0_15px_rgba(255,17,0,0.4)]">Sam Ready ?</h1>
+                <div id="global-quote" class="typewriter-text text-sm md:text-xl text-white leading-relaxed min-h-[4rem] flex items-center">loading directive...</div>
             </header>
 
             <div id="page-tasks" class="tab-page active">
                 <div class="flex flex-col md:flex-row gap-4 mb-12 gsap-item">
                     <input type="text" id="task-input" class="inferno-input flex-1" placeholder="forge new directive...">
-                    <button onclick="triggerAction(event, addTask)" class="btn-inferno shrink-0 fire-trigger">deploy objective</button>
+                    <button onclick="createRipple(event); addTask()" class="btn-inferno shrink-0">deploy objective</button>
                 </div>
                 
                 <div class="mb-10 gsap-item">
-                    <div class="superb-title"><i data-lucide="crosshair" class="w-6 h-6 text-[#ff5500]"></i><span class="title-sub text-[#ff5500]">active grind</span></div>
-                    <div id="task-list-quests" class="flex flex-col gap-3"></div>
+                    <div class="superb-title"><i data-lucide="crosshair" class="w-5 h-5 text-[#ff5500]"></i><span class="title-sub text-[#ff5500]">active grind</span></div>
+                    <div id="task-list-quests" class="flex flex-col gap-2"></div>
                 </div>
                 <div class="mb-10 gsap-item">
-                    <div class="superb-title"><i data-lucide="swords" class="w-6 h-6 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">combat protocol</span></div>
-                    <div id="task-list-combat" class="flex flex-col gap-3"></div>
+                    <div class="superb-title"><i data-lucide="swords" class="w-5 h-5 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">combat protocol</span></div>
+                    <div id="task-list-combat" class="flex flex-col gap-2"></div>
                 </div>
                 <div class="mb-10 gsap-item">
-                    <div class="superb-title"><i data-lucide="eye" class="w-6 h-6 text-[#a855f7]"></i><span class="title-sub text-[#a855f7]">visual protocol</span></div>
-                    <div id="task-list-looks" class="flex flex-col gap-3"></div>
+                    <div class="superb-title"><i data-lucide="eye" class="w-5 h-5 text-[#a855f7]"></i><span class="title-sub text-[#a855f7]">visual protocol</span></div>
+                    <div id="task-list-looks" class="flex flex-col gap-2"></div>
                 </div>
             </div>
 
@@ -160,22 +185,22 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="titan-panel p-8 flex flex-col justify-center relative overflow-hidden gsap-item">
                         <h3 class="text-red-800 text-sm mb-4 tracking-widest">sync rate</h3>
-                        <div class="text-7xl md:text-8xl text-[#ff1100] font-black drop-shadow-[0_0_30px_rgba(255,17,0,0.6)]" id="sync-rate-text">0%</div>
+                        <div class="text-7xl md:text-8xl text-[#ff1100] font-black drop-shadow-[0_0_20px_rgba(255,17,0,0.5)]" id="sync-rate-text">0%</div>
                         <div class="absolute bottom-0 left-0 w-full"><div class="progress-track"><div id="sync-bar" class="progress-fill w-0"></div></div></div>
                     </div>
                     <div class="titan-panel p-8 flex flex-col justify-center border-l-4 border-l-[#ff1100] gsap-item">
                         <h3 class="text-red-800 text-sm mb-2 tracking-widest">system integrity</h3>
                         <p id="last-relapse-text" class="text-sm text-[#ff5500] mb-8">last breach: pure</p>
-                        <button onclick="triggerAction(event, reportRelapse)" class="btn-inferno danger w-full fire-trigger">report fatal breach</button>
+                        <button onclick="createRipple(event); reportRelapse()" class="btn-inferno danger w-full">report fatal breach</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="titan-panel p-6 border-t-2 border-t-[#10b981] gsap-item">
-                        <div class="superb-title"><i data-lucide="award" class="w-6 h-6 text-[#10b981]"></i><span class="title-sub text-[#10b981]">acquired drops</span></div>
+                        <div class="superb-title"><i data-lucide="award" class="w-5 h-5 text-[#10b981]"></i><span class="title-sub text-[#10b981]">acquired drops</span></div>
                         <ul id="active-rewards" class="flex flex-col gap-4"></ul>
                     </div>
                     <div class="titan-panel p-6 border-t-2 border-t-[#ff1100] gsap-item">
-                        <div class="superb-title"><i data-lucide="skull" class="w-6 h-6 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">active curses</span></div>
+                        <div class="superb-title"><i data-lucide="skull" class="w-5 h-5 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">active curses</span></div>
                         <ul id="active-penalties" class="flex flex-col gap-4"></ul>
                     </div>
                 </div>
@@ -185,17 +210,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="titan-panel p-6 text-center border-t-2 border-t-red-900 gsap-item">
                         <h3 class="text-red-800 text-xs mb-2 tracking-widest">yesterday</h3>
-                        <div class="text-5xl text-white mb-2" id="rep-yest-score">0%</div>
+                        <div class="text-4xl text-white mb-2" id="rep-yest-score">0%</div>
                         <p class="text-xs text-red-900" id="rep-yest-stats">done: 0 | miss: 0</p>
                     </div>
                     <div class="titan-panel p-6 text-center border-t-2 border-t-[#ff5500] gsap-item">
                         <h3 class="text-[#ff5500] text-xs mb-2 tracking-widest">7-day trajectory</h3>
-                        <div class="text-5xl text-[#ff5500] mb-2" id="rep-week-score">0%</div>
+                        <div class="text-4xl text-[#ff5500] mb-2" id="rep-week-score">0%</div>
                         <p class="text-xs text-red-900" id="rep-week-stats">done: 0 | miss: 0</p>
                     </div>
                     <div class="titan-panel p-6 text-center border-t-2 border-t-[#ff1100] gsap-item">
                         <h3 class="text-[#ff1100] text-xs mb-2 tracking-widest">30-day dominance</h3>
-                        <div class="text-5xl text-[#ff1100] mb-2 drop-shadow-[0_0_20px_rgba(255,17,0,0.5)]" id="rep-month-score">0%</div>
+                        <div class="text-4xl text-[#ff1100] mb-2 drop-shadow-[0_0_15px_rgba(255,17,0,0.5)]" id="rep-month-score">0%</div>
                         <p class="text-xs text-red-900" id="rep-month-stats">done: 0 | miss: 0</p>
                     </div>
                 </div>
@@ -209,38 +234,54 @@
                 <div class="titan-panel p-12 text-center max-w-2xl mx-auto border-t-4 border-t-[#ff5500] gsap-item">
                     <div class="superb-title justify-center"><span class="title-sub text-[#ff5500] text-2xl">grooming log</span></div>
                     <p id="last-grooming-text" class="text-sm text-red-800 mb-10 tracking-widest">last log: never</p>
-                    <button id="btn-grooming" onclick="triggerAction(event, logGrooming)" class="btn-inferno w-full py-5 fire-trigger">authorize log</button>
+                    <button id="btn-grooming" onclick="createRipple(event); logGrooming()" class="btn-inferno w-full py-5">authorize log</button>
                 </div>
             </div>
 
             <div id="page-raids" class="tab-page">
-                <div class="titan-panel p-8 mb-8 gsap-item">
+                <div class="titan-panel p-6 md:p-8 mb-8 gsap-item">
                     <input type="text" id="raid-name" class="inferno-input mb-6" placeholder="raid / exam target">
                     <div class="flex gap-4 mb-8">
                         <input type="number" id="raid-d" class="inferno-input text-center" placeholder="days">
                         <input type="number" id="raid-h" class="inferno-input text-center" placeholder="hrs">
                         <input type="number" id="raid-m" class="inferno-input text-center" placeholder="mins">
                     </div>
-                    <button onclick="triggerAction(event, startRaid)" class="btn-inferno w-full fire-trigger">ignite countdown</button>
+                    <button onclick="createRipple(event); startRaid()" class="btn-inferno w-full">ignite countdown</button>
                 </div>
-                <div id="raid-list" class="flex flex-col gap-4 gsap-item"></div>
+                <div id="raid-list" class="flex flex-col gap-3 gsap-item"></div>
             </div>
 
             <div id="page-trading" class="tab-page">
+                <div class="titan-panel p-6 mb-8 gsap-item border-l-4 border-l-[#00e5ff]">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="title-sub text-[#00e5ff]">Tactical R/R Matrix</span>
+                        <span class="text-[10px] text-slate-400">1% RISK | 1:2.5 REWARD</span>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="rr-card"><div class="text-[10px] text-slate-500">$5k acc</div><div class="text-rose-500 text-xs">R: $50</div><div class="text-emerald-400 text-xs">T: $125</div></div>
+                        <div class="rr-card"><div class="text-[10px] text-slate-500">$10k acc</div><div class="text-rose-500 text-xs">R: $100</div><div class="text-emerald-400 text-xs">T: $250</div></div>
+                        <div class="rr-card"><div class="text-[10px] text-slate-500">$25k acc</div><div class="text-rose-500 text-xs">R: $250</div><div class="text-emerald-400 text-xs">T: $625</div></div>
+                        <div class="rr-card"><div class="text-[10px] text-slate-500">$50k acc</div><div class="text-rose-500 text-xs">R: $500</div><div class="text-emerald-400 text-xs">T: $1250</div></div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="titan-panel p-8 gsap-item">
+                    <div class="titan-panel p-6 md:p-8 gsap-item" id="trade-box">
+                        <div class="flex justify-between items-center mb-6 border-b border-red-900/50 pb-2">
+                            <span class="text-xs text-red-600 tracking-widest"><i data-lucide="alert-triangle" class="inline w-3 h-3 mr-1 mb-1"></i> LIMIT: 2 TRADES / 2 LOSSES</span>
+                            <span class="text-xs text-white bg-red-900/40 px-2 py-1 rounded" id="trade-count-display">0/2 LOGGED</span>
+                        </div>
                         <input type="text" id="trade-asset" class="inferno-input mb-6" placeholder="asset (e.g. xauusd)">
                         <div class="flex gap-4 mb-6">
                             <input type="number" id="trade-entry" class="inferno-input" placeholder="entry price">
                             <input type="number" id="trade-exit" class="inferno-input" placeholder="exit price">
                         </div>
                         <input type="number" id="trade-pnl" class="inferno-input mb-6" placeholder="net pnl ($)">
-                        <select id="trade-status" class="inferno-input mb-8" style="background: var(--surface-dark);">
-                            <option value="continue" class="text-[#ff9900]">continue (open)</option>
+                        <select id="trade-status" class="inferno-input mb-8" style="background: rgba(0,0,0,0.8);">
                             <option value="win" class="text-[#10b981]">win (profit)</option>
                             <option value="loss" class="text-[#ff1100]">loss (stop hit)</option>
                         </select>
-                        <button onclick="triggerAction(event, logTrade)" class="btn-inferno w-full fire-trigger">log position</button>
+                        <button id="btn-log-trade" onclick="createRipple(event); logTrade()" class="btn-inferno w-full">log position</button>
                     </div>
                     <div class="titan-panel p-4 overflow-y-auto max-h-[500px] gsap-item" id="trade-history"></div>
                 </div>
@@ -249,34 +290,34 @@
             <div id="page-wallet" class="tab-page">
                 <div class="titan-panel p-10 mb-8 text-center border-b-4 border-b-[#10b981] gsap-item">
                     <div class="text-sm text-emerald-800 mb-4 tracking-widest">capital reserve</div>
-                    <div class="text-7xl md:text-8xl text-[#10b981] drop-shadow-[0_0_30px_rgba(16,185,129,0.4)]" id="wallet-balance">₹0</div>
+                    <div class="text-6xl md:text-8xl text-[#10b981] drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]" id="wallet-balance">₹0</div>
                 </div>
-                <div class="titan-panel p-8 mb-8 gsap-item">
+                <div class="titan-panel p-6 md:p-8 mb-8 gsap-item">
                     <div class="flex flex-col md:flex-row gap-6 mb-8">
                         <input type="number" id="wallet-amt" class="inferno-input" placeholder="amount (₹)">
                         <input type="text" id="wallet-tag" class="inferno-input" placeholder="description tag">
                     </div>
                     <div class="flex gap-4">
-                        <button onclick="triggerAction(event, () => transact('In'))" class="btn-inferno flex-1 fire-trigger" style="background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.3);">deposit</button>
-                        <button onclick="triggerAction(event, () => transact('Out'))" class="btn-inferno outline flex-1 fire-trigger">deduct</button>
+                        <button onclick="createRipple(event); transact('In')" class="btn-inferno flex-1" style="background: linear-gradient(135deg, #065f46 0%, #10b981 100%); border-color: #34d399;">deposit</button>
+                        <button onclick="createRipple(event); transact('Out')" class="btn-inferno outline flex-1">deduct</button>
                     </div>
                 </div>
-                <div id="wallet-history" class="flex flex-col gap-3 gsap-item"></div>
+                <div id="wallet-history" class="flex flex-col gap-2 gsap-item"></div>
             </div>
 
             <div id="page-settings" class="tab-page">
-                <div class="titan-panel p-10 max-w-3xl mx-auto text-center border-t-4 border-t-[#ff1100] gsap-item">
-                    <div class="superb-title justify-center"><span class="title-sub text-3xl text-[#ff1100]">system purge</span></div>
+                <div class="titan-panel p-8 md:p-12 max-w-3xl mx-auto text-center border-t-4 border-t-[#ff1100] gsap-item">
+                    <div class="superb-title justify-center"><span class="title-sub text-2xl text-[#ff1100]">system purge</span></div>
                     <p class="text-sm text-red-700 mb-8">warning: action is irreversible. minimum 50 word justification required.</p>
                     <textarea id="reset-reason" class="inferno-input h-32 mb-8 text-sm" placeholder="type justification here..." style="text-transform: none !important;"></textarea>
-                    <button onclick="triggerAction(event, factoryReset)" class="btn-inferno outline w-full fire-trigger">authorize purge</button>
+                    <button onclick="createRipple(event); factoryReset()" class="btn-inferno outline w-full">authorize purge</button>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-2 py-3" id="mobile-nav"></nav>
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-2 py-2" id="mobile-nav"></nav>
 
     <script>
         // --- ⚡🔥 REALISTIC BLENDED FIRE ENGINE ---
@@ -285,29 +326,25 @@
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-        // Use screen blend mode so overlapping blurry circles look like continuous bright flames
         ctx.globalCompositeOperation = 'screen';
 
         let particles = [];
-        // Colors that blend well into fire (Yellows, Oranges, Reds)
         const fColors = ['rgba(255, 200, 0, 0.8)', 'rgba(255, 100, 0, 0.8)', 'rgba(255, 30, 0, 0.6)']; 
 
         class FireParticle {
             constructor(x, y, isBurst = false) {
-                this.x = x;
-                this.y = y;
+                this.x = x; this.y = y;
                 this.size = Math.random() * (isBurst ? 50 : 35) + 15;
                 this.speedX = Math.random() * 3 - 1.5;
                 this.speedY = Math.random() * -5 - 2 - (isBurst ? Math.random() * 10 : 0);
                 this.color = fColors[Math.floor(Math.random() * fColors.length)];
-                this.life = 1;
-                this.decay = Math.random() * 0.02 + 0.01;
+                this.life = 1; this.decay = Math.random() * 0.02 + 0.01;
             }
             update() {
-                this.x += this.speedX + (Math.sin(this.life * 15) * 1.5); // Organic horizontal sway
+                this.x += this.speedX + (Math.sin(this.life * 15) * 1.5);
                 this.y += this.speedY;
                 this.life -= this.decay;
-                this.size *= 0.95; // Flames taper off at the top
+                this.size *= 0.95; 
             }
             draw() {
                 ctx.globalAlpha = Math.max(0, this.life);
@@ -325,112 +362,109 @@
         }
 
         function createFireBurst(x, y) {
-            for(let i = 0; i < 40; i++) {
-                particles.push(new FireParticle(x, y, true));
-            }
+            for(let i = 0; i < 40; i++) { particles.push(new FireParticle(x, y, true)); }
         }
 
         function animateFire() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             spawnAmbientFire();
             for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
+                particles[i].update(); particles[i].draw();
             }
             particles = particles.filter(p => p.life > 0 && p.size > 1);
             requestAnimationFrame(animateFire);
         }
         animateFire();
 
-        // Hover Effect on Buttons
-        document.querySelectorAll('.fire-trigger').forEach(btn => {
-            btn.addEventListener('mousemove', (e) => {
-                if(Math.random() < 0.3) {
-                    const rect = btn.getBoundingClientRect();
-                    createFireBurst(rect.left + Math.random() * rect.width, rect.bottom);
-                }
-            });
-        });
+        // BUTTON RIPPLE & FIRE TRIGGER
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+            const rect = button.getBoundingClientRect();
+            const clientX = event.clientX || (event.touches && event.touches[0].clientX) || rect.left + radius;
+            const clientY = event.clientY || (event.touches && event.touches[0].clientY) || rect.top + radius;
 
-        function triggerAction(event, callback) {
-            playAlarm();
-            createFireBurst(event.clientX, event.clientY);
-            if(callback) { setTimeout(callback, 100); }
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${clientX - rect.left - radius}px`;
+            circle.style.top = `${clientY - rect.top - radius}px`;
+            circle.classList.add("ripple");
+
+            const existing = button.querySelector(".ripple");
+            if (existing) { existing.remove(); }
+            button.appendChild(circle);
+
+            // Also trigger fire canvas
+            createFireBurst(clientX, clientY);
         }
 
         // --- GSAP PAGE TRANSITIONS ---
         function animatePageIn(pageId) {
             gsap.fromTo(`#page-${pageId} .gsap-item`, 
-                { y: 40, opacity: 0 }, 
-                { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: "back.out(1.2)" }
+                { y: 20, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }
             );
         }
 
         // --- GOD MODE AUDIO ---
+        // YAHAN APNA BASE 64 PASTE KARNA
         const alarmBase64 = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAOAAADWAA...";
         const alarmAudio = new Audio(alarmBase64);
         function playAlarm() { alarmAudio.currentTime = 0; alarmAudio.play().catch(e=>console.log("Audio blocked.")); }
 
-        // --- LOWERCASE QUOTES FOR TITLE CASE ---
-        const QUOTES = [
+        // --- DYNAMIC QUOTES (INCLUDING TRADING PUNISHMENTS) ---
+        const NORMAL_QUOTES = [
             "lakhon ki bheed form bharti hai, par selection sirf uss ziddi ka hota hai jo raat ke 3 baje tak table pe baitha ho.",
             "interview room mein shiver karne walo ki jagah nahi hai. command the room.",
             "excel, english, coding, trading—ye tere chaar astra hain. inko master kar.",
-            "market tere emotions nahi dekhta. stop-loss hit hua toh ro mat, strike back harder.",
             "communication skill teri dhaal hai. speak with power and rule the room.",
-            "trading is a game of probability and extreme discipline. stay disciplined.",
             "karm kar, fal ki chinta mat kar. the matrix controls the fruit, wage war on your weaknesses.",
-            "jo vyakti apne aape ko jeet leta hai, uske liye uska man sabse bada mitra hai.",
             "har har mahadev. destruction of the weak self is the first step to creation.",
             "dharm ke path par chalne wale ko maut ka darr nahi hota. fear is an illusion.",
-            "shastra uthao. jab shanti se baat na bane, toh parakram hi ek rasta hai.",
-            "utho partha, aur yuddh karo! astra zameen par nahi girne chahiye.",
-            "surya ki tarah chamakna hai, toh pehle surya ki tarah jalna seekh.",
-            "shiv ka teesra netra khulne ka intezaar mat kar. tandav khud jagrit kar.",
             "time is the ultimate destroyer. don't waste it scrolling. it is eating you alive.",
             "the things you own end up owning you. break the chains. stay dangerous.",
             "you are not your bank account. you are your sheer fucking will.",
             "matrix chahti hai tu weak rahe. escape the matrix.",
             "pain is the rent you pay for success. pay it daily.",
-            "arrogance is earned. confidence is built. tears build neither. get to work.",
-            "they are partying right now. they are weak. build the foundation of a king.",
             "reject modernity, embrace masculinity. look like a threat.",
-            "work in complete silence. let success be the noise.",
             "comfort is a drug. it will kill your dreams faster than failure.",
             "wake up to reality. force the world to go your way.",
-            "struggle, endure, contend. defy death.",
             "giving up hurts infinitely more than pushing through.",
             "agar tu hara, toh tu marega. bina lade tu nahi jeet sakta!",
-            "power comes in response to a need. create that need.",
-            "if you don't take risks, you can't create a future.",
             "a monster? no, I'm the devil. let them fear your work ethic.",
-            "dard se dosti kar le. pain is your only true friend.",
             "hard work betrays none. stop dreaming. start doing.",
-            "a dropout will beat a genius through hard work.",
-            "I have no enemies. but I will destroy anyone who blocks my goals.",
             "impossible is just a word used by the weak.",
-            "overcome anything through sheer, bone-breaking effort.",
             "the kingdom of heaven suffers violence. take what is yours.",
-            "pick up your cross. no one is coming to save you.",
-            "iron sharpens iron. surround yourself with wolves.",
             "jab tak todenge nahi, tab tak chhodenge nahi.",
             "duniya izzat se nahi, aukaat se chalti hai.",
-            "aksar log aukaat bhool jate hain. unhe yaad dilana tera kaam hai.",
             "sona allow nahi hai jab tak bank balance mobile number jaisa na dikhe.",
-            "kutta banna chhod, sher ban.",
             "maa baap ke sapne dekh, aur aalas ko aag laga de.",
-            "mehnat itni khamoshi mein kar ki safalta kaan ke parde faad de.",
-            "taqdeer badal jayegi, bas irade fauladi rakh.",
             "thak gaya hai? ro le. par wapas kaam pe baith.",
-            "jo chhod ke gayi hai, usko feel karwa ki usne kya khoya hai.",
-            "teri aukaat teri baaton se nahi, tere skills se napi jayegi.",
-            "garib hi marega kya? uth ja aur table pe baith."
+            "jo chhod ke gayi hai, usko feel karwa ki usne kya khoya hai."
+        ];
+
+        const TRADING_ERROR_QUOTES = [
+            "revenge trading is a loser's game. step away from the screen.",
+            "the market does not care about your ego. you broke the rule, you pay the price.",
+            "2 trades limit. that was the rule. your lack of discipline is why you fail.",
+            "stop-loss is a shield, not a suggestion. you failed your psychology test today.",
+            "a professional accepts the loss and logs off. an amateur burns the account.",
+            "you let emotions control the mouse. authorization revoked.",
+            "trading is 90% waiting and 10% execution. you forced it today."
         ];
 
         let quoteIdx = 0, charIdx = 0, isDeleting = false;
         function typeWriter() {
             const quoteEl = document.getElementById('global-quote');
-            const currentText = QUOTES[quoteIdx];
+            
+            let activePool = NORMAL_QUOTES;
+            if(sys.tradingBreached && Math.random() < 0.4) { 
+                activePool = TRADING_ERROR_QUOTES;
+            }
+            
+            if(quoteIdx >= activePool.length) quoteIdx = 0;
+            const currentText = activePool[quoteIdx];
             
             if(isDeleting) {
                 quoteEl.innerText = currentText.substring(0, charIdx - 1);
@@ -442,17 +476,17 @@
 
             let typeSpeed = isDeleting ? 15 : 40; 
             if(!isDeleting && charIdx === currentText.length) {
-                typeSpeed = 900000; // 15 MINUTE
+                typeSpeed = 900000; // 15 MINUTE EXACT DELAY
                 isDeleting = true;
             } else if(isDeleting && charIdx === 0) {
                 isDeleting = false;
-                quoteIdx = Math.floor(Math.random() * QUOTES.length);
+                quoteIdx = Math.floor(Math.random() * activePool.length);
                 typeSpeed = 500; 
             }
             setTimeout(typeWriter, typeSpeed);
         }
 
-        // --- LOWERCASE DATABASES ---
+        // --- DATABASES (LOWERCASE) ---
         const REWARDS_DAILY = ["gaming night", "reels / fun night", "the 'I am the best' log", "fav food night", "productive night", "night travel + fav song", "shopping night", "coffee night", "body growth fuel", "emotional release"];
         const REWARDS_SAT = ["movie night", "fly free (go somewhere)", "full day chill: pure rest"];
         const REWARD_RARE = "system rules se chutti";
@@ -472,22 +506,23 @@
             { id: 'wallet', icon: 'database', name: 'ledger' }, { id: 'settings', icon: 'cpu', name: 'root' }
         ];
 
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v29')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v33')) || {
             lastEvalDate: new Date().toLocaleDateString(), tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
-            lastRelapse: "pure", lastGroomingTs: null, rewards: [], curses: [], history: []
+            lastRelapse: "pure", lastGroomingTs: null, rewards: [], curses: [], history: [],
+            tradesToday: 0, lossToday: 0, tradingBreached: false
         };
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v29', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v33', JSON.stringify(sys)); }
 
         function init() {
             Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#884444';
             
-            const navStr = TABS.map(t => `<button onclick="go('${t.id}')" id="n-${t.id}" class="nav-item flex-1"><i data-lucide="${t.icon}"></i><span class="text-[10px] tracking-widest hidden md:block">${t.name}</span></button>`).join('');
+            const navStr = TABS.map(t => `<button onclick="go('${t.id}')" id="n-${t.id}" class="nav-item flex-1"><i data-lucide="${t.icon}"></i><span class="text-[9px] tracking-widest hidden md:block">${t.name}</span></button>`).join('');
             document.getElementById('desktop-nav').innerHTML = navStr; document.getElementById('mobile-nav').innerHTML = navStr;
             lucide.createIcons();
             
-            quoteIdx = Math.floor(Math.random() * QUOTES.length);
+            quoteIdx = Math.floor(Math.random() * NORMAL_QUOTES.length);
             typeWriter(); 
             
             checkEval();
@@ -534,12 +569,13 @@
                 if(sys.rewards.includes("full day chill: pure rest")) sys.tasks = [];
                 else { sys.tasks = sys.tasks.filter(t => t.type === 'QUEST'); sys.tasks.forEach(t => t.done = false); }
 
+                sys.tradesToday = 0; sys.lossToday = 0; sys.tradingBreached = false;
+
                 sys.lastEvalDate = today; save(); populateAwaken();
             }
         }
 
         function go(id) {
-            createFireBurst(window.innerWidth / 2, window.innerHeight / 2);
             document.querySelectorAll('.tab-page').forEach(e=>e.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
             document.getElementById(`page-${id}`).classList.add('active');
@@ -553,26 +589,45 @@
             document.getElementById('last-relapse-text').innerText = `last breach: ${sys.lastRelapse}`;
         }
 
+        // --- TASKS & GSAP DONE ANIMATION ---
         function uiTasks() {
             const render = (type) => {
                 let f = sys.tasks.map((t, i) => ({...t, i})).filter(t => t.type === type).sort((a, b) => a.done - b.done);
                 if(f.length===0) return '<div class="text-red-900 text-sm tracking-widest">no directives</div>';
                 return f.map(t => `
-                    <div class="titan-panel flex items-center justify-between p-4 mb-3 border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'}">
+                    <div id="task-box-${t.i}" class="titan-panel flex items-center justify-between p-4 mb-3 border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'}">
                         <div class="flex items-center gap-4 flex-1">
-                            <div onclick="triggerAction(event, () => togT(${t.i}))" class="task-toggle fire-trigger ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
-                            <span class="text-sm md:text-lg pr-4 ${t.done?'text-[#10b981] line-through':'text-slate-100'}">${t.t}</span>
+                            <div onclick="togT(${t.i})" class="task-toggle ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
+                            <span class="text-sm md:text-base pr-4 ${t.done?'text-[#10b981] line-through':'text-slate-100'}">${t.t}</span>
                         </div>
-                        <button onclick="triggerAction(event, () => delT(${t.i}))" class="text-red-600 hover:text-white p-2 transition-colors fire-trigger"><i data-lucide="x"></i></button>
+                        <button onclick="createRipple(event); delT(${t.i})" class="text-red-600 hover:text-white p-2 transition-colors"><i data-lucide="x"></i></button>
                     </div>`).join('');
             };
             document.getElementById('task-list-quests').innerHTML = render('QUEST');
             document.getElementById('task-list-combat').innerHTML = render('COMBAT');
             document.getElementById('task-list-looks').innerHTML = render('LOOKS');
             lucide.createIcons();
-            addHoverListeners();
         }
 
+        function togT(i) { 
+            let wasDone = sys.tasks[i].done;
+            sys.tasks[i].done = !sys.tasks[i].done; 
+            
+            if(!wasDone) {
+                const box = document.getElementById(`task-box-${i}`);
+                gsap.fromTo(box, 
+                    { backgroundColor: "rgba(16, 185, 129, 0.4)", scale: 1.02 }, 
+                    { backgroundColor: "rgba(10, 1, 1, 0.95)", scale: 1, duration: 0.5, ease: "power2.out", onComplete: () => { save(); ui(); } }
+                );
+                box.querySelector('.task-toggle').classList.add('done');
+                box.querySelector('.task-toggle').innerHTML = '<i data-lucide="check" class="w-4 h-4 text-black"></i>';
+                lucide.createIcons();
+            } else { save(); ui(); }
+        }
+        function addTask() { let v = document.getElementById('task-input').value.trim(); if(v){ sys.tasks.push({t:v, done:false, type:'QUEST'}); document.getElementById('task-input').value=''; save(); ui(); } }
+        function delT(i) { playAlarm(); sys.tasks.splice(i,1); save(); ui(); }
+
+        // --- KARMA ---
         function uiKarma() {
             const tot = sys.tasks.length, dn = sys.tasks.filter(t=>t.done).length;
             const pct = tot===0?0:Math.round((dn/tot)*100);
@@ -586,7 +641,7 @@
             document.getElementById('active-rewards').innerHTML = sys.rewards.length ? sys.rewards.map((r,i) => `
                 <li class="flex justify-between items-center titan-panel p-4 border border-emerald-900/50">
                     <span class="text-emerald-400 text-sm md:text-base flex-1 pr-4">${r}</span>
-                    <button onclick="triggerAction(event, () => clrR(${i}))" class="btn-inferno outline !p-2 !text-xs !border-emerald-500 !text-emerald-500 fire-trigger">claim</button>
+                    <button onclick="createRipple(event); clrR(${i})" class="btn-inferno outline !p-2 !text-xs !border-emerald-500 !text-emerald-500">claim</button>
                 </li>`).join('') : '<li class="text-red-900 text-sm">no drops</li>';
 
             document.getElementById('active-penalties').innerHTML = sys.curses.length ? sys.curses.map((c,i) => {
@@ -594,22 +649,25 @@
                     const ul = Date.now()>=c.lock;
                     return `<li class="flex flex-col gap-3 titan-panel p-4 border border-red-900/80">
                         <span class="text-[#ff1100] text-sm md:text-base">${c.t}</span>
-                        ${ul ? `<button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno danger !p-3 !text-sm w-full fire-trigger">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
+                        ${ul ? `<button onclick="createRipple(event); clrC(${i})" class="btn-inferno danger !p-3 !text-sm w-full">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
                     </li>`;
                 } else if(c.type==='MULTI') {
                     return `<li class="flex justify-between items-center titan-panel p-4 border border-[#ff5500]/50">
                         <span class="text-[#ff5500] text-sm md:text-base flex-1 pr-4">${c.t} (${c.d}d)</span>
-                        <button onclick="triggerAction(event, () => progC(${i}))" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500] fire-trigger" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
+                        <button onclick="createRipple(event); progC(${i})" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500]" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
                     </li>`;
                 } else {
                     return `<li class="flex justify-between items-center titan-panel p-4 border border-red-900/80">
                         <span class="text-red-500 text-sm md:text-base flex-1 pr-4">${c.t}</span>
-                        <button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno outline !p-2 !text-xs fire-trigger">clear</button>
+                        <button onclick="createRipple(event); clrC(${i})" class="btn-inferno outline !p-2 !text-xs">clear</button>
                     </li>`;
                 }
             }).join('') : '<li class="text-red-900 text-sm">system clear</li>';
-            addHoverListeners();
         }
+
+        function clrR(i) { sys.rewards.splice(i,1); save(); ui(); }
+        function clrC(i) { sys.curses.splice(i,1); save(); ui(); }
+        function progC(i) { sys.curses[i].doneToday = true; save(); ui(); } 
 
         function uiGrooming() {
             const btn = document.getElementById('btn-grooming'), txt = document.getElementById('last-grooming-text');
@@ -619,6 +677,7 @@
             if(left > 0) { btn.disabled = true; btn.innerText = `locked (${Math.ceil(left / 86400000)} days)`; btn.classList.add('outline'); btn.style.color = '#550000'; btn.style.borderColor = '#330000'; } 
             else { btn.disabled = false; btn.innerText = `authorize log`; btn.classList.remove('outline'); btn.style.color = '#000'; }
         }
+        function logGrooming() { sys.lastGroomingTs = Date.now(); save(); uiGrooming(); }
 
         function uiReport() {
             if(sys.history.length === 0) return;
@@ -641,22 +700,83 @@
                 let l = Math.max(0, r.t - Date.now()), d = Math.floor(l/86400000), h = Math.floor((l%86400000)/3600000), m = Math.floor((l%3600000)/60000), s = Math.floor((l%60000)/1000);
                 return `<div class="titan-panel p-5 flex justify-between items-center ${r.failed?'border-red-900 bg-red-950/10':''}">
                     <div class="flex flex-col"><span class="text-sm md:text-base text-slate-300">${r.n}</span><span class="text-xl md:text-3xl ${r.failed?'text-red-600':'text-[#ff1100]'}">${r.failed?'FAILED':`${d}d ${h}h ${m}m ${s}s`}</span></div>
-                    <button onclick="triggerAction(event, () => delR(${i}))" class="text-red-600 hover:text-white p-3 fire-trigger"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <button onclick="createRipple(event); delR(${i})" class="text-red-600 hover:text-white p-3"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>`;
             }).join(''); lucide.createIcons();
-            addHoverListeners();
         }
 
+        function startRaid() {
+            let n = document.getElementById('raid-name').value, d = parseInt(document.getElementById('raid-d').value)||0, h = parseInt(document.getElementById('raid-h').value)||0, m = parseInt(document.getElementById('raid-m').value)||0;
+            if(!n) return; sys.raids.push({ n, t: Date.now() + (d*86400000+h*3600000+m*60000), failed: false });
+            ['raid-name','raid-d','raid-h','raid-m'].forEach(id=>document.getElementById(id).value=''); save(); uiRaids();
+        }
+        function delR(i) { sys.raids.splice(i,1); save(); uiRaids(); }
+        function tickRaids() { if(document.getElementById('page-raids').classList.contains('active')) { let c=false; sys.raids.forEach(r => { if(r.t - Date.now() <= 0 && !r.failed) { r.failed = true; c = true; } }); if(c){save(); uiRaids();} else uiRaids(); } }
+
+        // --- TRADING LOGIC WITH THE 3-LOSS EXTREME RULE ---
         function uiTrades() {
+            const btn = document.getElementById('btn-log-trade');
+            const box = document.getElementById('trade-box');
+            const countDisplay = document.getElementById('trade-count-display');
+
+            countDisplay.innerText = `${sys.tradesToday}/2 LOGGED`;
+
+            if(sys.tradingBreached) {
+                btn.disabled = true;
+                btn.innerText = "authorization revoked";
+                box.classList.add('breach-shake');
+            } else {
+                btn.disabled = false;
+                btn.innerText = "log position";
+                box.classList.remove('breach-shake');
+            }
+
             document.getElementById('trade-history').innerHTML = sys.trades.map(t => {
-                let c = t.s==='win'?'text-[#10b981]':(t.s==='loss'?'text-[#ff1100]':'text-[#ff6600]');
-                return `<div class="titan-panel p-5 flex justify-between mb-3">
+                let c = t.s==='win'?'text-[#10b981]':'text-[#ff1100]';
+                return `<div class="titan-panel p-4 flex justify-between mb-3">
                     <div class="flex flex-col"><span class="text-sm md:text-base">${t.a}</span><span class="text-[10px] text-red-900">${t.d}</span></div>
                     <div class="text-right flex flex-col"><span class="${c} text-sm md:text-base">${t.s}</span><span class="text-slate-400 text-xs md:text-sm">$${t.pnl}</span></div>
                 </div>`;
             }).join('');
         }
 
+        function triggerTradingBreach(reason) {
+            sys.tradingBreached = true;
+            isDeleting = true; charIdx = document.getElementById('global-quote').innerText.length;
+            save(); ui(); 
+        }
+
+        function triggerExtremePenalty() {
+            playAlarm();
+            let tD = new Date(Date.now() + 7*86400000).setHours(22,0,0,0);
+            sys.curses.push({ t: `EXTREME TRADING PENALTY: ${ALL_USER_PENALTIES[Math.floor(Math.random() * ALL_USER_PENALTIES.length)]}`, type: 'RELAPSE', lock: tD });
+            alert("SYSTEM BREACHED 3 TIMES. 7-DAY EXTREME PENALTY INITIATED.");
+        }
+
+        function logTrade() {
+            if(sys.tradingBreached) return;
+
+            let a=document.getElementById('trade-asset').value, st=document.getElementById('trade-status').value, pnl=document.getElementById('trade-pnl').value||'0';
+            if(!a) return; 
+
+            if(sys.tradesToday >= 2) {
+                sys.lossToday++; 
+                if(sys.lossToday >= 3) { triggerExtremePenalty(); sys.tradingBreached = true; save(); ui(); } 
+                else { triggerTradingBreach("MAX 2 TRADES RULE VIOLATED."); }
+                return;
+            }
+
+            sys.tradesToday++;
+            if(st === 'loss') sys.lossToday++;
+
+            sys.trades.unshift({ a, s:st, pnl, d: new Date().toLocaleString() }); 
+            
+            if(sys.lossToday === 2) { triggerTradingBreach("2 LOSSES HIT. TRADING LOCKED FOR TODAY."); } 
+            else if (sys.lossToday >= 3) { triggerExtremePenalty(); sys.tradingBreached = true; save(); ui(); } 
+            else { save(); ui(); }
+        }
+
+        // --- WALLET ---
         function uiWallet() {
             document.getElementById('wallet-balance').innerText = `₹${sys.balance.toLocaleString()}`;
             document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `
@@ -666,41 +786,6 @@
                 </div>`).join('');
         }
 
-        function addHoverListeners() {
-            document.querySelectorAll('.fire-trigger').forEach(btn => {
-                // Ensure we don't attach multiple times
-                btn.removeEventListener('mousemove', hoverFire);
-                btn.addEventListener('mousemove', hoverFire);
-            });
-        }
-        function hoverFire(e) {
-            if(Math.random() < 0.4) {
-                const rect = e.currentTarget.getBoundingClientRect();
-                particles.push(new FireParticle(rect.left + Math.random() * rect.width, rect.bottom, false));
-            }
-        }
-
-        function addTask() { let v = document.getElementById('task-input').value.trim(); if(v){ sys.tasks.push({t:v, done:false, type:'QUEST'}); document.getElementById('task-input').value=''; save(); ui(); } }
-        function togT(i) { sys.tasks[i].done = !sys.tasks[i].done; save(); ui(); }
-        function delT(i) { sys.tasks.splice(i,1); save(); ui(); }
-        function clrR(i) { sys.rewards.splice(i,1); save(); ui(); }
-        function clrC(i) { sys.curses.splice(i,1); save(); ui(); }
-        function progC(i) { sys.curses[i].doneToday = true; save(); ui(); } 
-        function logGrooming() { sys.lastGroomingTs = Date.now(); save(); uiGrooming(); }
-        
-        function startRaid() {
-            let n = document.getElementById('raid-name').value, d = parseInt(document.getElementById('raid-d').value)||0, h = parseInt(document.getElementById('raid-h').value)||0, m = parseInt(document.getElementById('raid-m').value)||0;
-            if(!n) return; sys.raids.push({ n, t: Date.now() + (d*86400000+h*3600000+m*60000), failed: false });
-            ['raid-name','raid-d','raid-h','raid-m'].forEach(id=>document.getElementById(id).value=''); save(); uiRaids();
-        }
-        function delR(i) { sys.raids.splice(i,1); save(); uiRaids(); }
-        function tickRaids() { if(document.getElementById('page-raids').classList.contains('active')) { let c=false; sys.raids.forEach(r => { if(r.t - Date.now() <= 0 && !r.failed) { r.failed = true; c = true; } }); if(c){save(); uiRaids();} else uiRaids(); } }
-
-        function logTrade() {
-            let a=document.getElementById('trade-asset').value, st=document.getElementById('trade-status').value, pnl=document.getElementById('trade-pnl').value||'0';
-            if(!a) return; if(sys.trades.length>0 && sys.trades[0].s==='continue' && st==='continue') return alert("close prev trade");
-            sys.trades.unshift({ a, s:st, pnl, d: new Date().toLocaleString() }); save(); ui();
-        }
         function transact(t) {
             let a = parseFloat(document.getElementById('wallet-amt').value); if(!a||a<=0) return;
             sys.balance += (t==='In'?a:-a); sys.wallet.unshift({ t, a, tag: document.getElementById('wallet-tag').value||"unknown", d: new Date().toLocaleString() });
@@ -708,7 +793,7 @@
         }
 
         function reportRelapse() {
-            sys.lastRelapse = new Date().toLocaleString();
+            playAlarm(); sys.lastRelapse = new Date().toLocaleString();
             let tD = new Date(Date.now() + 7*86400000).setHours(22,0,0,0);
             sys.curses.push({ t: `7-day lockdown: ${ALL_USER_PENALTIES[Math.floor(Math.random() * ALL_USER_PENALTIES.length)]}`, type: 'RELAPSE', lock: tD });
             save(); ui(); 
@@ -717,7 +802,7 @@
         function factoryReset() {
             let r = document.getElementById('reset-reason').value.trim();
             if(r.split(/\s+/).filter(w=>w.length>0).length < 50) return alert("insufficient justification.");
-            localStorage.removeItem('monarch2026_v29'); location.reload();
+            localStorage.removeItem('monarch2026_v33'); location.reload();
         }
 
         window.onload = init;
