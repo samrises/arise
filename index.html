@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sam - Getup Buddy</title>
+    <title>Sam - Be Ready for Fly</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&family=Josefin+Sans:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
-        /* STRICTLY CAPITALIZE FIRST LETTER (TITLE CASE) */
+        /* ALL JOST BOLD & STRICTLY CAPITALIZE (Title Case - "Somnath") */
         * {
             font-family: 'Jost', sans-serif !important;
             font-weight: 800 !important;
@@ -21,38 +23,37 @@
             -webkit-tap-highlight-color: transparent;
         }
         *::-webkit-scrollbar { display: none; }
-        h1, h2, h3, .font-black { font-weight: 900 !important; font-family: 'Jost', sans-serif !important; }
+        h1, h2, h3, .font-black { font-weight: 900 !important; }
 
         :root {
-            --bg-void: #050101;
-            --surface-dark: #0a0202;
+            --bg-void: #050000;
+            --surface-dark: #0a0101;
             --border-glow: #3a0505;
             --neon-blood: #ff1100;
-            --neon-fire: #ff5500;
+            --neon-fire: #ff6600;
             --text-muted: #884444;
         }
 
         body {
             background-color: var(--bg-void); color: #ffffff; 
-            overflow: hidden; 
-            height: 100dvh; width: 100vw;
-            background-image: radial-gradient(circle at 50% 100%, rgba(255, 17, 0, 0.08) 0%, transparent 60%);
+            overflow: hidden; height: 100dvh; width: 100vw;
         }
 
-        /* SCREEN FIRE FLASH ANIMATION */
-        #fire-overlay {
-            position: fixed; inset: 0; pointer-events: none; z-index: 10000; 
-            background: radial-gradient(circle at 50% 50%, rgba(255,17,0,0.3) 0%, transparent 80%); 
-            opacity: 0; 
-        }
-
-        .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; opacity: 0.2; }
+        /* REAL FLAME CANVAS LAYER */
+        #fire-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99999; mix-blend-mode: screen; }
+        .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9000; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; opacity: 0.3; }
 
         .titan-panel {
-            background: var(--surface-dark);
+            background: rgba(10, 1, 1, 0.85);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border-glow);
-            box-shadow: inset 0 0 20px rgba(255,17,0,0.02), 0 10px 30px rgba(0,0,0,0.8);
-            transition: all 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(255,17,0,0.05), 0 10px 40px rgba(0,0,0,0.9);
+            border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .titan-panel:hover {
+            border-color: rgba(255, 17, 0, 0.4);
+            box-shadow: inset 0 0 30px rgba(255,17,0,0.1), 0 15px 50px rgba(255,17,0,0.15);
         }
 
         .inferno-input {
@@ -60,73 +61,65 @@
             color: var(--neon-fire); padding: 1rem 0.5rem; width: 100%; outline: none; 
             font-size: 1.2rem; transition: all 0.3s;
         }
-        .inferno-input:focus { border-bottom-color: var(--neon-blood); box-shadow: 0 10px 20px -10px rgba(255,17,0,0.3); }
+        .inferno-input:focus { border-bottom-color: var(--neon-blood); box-shadow: 0 15px 20px -10px rgba(255,17,0,0.5); }
         .inferno-input::placeholder { color: var(--text-muted); }
 
-        /* FIXED BUTTON ANIMATIONS & TRANSITIONS */
+        /* INTENSE BUTTON HOVER & CLICK TRANSITIONS */
         .btn-inferno {
-            position: relative; overflow: hidden;
             background: var(--neon-blood); color: #000; padding: 1.2rem 2rem;
             font-weight: 900; letter-spacing: 1px; cursor: pointer; 
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
             display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-            box-shadow: 0 0 15px rgba(255,17,0,0.2);
-            border-radius: 6px;
-            text-align: center;
+            box-shadow: 0 0 15px rgba(255,17,0,0.3); border-radius: 6px; 
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s;
+        }
+        .btn-inferno:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 15px 35px rgba(255,17,0,0.7);
+            background: #ff3300;
         }
         .btn-inferno:active { 
-            transform: scale(0.92); 
-            box-shadow: 0 0 30px rgba(255,17,0,0.6); 
+            transform: scale(0.92) translateY(2px); 
+            box-shadow: 0 5px 15px rgba(255,17,0,0.9); 
         }
-        .btn-inferno.outline { background: transparent; border: 2px solid var(--neon-blood); color: var(--neon-blood); }
         
-        /* CLICK RIPPLE */
-        .ripple {
-            position: absolute; border-radius: 50%; transform: scale(0);
-            animation: ripple-anim 500ms linear; background-color: rgba(255, 255, 255, 0.5);
-            pointer-events: none;
-        }
-        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+        .btn-inferno.outline { background: transparent; border: 2px solid var(--neon-blood); color: var(--neon-blood); }
+        .btn-inferno.outline:hover { background: var(--neon-blood); color: #000; }
 
         .progress-track { background: #1a0000; height: 8px; width: 100%; overflow: hidden; border-radius: 4px; }
-        .progress-fill { background: linear-gradient(90deg, #880000, var(--neon-blood)); height: 100%; transition: width 1s ease-in-out; box-shadow: 0 0 10px var(--neon-blood); }
+        .progress-fill { background: linear-gradient(90deg, #880000, var(--neon-fire), var(--neon-blood)); height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon-blood); }
 
-        /* SCROLL FIX */
-        .main-container { display: flex; flex-direction: column; height: 100dvh; }
+        .main-container { display: flex; flex-direction: column; height: 100dvh; z-index: 10; position: relative; }
         .main-viewport { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1rem; padding-bottom: 120px; }
         @media (min-width: 768px) { .main-viewport { padding: 2.5rem; padding-bottom: 2.5rem; } }
 
-        /* NAVIGATION WITH LUCIDE ICONS */
-        .nav-item { color: var(--text-muted); transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; gap: 4px; cursor: pointer; }
-        .nav-item i { width: 24px; height: 24px; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .nav-item:active i { transform: scale(0.8); }
-        .nav-item.active { color: var(--neon-blood); filter: drop-shadow(0 0 8px rgba(255,17,0,0.5)); }
-        .nav-item.active i { transform: scale(1.15); }
-        .mobile-nav { background: rgba(5, 0, 0, 0.98); border-top: 1px solid var(--border-glow); padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; gap: 4px; cursor: pointer; transition: all 0.3s; }
+        .nav-item:hover { color: var(--neon-fire); transform: translateY(-3px); }
+        .nav-item.active { color: var(--neon-blood); filter: drop-shadow(0 0 10px rgba(255,17,0,0.6)); transform: scale(1.1); }
+        .mobile-nav { background: rgba(5, 1, 1, 0.98); border-top: 1px solid var(--border-glow); padding-bottom: env(safe-area-inset-bottom); z-index: 50; }
 
-        .tab-page { display: none; opacity: 0; }
-        .tab-page.active { display: block; animation: stealthFade 0.3s forwards; }
-        @keyframes stealthFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-page { display: none; }
+        .tab-page.active { display: block; }
 
-        .task-toggle { position: relative; overflow: hidden; width: 24px; height: 24px; border: 2px solid var(--text-muted); transition: all 0.2s; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; }
+        .task-toggle { width: 26px; height: 26px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .task-toggle:hover { border-color: var(--neon-fire); transform: scale(1.1); }
         .task-toggle:active { transform: scale(0.8); }
-        .task-toggle.done { border-color: var(--neon-blood); background: var(--neon-blood); box-shadow: 0 0 15px rgba(255,17,0,0.5); }
+        .task-toggle.done { border-color: var(--neon-blood); background: var(--neon-blood); box-shadow: 0 0 20px rgba(255,17,0,0.6); transform: scale(1.05); }
 
         .superb-title { display: flex; align-items: center; gap: 0.5rem; border-bottom: 2px solid var(--border-glow); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-        .title-sub { color: #fff; font-size: 1rem; font-weight: 900; letter-spacing: 1px; }
+        .title-sub { color: #fff; font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; }
 
         .typewriter-text::after { content: '█'; animation: blink 1s step-end infinite; color: var(--neon-blood); }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body class="relative flex">
-    <div id="fire-overlay"></div>
+    <canvas id="fire-canvas"></canvas>
     <div class="scanlines"></div>
 
-    <aside class="hidden md:flex flex-col w-72 h-[100dvh] bg-[#030000] border-r border-[#220000] z-40 fixed left-0 top-0 p-8">
+    <aside class="hidden md:flex flex-col w-72 h-[100dvh] bg-[#030101] border-r border-[#220000] z-40 fixed left-0 top-0 p-8">
         <div class="mb-12">
-            <h1 class="text-4xl text-[#ff1100] drop-shadow-[0_0_20px_rgba(255,17,0,0.5)]">Samm.</h1>
-            <p class="text-xs text-red-900 mt-1">Kill that Boy</p>
+            <h1 class="text-5xl text-[#ff1100] font-black drop-shadow-[0_0_25px_rgba(255,17,0,0.6)]">Sammm.</h1>
+            <p class="text-xs text-red-800 mt-2 tracking-widest">Give up Or Stand up With Me And Show them What Your Father Raised !</p>
         </div>
         <nav class="flex flex-col gap-4" id="desktop-nav"></nav>
     </aside>
@@ -134,51 +127,51 @@
     <div class="main-container flex-1 w-full md:ml-72">
         <main class="main-viewport" id="pages-container">
             
-            <header class="mb-8 md:mb-12">
-                <h1 class="md:hidden text-4xl text-[#ff1100] mb-4 drop-shadow-[0_0_15px_rgba(255,17,0,0.4)]">Sammm.</h1>
-                <div id="global-quote" class="typewriter-text quote-text text-sm md:text-xl text-white leading-relaxed min-h-[4rem] flex items-center">Loading directive...</div>
+            <header class="mb-8 md:mb-12 gsap-header">
+                <h1 class="md:hidden text-5xl text-[#ff1100] mb-4 drop-shadow-[0_0_20px_rgba(255,17,0,0.6)]">monarch</h1>
+                <div id="global-quote" class="typewriter-text text-sm md:text-xl text-white leading-relaxed min-h-[4rem] flex items-center">igniting system...</div>
             </header>
 
             <div id="page-tasks" class="tab-page active">
-                <div class="flex flex-col md:flex-row gap-4 mb-12">
+                <div class="flex flex-col md:flex-row gap-4 mb-12 gsap-item">
                     <input type="text" id="task-input" class="inferno-input flex-1" placeholder="forge new directive...">
-                    <button onclick="handleAction(event, addTask)" class="btn-inferno shrink-0">Deploy</button>
+                    <button onclick="triggerAction(event, addTask)" class="btn-inferno shrink-0">deploy objective</button>
                 </div>
                 
-                <div class="mb-10">
-                    <div class="superb-title"><i data-lucide="crosshair" class="w-5 h-5 text-[#ff5500]"></i><span class="title-sub">active grind</span></div>
-                    <div id="task-list-quests" class="flex flex-col gap-2"></div>
+                <div class="mb-10 gsap-item">
+                    <div class="superb-title"><i data-lucide="crosshair" class="w-6 h-6 text-[#ff5500]"></i><span class="title-sub text-[#ff5500]">active grind</span></div>
+                    <div id="task-list-quests" class="flex flex-col gap-3"></div>
                 </div>
-                <div class="mb-10">
-                    <div class="superb-title"><i data-lucide="swords" class="w-5 h-5 text-[#ff9900]"></i><span class="title-sub">combat protocol</span></div>
-                    <div id="task-list-combat" class="flex flex-col gap-2"></div>
+                <div class="mb-10 gsap-item">
+                    <div class="superb-title"><i data-lucide="swords" class="w-6 h-6 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">combat protocol</span></div>
+                    <div id="task-list-combat" class="flex flex-col gap-3"></div>
                 </div>
-                <div class="mb-10">
-                    <div class="superb-title"><i data-lucide="eye" class="w-5 h-5 text-[#a855f7]"></i><span class="title-sub">visual protocol</span></div>
-                    <div id="task-list-looks" class="flex flex-col gap-2"></div>
+                <div class="mb-10 gsap-item">
+                    <div class="superb-title"><i data-lucide="eye" class="w-6 h-6 text-[#a855f7]"></i><span class="title-sub text-[#a855f7]">visual protocol</span></div>
+                    <div id="task-list-looks" class="flex flex-col gap-3"></div>
                 </div>
             </div>
 
             <div id="page-karma" class="tab-page">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="titan-panel p-8 flex flex-col justify-center relative overflow-hidden">
-                        <h3 class="text-red-800 text-sm mb-4">sync rate</h3>
-                        <div class="text-7xl text-[#ff1100] drop-shadow-[0_0_30px_rgba(255,17,0,0.5)]" id="sync-rate-text">0%</div>
+                    <div class="titan-panel p-8 flex flex-col justify-center relative overflow-hidden gsap-item">
+                        <h3 class="text-red-800 text-sm mb-4 tracking-widest">sync rate</h3>
+                        <div class="text-7xl md:text-8xl text-[#ff1100] font-black drop-shadow-[0_0_30px_rgba(255,17,0,0.6)]" id="sync-rate-text">0%</div>
                         <div class="absolute bottom-0 left-0 w-full"><div class="progress-track"><div id="sync-bar" class="progress-fill w-0"></div></div></div>
                     </div>
-                    <div class="titan-panel p-8 flex flex-col justify-center border-l-4 border-l-[#ff1100]">
-                        <h3 class="text-red-800 text-sm mb-2">system integrity</h3>
+                    <div class="titan-panel p-8 flex flex-col justify-center border-l-4 border-l-[#ff1100] gsap-item">
+                        <h3 class="text-red-800 text-sm mb-2 tracking-widest">system integrity</h3>
                         <p id="last-relapse-text" class="text-sm text-[#ff5500] mb-8">last breach: pure</p>
-                        <button onclick="handleAction(event, reportRelapse)" class="btn-inferno outline w-full">report breach</button>
+                        <button onclick="triggerAction(event, reportRelapse)" class="btn-inferno danger w-full">report fatal breach</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="titan-panel p-6 border-t-2 border-t-[#10b981]">
-                        <div class="superb-title"><i data-lucide="award" class="w-5 h-5 text-[#10b981]"></i><span class="title-sub text-[#10b981]">acquired rewards</span></div>
+                    <div class="titan-panel p-6 border-t-2 border-t-[#10b981] gsap-item">
+                        <div class="superb-title"><i data-lucide="award" class="w-6 h-6 text-[#10b981]"></i><span class="title-sub text-[#10b981]">acquired drops</span></div>
                         <ul id="active-rewards" class="flex flex-col gap-4"></ul>
                     </div>
-                    <div class="titan-panel p-6 border-t-2 border-t-[#ff1100]">
-                        <div class="superb-title"><i data-lucide="skull" class="w-5 h-5 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">active curses</span></div>
+                    <div class="titan-panel p-6 border-t-2 border-t-[#ff1100] gsap-item">
+                        <div class="superb-title"><i data-lucide="skull" class="w-6 h-6 text-[#ff1100]"></i><span class="title-sub text-[#ff1100]">active curses</span></div>
                         <ul id="active-penalties" class="flex flex-col gap-4"></ul>
                     </div>
                 </div>
@@ -186,53 +179,53 @@
 
             <div id="page-report" class="tab-page">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="titan-panel p-6 text-center border-t-2 border-t-red-900">
-                        <h3 class="text-red-800 text-xs mb-2">yesterday</h3>
-                        <div class="text-4xl text-white mb-2" id="rep-yest-score">0%</div>
+                    <div class="titan-panel p-6 text-center border-t-2 border-t-red-900 gsap-item">
+                        <h3 class="text-red-800 text-xs mb-2 tracking-widest">yesterday</h3>
+                        <div class="text-5xl text-white mb-2" id="rep-yest-score">0%</div>
                         <p class="text-xs text-red-900" id="rep-yest-stats">done: 0 | miss: 0</p>
                     </div>
-                    <div class="titan-panel p-6 text-center border-t-2 border-t-[#ff5500]">
-                        <h3 class="text-[#ff5500] text-xs mb-2">7-day trajectory</h3>
-                        <div class="text-4xl text-[#ff5500] mb-2" id="rep-week-score">0%</div>
+                    <div class="titan-panel p-6 text-center border-t-2 border-t-[#ff5500] gsap-item">
+                        <h3 class="text-[#ff5500] text-xs mb-2 tracking-widest">7-day trajectory</h3>
+                        <div class="text-5xl text-[#ff5500] mb-2" id="rep-week-score">0%</div>
                         <p class="text-xs text-red-900" id="rep-week-stats">done: 0 | miss: 0</p>
                     </div>
-                    <div class="titan-panel p-6 text-center border-t-2 border-t-[#ff1100]">
-                        <h3 class="text-[#ff1100] text-xs mb-2">30-day dominance</h3>
-                        <div class="text-4xl text-[#ff1100] mb-2 drop-shadow-[0_0_15px_rgba(255,17,0,0.4)]" id="rep-month-score">0%</div>
+                    <div class="titan-panel p-6 text-center border-t-2 border-t-[#ff1100] gsap-item">
+                        <h3 class="text-[#ff1100] text-xs mb-2 tracking-widest">30-day dominance</h3>
+                        <div class="text-5xl text-[#ff1100] mb-2 drop-shadow-[0_0_20px_rgba(255,17,0,0.5)]" id="rep-month-score">0%</div>
                         <p class="text-xs text-red-900" id="rep-month-stats">done: 0 | miss: 0</p>
                     </div>
                 </div>
-                <div class="titan-panel p-6 h-[350px]">
-                    <h3 class="text-red-800 text-xs mb-4 text-center">performance graph</h3>
-                    <div class="relative w-full h-[250px]"><canvas id="monthChart"></canvas></div>
+                <div class="titan-panel p-6 h-[400px] gsap-item">
+                    <h3 class="text-red-800 text-xs mb-4 text-center tracking-widest">performance graph</h3>
+                    <div class="relative w-full h-[300px]"><canvas id="monthChart"></canvas></div>
                 </div>
             </div>
 
             <div id="page-awaken" class="tab-page">
-                <div class="titan-panel p-10 text-center max-w-2xl mx-auto border-t-4 border-t-[#ff5500]">
-                    <div class="superb-title justify-center"><span class="title-sub">grooming log</span></div>
-                    <p id="last-grooming-text" class="text-sm text-red-800 mb-10">last log: never</p>
-                    <button id="btn-grooming" onclick="handleAction(event, logGrooming)" class="btn-inferno w-full">authorize log</button>
+                <div class="titan-panel p-12 text-center max-w-2xl mx-auto border-t-4 border-t-[#ff5500] gsap-item">
+                    <div class="superb-title justify-center"><span class="title-sub text-[#ff5500] text-2xl">grooming log</span></div>
+                    <p id="last-grooming-text" class="text-sm text-red-800 mb-10 tracking-widest">last log: never</p>
+                    <button id="btn-grooming" onclick="triggerAction(event, logGrooming)" class="btn-inferno w-full py-5">authorize log</button>
                 </div>
             </div>
 
             <div id="page-raids" class="tab-page">
-                <div class="titan-panel p-6 mb-8">
+                <div class="titan-panel p-8 mb-8 gsap-item">
                     <input type="text" id="raid-name" class="inferno-input mb-6" placeholder="raid / exam target">
                     <div class="flex gap-4 mb-8">
                         <input type="number" id="raid-d" class="inferno-input text-center" placeholder="days">
                         <input type="number" id="raid-h" class="inferno-input text-center" placeholder="hrs">
                         <input type="number" id="raid-m" class="inferno-input text-center" placeholder="mins">
                     </div>
-                    <button onclick="handleAction(event, startRaid)" class="btn-inferno w-full">ignite countdown</button>
+                    <button onclick="triggerAction(event, startRaid)" class="btn-inferno w-full">ignite countdown</button>
                 </div>
-                <div id="raid-list" class="flex flex-col gap-4"></div>
+                <div id="raid-list" class="flex flex-col gap-4 gsap-item"></div>
             </div>
 
             <div id="page-trading" class="tab-page">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="titan-panel p-6">
-                        <input type="text" id="trade-asset" class="inferno-input mb-6" placeholder="asset (e.g. btc)">
+                    <div class="titan-panel p-8 gsap-item">
+                        <input type="text" id="trade-asset" class="inferno-input mb-6" placeholder="asset (e.g. xauusd)">
                         <div class="flex gap-4 mb-6">
                             <input type="number" id="trade-entry" class="inferno-input" placeholder="entry price">
                             <input type="number" id="trade-exit" class="inferno-input" placeholder="exit price">
@@ -243,36 +236,36 @@
                             <option value="win" class="text-[#10b981]">win (profit)</option>
                             <option value="loss" class="text-[#ff1100]">loss (stop hit)</option>
                         </select>
-                        <button onclick="handleAction(event, logTrade)" class="btn-inferno w-full">log position</button>
+                        <button onclick="triggerAction(event, logTrade)" class="btn-inferno w-full">log position</button>
                     </div>
-                    <div class="titan-panel p-4 overflow-y-auto max-h-[500px]" id="trade-history"></div>
+                    <div class="titan-panel p-4 overflow-y-auto max-h-[500px] gsap-item" id="trade-history"></div>
                 </div>
             </div>
 
             <div id="page-wallet" class="tab-page">
-                <div class="titan-panel p-10 mb-8 text-center border-b-4 border-b-[#10b981]">
-                    <div class="text-sm text-emerald-800 mb-4">capital reserve</div>
-                    <div class="text-6xl text-[#10b981] drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]" id="wallet-balance">₹0</div>
+                <div class="titan-panel p-10 mb-8 text-center border-b-4 border-b-[#10b981] gsap-item">
+                    <div class="text-sm text-emerald-800 mb-4 tracking-widest">capital reserve</div>
+                    <div class="text-7xl md:text-8xl text-[#10b981] drop-shadow-[0_0_30px_rgba(16,185,129,0.4)]" id="wallet-balance">₹0</div>
                 </div>
-                <div class="titan-panel p-6 mb-8">
+                <div class="titan-panel p-8 mb-8 gsap-item">
                     <div class="flex flex-col md:flex-row gap-6 mb-8">
                         <input type="number" id="wallet-amt" class="inferno-input" placeholder="amount (₹)">
                         <input type="text" id="wallet-tag" class="inferno-input" placeholder="description tag">
                     </div>
                     <div class="flex gap-4">
-                        <button onclick="handleAction(event, () => transact('in'))" class="btn-inferno flex-1" style="background: #10b981;">deposit</button>
-                        <button onclick="handleAction(event, () => transact('out'))" class="btn-inferno danger flex-1">deduct</button>
+                        <button onclick="triggerAction(event, () => transact('In'))" class="btn-inferno flex-1" style="background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.3);">deposit</button>
+                        <button onclick="triggerAction(event, () => transact('Out'))" class="btn-inferno outline flex-1">deduct</button>
                     </div>
                 </div>
-                <div id="wallet-history" class="flex flex-col gap-2"></div>
+                <div id="wallet-history" class="flex flex-col gap-3 gsap-item"></div>
             </div>
 
             <div id="page-settings" class="tab-page">
-                <div class="titan-panel p-8 max-w-3xl mx-auto text-center border-t-4 border-t-[#ff1100]">
-                    <div class="superb-title justify-center"><span class="title-sub">system purge</span></div>
+                <div class="titan-panel p-10 max-w-3xl mx-auto text-center border-t-4 border-t-[#ff1100] gsap-item">
+                    <div class="superb-title justify-center"><span class="title-sub text-3xl text-[#ff1100]">system purge</span></div>
                     <p class="text-sm text-red-700 mb-8">warning: action is irreversible. minimum 50 word justification required.</p>
                     <textarea id="reset-reason" class="inferno-input h-32 mb-8 text-sm" placeholder="type justification here..." style="text-transform: none !important;"></textarea>
-                    <button onclick="handleAction(event, factoryReset)" class="btn-inferno outline w-full">authorize purge</button>
+                    <button onclick="triggerAction(event, factoryReset)" class="btn-inferno outline w-full">authorize purge</button>
                 </div>
             </div>
 
@@ -282,48 +275,94 @@
     <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-2 py-3" id="mobile-nav"></nav>
 
     <script>
+        // --- ⚡🔥 THE REALISTIC MOLTEN FIRE ENGINE ---
+        const canvas = document.getElementById('fire-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        let particles = [];
+        const fColors = ['#ffcc00', '#ff6600', '#ff1100', '#990000', '#440000']; // White-hot to dark smoke
+
+        class FireParticle {
+            constructor(x, y, isBurst = false) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * (isBurst ? 45 : 30) + 10;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * -4 - 1 - (isBurst ? Math.random() * 8 : 0);
+                this.color = fColors[Math.floor(Math.random() * (isBurst ? 3 : fColors.length))];
+                this.life = 1;
+                this.decay = Math.random() * 0.02 + 0.015;
+                this.isBurst = isBurst;
+            }
+            update() {
+                this.x += this.speedX + (Math.sin(this.life * 10) * 0.5); // Organic sway
+                this.y += this.speedY;
+                this.life -= this.decay;
+                this.size *= 0.94; // Shrink as it burns out
+            }
+            draw() {
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.beginPath();
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                gradient.addColorStop(0, this.color);
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Ambient Fire at Bottom
+        function spawnAmbientFire() {
+            if(Math.random() < 0.6) { // Control density
+                particles.push(new FireParticle(Math.random() * canvas.width, canvas.height + 20, false));
+            }
+        }
+
+        // Explosive Burst on Click
+        function createFireBurst(x, y) {
+            for(let i = 0; i < 35; i++) {
+                particles.push(new FireParticle(x, y, true));
+            }
+        }
+
+        function animateFire() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            spawnAmbientFire();
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            particles = particles.filter(p => p.life > 0 && p.size > 0.5);
+            requestAnimationFrame(animateFire);
+        }
+        animateFire();
+
+        // Global Click listener for fire spawn
+        document.addEventListener('click', (e) => { createFireBurst(e.clientX, e.clientY); });
+
+        // Central Trigger Action for Clicks (Audio + Fire + Logic)
+        function triggerAction(event, callback) {
+            playAlarm();
+            if(callback) { setTimeout(callback, 50); }
+        }
+
+        // --- GSAP PAGE TRANSITIONS ---
+        function animatePageIn(pageId) {
+            gsap.fromTo(`#page-${pageId} .gsap-item`, 
+                { y: 30, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "back.out(1.2)" }
+            );
+        }
+
         // --- GOD MODE AUDIO ---
         const alarmBase64 = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAOAAADWAA...";
         const alarmAudio = new Audio(alarmBase64);
-        function playAlarm() { alarmAudio.currentTime = 0; alarmAudio.play().catch(e=>console.log("Audio blocked. Tap first.")); }
+        function playAlarm() { alarmAudio.currentTime = 0; alarmAudio.play().catch(e=>console.log("Audio blocked.")); }
 
-        // --- FLASH & RIPPLE ANIMATION (PERFECTED) ---
-        function screenFlash() {
-            const overlay = document.getElementById('fire-overlay');
-            overlay.style.transition = 'none';
-            overlay.style.opacity = '1';
-            setTimeout(() => {
-                overlay.style.transition = 'opacity 0.4s ease-out';
-                overlay.style.opacity = '0';
-            }, 50);
-        }
-
-        function handleAction(event, callback) {
-            screenFlash();
-            
-            // Ripple
-            const button = event.currentTarget;
-            const circle = document.createElement("span");
-            const diameter = Math.max(button.clientWidth, button.clientHeight);
-            const radius = diameter / 2;
-            const rect = button.getBoundingClientRect();
-            const clientX = event.clientX || (event.touches && event.touches[0].clientX) || rect.left + radius;
-            const clientY = event.clientY || (event.touches && event.touches[0].clientY) || rect.top + radius;
-
-            circle.style.width = circle.style.height = `${diameter}px`;
-            circle.style.left = `${clientX - rect.left - radius}px`;
-            circle.style.top = `${clientY - rect.top - radius}px`;
-            circle.classList.add("ripple");
-
-            const existing = button.querySelector(".ripple");
-            if (existing) { existing.remove(); }
-            button.appendChild(circle);
-
-            // Execute logic
-            if(callback) setTimeout(callback, 100);
-        }
-
-        // --- LOWERCASE / PROPER CASE QUOTES (SO CSS CAPITALIZE WORKS PERFECTLY) ---
+        // --- QUOTES (LOWERCASE STRINGS -> CSS Renders them Title Case 'Somnath') ---
         const QUOTES = [
             "lakhon ki bheed form bharti hai, par selection sirf uss ziddi ka hota hai jo raat ke 3 baje tak table pe baitha ho.",
             "interview room mein shiver karne walo ki jagah nahi hai. command the room.",
@@ -404,7 +443,7 @@
             setTimeout(typeWriter, typeSpeed);
         }
 
-        // --- LOWERCASE DATABASES ---
+        // --- DATABASES (LOWERCASE) ---
         const REWARDS_DAILY = ["gaming night", "reels / fun night", "the 'I am the best' log", "fav food night", "productive night", "night travel + fav song", "shopping night", "coffee night", "body growth fuel", "emotional release"];
         const REWARDS_SAT = ["movie night", "fly free (go somewhere)", "full day chill: pure rest"];
         const REWARD_RARE = "system rules se chutti";
@@ -424,13 +463,13 @@
             { id: 'wallet', icon: 'database', name: 'ledger' }, { id: 'settings', icon: 'cpu', name: 'root' }
         ];
 
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v26')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v28')) || {
             lastEvalDate: new Date().toLocaleDateString(), tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
             lastRelapse: "pure", lastGroomingTs: null, rewards: [], curses: [], history: []
         };
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v26', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v28', JSON.stringify(sys)); }
 
         function init() {
             Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#884444';
@@ -491,18 +530,17 @@
         }
 
         function go(id) {
-            screenFlash();
             document.querySelectorAll('.tab-page').forEach(e=>e.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
             document.getElementById(`page-${id}`).classList.add('active');
             document.querySelectorAll(`#n-${id}`).forEach(e=>e.classList.add('active'));
             if(id === 'report') setTimeout(drawChart, 100);
+            animatePageIn(id);
         }
 
         function ui() {
             uiTasks(); uiRaids(); uiTrades(); uiWallet(); uiKarma(); uiGrooming(); uiReport();
             document.getElementById('last-relapse-text').innerText = `last breach: ${sys.lastRelapse}`;
-            document.getElementById('last-wipe-text').innerText = `last purge: ${sys.lastWipe || 'never'}`;
         }
 
         function uiTasks() {
@@ -510,12 +548,12 @@
                 let f = sys.tasks.map((t, i) => ({...t, i})).filter(t => t.type === type).sort((a, b) => a.done - b.done);
                 if(f.length===0) return '<div class="text-red-900 text-sm tracking-widest">no directives</div>';
                 return f.map(t => `
-                    <div class="flex items-center justify-between p-4 bg-[#0a0202] border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'} mb-2">
+                    <div class="titan-panel flex items-center justify-between p-4 mb-3 border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'}">
                         <div class="flex items-center gap-4 flex-1">
-                            <div onclick="screenFlash(); togT(${t.i})" class="task-toggle ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
-                            <span class="text-sm md:text-base pr-4 ${t.done?'text-[#10b981] line-through':'text-slate-100'}">${t.t}</span>
+                            <div onclick="triggerAction(event, () => togT(${t.i}))" class="task-toggle ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
+                            <span class="text-sm md:text-lg pr-4 ${t.done?'text-[#10b981] line-through':'text-slate-100'}">${t.t}</span>
                         </div>
-                        <button onclick="screenFlash(); delT(${t.i})" class="text-red-600 hover:text-white p-2"><i data-lucide="x"></i></button>
+                        <button onclick="triggerAction(event, () => delT(${t.i}))" class="text-red-600 hover:text-white p-2 transition-colors"><i data-lucide="x"></i></button>
                     </div>`).join('');
             };
             document.getElementById('task-list-quests').innerHTML = render('QUEST');
@@ -530,28 +568,32 @@
             document.getElementById('sync-rate-text').innerText = `${pct}%`;
             document.getElementById('sync-bar').style.width = `${pct}%`;
 
+            let changed=false;
+            sys.curses.forEach(c => { if(c.type==='RELAPSE' && Date.now() > (new Date(c.lock).setHours(23,59,59,999))) { c.lock += 7*86400000; changed=true; } });
+            if(changed) save();
+
             document.getElementById('active-rewards').innerHTML = sys.rewards.length ? sys.rewards.map((r,i) => `
-                <li class="flex justify-between items-center bg-[#0a0202] p-4 border border-emerald-900/50">
-                    <span class="text-emerald-400 text-sm flex-1 pr-4">${r}</span>
-                    <button onclick="handleAction(event, () => clrR(${i}))" class="btn-inferno outline !p-2 !text-xs !border-emerald-500 !text-emerald-500">claim</button>
+                <li class="flex justify-between items-center titan-panel p-4 border border-emerald-900/50">
+                    <span class="text-emerald-400 text-sm md:text-base flex-1 pr-4">${r}</span>
+                    <button onclick="triggerAction(event, () => clrR(${i}))" class="btn-inferno outline !p-2 !text-xs !border-emerald-500 !text-emerald-500">claim</button>
                 </li>`).join('') : '<li class="text-red-900 text-sm">no drops</li>';
 
             document.getElementById('active-penalties').innerHTML = sys.curses.length ? sys.curses.map((c,i) => {
                 if(c.type==='RELAPSE') {
                     const ul = Date.now()>=c.lock;
-                    return `<li class="flex flex-col gap-2 bg-[#0a0202] p-4 border border-red-900/80">
-                        <span class="text-[#ff1100] text-sm">${c.t}</span>
-                        ${ul ? `<button onclick="handleAction(event, () => clrC(${i}))" class="btn-inferno outline !p-2 !text-xs w-full">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
+                    return `<li class="flex flex-col gap-3 titan-panel p-4 border border-red-900/80">
+                        <span class="text-[#ff1100] text-sm md:text-base">${c.t}</span>
+                        ${ul ? `<button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno danger !p-3 !text-sm w-full">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
                     </li>`;
                 } else if(c.type==='MULTI') {
-                    return `<li class="flex justify-between items-center bg-[#0a0202] p-4 border border-[#ff5500]/50">
-                        <span class="text-[#ff5500] text-sm flex-1 pr-4">${c.t} (${c.d}d)</span>
-                        <button onclick="handleAction(event, () => progC(${i}))" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500]" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
+                    return `<li class="flex justify-between items-center titan-panel p-4 border border-[#ff5500]/50">
+                        <span class="text-[#ff5500] text-sm md:text-base flex-1 pr-4">${c.t} (${c.d}d)</span>
+                        <button onclick="triggerAction(event, () => progC(${i}))" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500]" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
                     </li>`;
                 } else {
-                    return `<li class="flex justify-between items-center bg-[#0a0202] p-4 border border-red-900/80">
-                        <span class="text-red-500 text-sm flex-1 pr-4">${c.t}</span>
-                        <button onclick="handleAction(event, () => clrC(${i}))" class="btn-inferno outline !p-2 !text-xs">clear</button>
+                    return `<li class="flex justify-between items-center titan-panel p-4 border border-red-900/80">
+                        <span class="text-red-500 text-sm md:text-base flex-1 pr-4">${c.t}</span>
+                        <button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno outline !p-2 !text-xs">clear</button>
                     </li>`;
                 }
             }).join('') : '<li class="text-red-900 text-sm">system clear</li>';
@@ -562,8 +604,8 @@
             if(!sys.lastGroomingTs) return;
             const left = (15 * 86400000) - (Date.now() - sys.lastGroomingTs);
             txt.innerText = `last log: ${new Date(sys.lastGroomingTs).toLocaleDateString()}`;
-            if(left > 0) { btn.disabled = true; btn.innerText = `locked (${Math.ceil(left / 86400000)} days)`; btn.style.background = 'transparent'; btn.style.border = '2px solid #330000'; btn.style.color = '#550000'; btn.style.boxShadow = 'none'; } 
-            else { btn.disabled = false; btn.innerText = `authorize log`; btn.style.background = '#ff1100'; btn.style.color = '#000'; btn.style.border = 'none'; }
+            if(left > 0) { btn.disabled = true; btn.innerText = `locked (${Math.ceil(left / 86400000)} days)`; btn.classList.add('outline'); btn.style.color = '#550000'; btn.style.borderColor = '#330000'; } 
+            else { btn.disabled = false; btn.innerText = `authorize log`; btn.classList.remove('outline'); btn.style.color = '#000'; }
         }
 
         function uiReport() {
@@ -579,25 +621,25 @@
         function drawChart() {
             const ctx = document.getElementById('monthChart').getContext('2d');
             if(mChart) mChart.destroy();
-            mChart = new Chart(ctx, { type: 'line', data: { labels: sys.history.map(h=>h.d.slice(0,5)), datasets: [{ data: sys.history.map(h=>h.s), borderColor: '#ff1100', backgroundColor: 'rgba(255,17,0,0.1)', fill: true, tension: 0.2, borderWidth: 3, pointRadius: 2 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100, grid: { color: '#3a0000' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }});
+            mChart = new Chart(ctx, { type: 'line', data: { labels: sys.history.map(h=>h.d.slice(0,5)), datasets: [{ data: sys.history.map(h=>h.s), borderColor: '#ff1100', backgroundColor: 'rgba(255,17,0,0.1)', fill: true, tension: 0.3, borderWidth: 4, pointRadius: 3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100, grid: { color: '#3a0000' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }});
         }
 
         function uiRaids() {
             document.getElementById('raid-list').innerHTML = sys.raids.map((r,i) => {
                 let l = Math.max(0, r.t - Date.now()), d = Math.floor(l/86400000), h = Math.floor((l%86400000)/3600000), m = Math.floor((l%3600000)/60000), s = Math.floor((l%60000)/1000);
-                return `<div class="titan-panel p-4 flex justify-between items-center ${r.failed?'border-red-900 bg-red-950/10':''}">
-                    <div class="flex flex-col"><span class="text-sm text-slate-300">${r.n}</span><span class="text-xl ${r.failed?'text-red-600':'text-[#ff1100]'}">${r.failed?'FAILED':`${d}d ${h}h ${m}m ${s}s`}</span></div>
-                    <button onclick="delR(${i})" class="text-red-600 hover:text-white p-2"><i data-lucide="x"></i></button>
+                return `<div class="titan-panel p-5 flex justify-between items-center ${r.failed?'border-red-900 bg-red-950/10':''}">
+                    <div class="flex flex-col"><span class="text-sm md:text-base text-slate-300">${r.n}</span><span class="text-xl md:text-3xl ${r.failed?'text-red-600':'text-[#ff1100]'}">${r.failed?'FAILED':`${d}d ${h}h ${m}m ${s}s`}</span></div>
+                    <button onclick="triggerAction(event, () => delR(${i}))" class="text-red-600 hover:text-white p-3"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>`;
             }).join(''); lucide.createIcons();
         }
 
         function uiTrades() {
             document.getElementById('trade-history').innerHTML = sys.trades.map(t => {
-                let c = t.s==='win'?'text-[#10b981]':(t.s==='loss'?'text-[#ff1100]':'text-[#ff9900]');
-                return `<div class="bg-[#0a0202] border-b border-[#3a0000] p-4 flex justify-between mb-2">
-                    <div class="flex flex-col"><span class="text-sm">${t.a}</span><span class="text-[10px] text-red-900">${t.d}</span></div>
-                    <div class="text-right flex flex-col"><span class="${c} text-sm">${t.s}</span><span class="text-slate-400 text-xs">$${t.pnl}</span></div>
+                let c = t.s==='win'?'text-[#10b981]':(t.s==='loss'?'text-[#ff1100]':'text-[#ff6600]');
+                return `<div class="titan-panel p-5 flex justify-between mb-3">
+                    <div class="flex flex-col"><span class="text-sm md:text-base">${t.a}</span><span class="text-[10px] text-red-900">${t.d}</span></div>
+                    <div class="text-right flex flex-col"><span class="${c} text-sm md:text-base">${t.s}</span><span class="text-slate-400 text-xs md:text-sm">$${t.pnl}</span></div>
                 </div>`;
             }).join('');
         }
@@ -605,15 +647,15 @@
         function uiWallet() {
             document.getElementById('wallet-balance').innerText = `₹${sys.balance.toLocaleString()}`;
             document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `
-                <div class="bg-[#0a0202] border-b border-[#3a0000] p-4 flex justify-between mb-2">
-                    <div class="flex flex-col"><span class="text-sm">${w.tag}</span><span class="text-[10px] text-red-900">${w.d}</span></div>
-                    <span class="${w.t==='In'?'text-[#10b981]':'text-[#ff1100]'} text-lg">${w.t==='In'?'+':'-'}₹${w.a}</span>
+                <div class="titan-panel p-5 flex justify-between mb-3 items-center">
+                    <div class="flex flex-col"><span class="text-sm md:text-base">${w.tag}</span><span class="text-[10px] text-red-900">${w.d}</span></div>
+                    <span class="${w.t==='In'?'text-[#10b981]':'text-[#ff1100]'} text-xl md:text-2xl">${w.t==='In'?'+':'-'}₹${w.a}</span>
                 </div>`).join('');
         }
 
         function addTask() { let v = document.getElementById('task-input').value.trim(); if(v){ sys.tasks.push({t:v, done:false, type:'QUEST'}); document.getElementById('task-input').value=''; save(); ui(); } }
         function togT(i) { sys.tasks[i].done = !sys.tasks[i].done; save(); ui(); }
-        function delT(i) { playAlarm(); sys.tasks.splice(i,1); save(); ui(); }
+        function delT(i) { sys.tasks.splice(i,1); save(); ui(); }
         function clrR(i) { sys.rewards.splice(i,1); save(); ui(); }
         function clrC(i) { sys.curses.splice(i,1); save(); ui(); }
         function progC(i) { sys.curses[i].doneToday = true; save(); ui(); } 
@@ -639,7 +681,7 @@
         }
 
         function reportRelapse() {
-            playAlarm(); sys.lastRelapse = new Date().toLocaleString();
+            sys.lastRelapse = new Date().toLocaleString();
             let tD = new Date(Date.now() + 7*86400000).setHours(22,0,0,0);
             sys.curses.push({ t: `7-day lockdown: ${ALL_USER_PENALTIES[Math.floor(Math.random() * ALL_USER_PENALTIES.length)]}`, type: 'RELAPSE', lock: tD });
             save(); ui(); 
@@ -648,7 +690,7 @@
         function factoryReset() {
             let r = document.getElementById('reset-reason').value.trim();
             if(r.split(/\s+/).filter(w=>w.length>0).length < 50) return alert("insufficient justification.");
-            localStorage.removeItem('monarch2026_v26'); location.reload();
+            localStorage.removeItem('monarch2026_v28'); location.reload();
         }
 
         window.onload = init;
