@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
-        /* ALL JOST BOLD & STRICTLY CAPITALIZE (Title Case - "Somnath") */
+        /* ALL JOST BOLD & STRICTLY CAPITALIZE (Title Case) */
         * {
             font-family: 'Jost', sans-serif !important;
             font-weight: 800 !important;
@@ -26,7 +26,7 @@
         h1, h2, h3, .font-black { font-weight: 900 !important; }
 
         :root {
-            --bg-void: #050000;
+            --bg-void: #030000;
             --surface-dark: #0a0101;
             --border-glow: #3a0505;
             --neon-blood: #ff1100;
@@ -39,8 +39,12 @@
             overflow: hidden; height: 100dvh; width: 100vw;
         }
 
-        /* REAL FLAME CANVAS LAYER */
-        #fire-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99999; mix-blend-mode: screen; }
+        /* REALISTIC FLAME CANVAS LAYER */
+        #fire-canvas { 
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 0; 
+            filter: blur(4px) contrast(1.2); /* Creates the continuous gooey flame effect */
+        }
+        
         .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9000; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; opacity: 0.3; }
 
         .titan-panel {
@@ -49,7 +53,8 @@
             border: 1px solid var(--border-glow);
             box-shadow: inset 0 0 20px rgba(255,17,0,0.05), 0 10px 40px rgba(0,0,0,0.9);
             border-radius: 8px;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; z-index: 10;
         }
         .titan-panel:hover {
             border-color: rgba(255, 17, 0, 0.4);
@@ -64,24 +69,23 @@
         .inferno-input:focus { border-bottom-color: var(--neon-blood); box-shadow: 0 15px 20px -10px rgba(255,17,0,0.5); }
         .inferno-input::placeholder { color: var(--text-muted); }
 
-        /* INTENSE BUTTON HOVER & CLICK TRANSITIONS */
+        /* INTENSE BUTTON TRANSITIONS */
         .btn-inferno {
             background: var(--neon-blood); color: #000; padding: 1.2rem 2rem;
             font-weight: 900; letter-spacing: 1px; cursor: pointer; 
             display: flex; justify-content: center; align-items: center; gap: 0.5rem;
             box-shadow: 0 0 15px rgba(255,17,0,0.3); border-radius: 6px; 
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s;
+            position: relative; z-index: 10; overflow: hidden;
         }
         .btn-inferno:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 15px 35px rgba(255,17,0,0.7);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,17,0,0.8);
             background: #ff3300;
         }
         .btn-inferno:active { 
-            transform: scale(0.92) translateY(2px); 
-            box-shadow: 0 5px 15px rgba(255,17,0,0.9); 
+            transform: scale(0.95); 
         }
-        
         .btn-inferno.outline { background: transparent; border: 2px solid var(--neon-blood); color: var(--neon-blood); }
         .btn-inferno.outline:hover { background: var(--neon-blood); color: #000; }
 
@@ -135,7 +139,7 @@
             <div id="page-tasks" class="tab-page active">
                 <div class="flex flex-col md:flex-row gap-4 mb-12 gsap-item">
                     <input type="text" id="task-input" class="inferno-input flex-1" placeholder="forge new directive...">
-                    <button onclick="triggerAction(event, addTask)" class="btn-inferno shrink-0">deploy objective</button>
+                    <button onclick="triggerAction(event, addTask)" class="btn-inferno shrink-0 fire-trigger">deploy objective</button>
                 </div>
                 
                 <div class="mb-10 gsap-item">
@@ -162,7 +166,7 @@
                     <div class="titan-panel p-8 flex flex-col justify-center border-l-4 border-l-[#ff1100] gsap-item">
                         <h3 class="text-red-800 text-sm mb-2 tracking-widest">system integrity</h3>
                         <p id="last-relapse-text" class="text-sm text-[#ff5500] mb-8">last breach: pure</p>
-                        <button onclick="triggerAction(event, reportRelapse)" class="btn-inferno danger w-full">report fatal breach</button>
+                        <button onclick="triggerAction(event, reportRelapse)" class="btn-inferno danger w-full fire-trigger">report fatal breach</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,7 +209,7 @@
                 <div class="titan-panel p-12 text-center max-w-2xl mx-auto border-t-4 border-t-[#ff5500] gsap-item">
                     <div class="superb-title justify-center"><span class="title-sub text-[#ff5500] text-2xl">grooming log</span></div>
                     <p id="last-grooming-text" class="text-sm text-red-800 mb-10 tracking-widest">last log: never</p>
-                    <button id="btn-grooming" onclick="triggerAction(event, logGrooming)" class="btn-inferno w-full py-5">authorize log</button>
+                    <button id="btn-grooming" onclick="triggerAction(event, logGrooming)" class="btn-inferno w-full py-5 fire-trigger">authorize log</button>
                 </div>
             </div>
 
@@ -217,7 +221,7 @@
                         <input type="number" id="raid-h" class="inferno-input text-center" placeholder="hrs">
                         <input type="number" id="raid-m" class="inferno-input text-center" placeholder="mins">
                     </div>
-                    <button onclick="triggerAction(event, startRaid)" class="btn-inferno w-full">ignite countdown</button>
+                    <button onclick="triggerAction(event, startRaid)" class="btn-inferno w-full fire-trigger">ignite countdown</button>
                 </div>
                 <div id="raid-list" class="flex flex-col gap-4 gsap-item"></div>
             </div>
@@ -236,7 +240,7 @@
                             <option value="win" class="text-[#10b981]">win (profit)</option>
                             <option value="loss" class="text-[#ff1100]">loss (stop hit)</option>
                         </select>
-                        <button onclick="triggerAction(event, logTrade)" class="btn-inferno w-full">log position</button>
+                        <button onclick="triggerAction(event, logTrade)" class="btn-inferno w-full fire-trigger">log position</button>
                     </div>
                     <div class="titan-panel p-4 overflow-y-auto max-h-[500px] gsap-item" id="trade-history"></div>
                 </div>
@@ -253,8 +257,8 @@
                         <input type="text" id="wallet-tag" class="inferno-input" placeholder="description tag">
                     </div>
                     <div class="flex gap-4">
-                        <button onclick="triggerAction(event, () => transact('In'))" class="btn-inferno flex-1" style="background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.3);">deposit</button>
-                        <button onclick="triggerAction(event, () => transact('Out'))" class="btn-inferno outline flex-1">deduct</button>
+                        <button onclick="triggerAction(event, () => transact('In'))" class="btn-inferno flex-1 fire-trigger" style="background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.3);">deposit</button>
+                        <button onclick="triggerAction(event, () => transact('Out'))" class="btn-inferno outline flex-1 fire-trigger">deduct</button>
                     </div>
                 </div>
                 <div id="wallet-history" class="flex flex-col gap-3 gsap-item"></div>
@@ -265,7 +269,7 @@
                     <div class="superb-title justify-center"><span class="title-sub text-3xl text-[#ff1100]">system purge</span></div>
                     <p class="text-sm text-red-700 mb-8">warning: action is irreversible. minimum 50 word justification required.</p>
                     <textarea id="reset-reason" class="inferno-input h-32 mb-8 text-sm" placeholder="type justification here..." style="text-transform: none !important;"></textarea>
-                    <button onclick="triggerAction(event, factoryReset)" class="btn-inferno outline w-full">authorize purge</button>
+                    <button onclick="triggerAction(event, factoryReset)" class="btn-inferno outline w-full fire-trigger">authorize purge</button>
                 </div>
             </div>
 
@@ -275,55 +279,53 @@
     <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-2 py-3" id="mobile-nav"></nav>
 
     <script>
-        // --- ⚡🔥 THE REALISTIC MOLTEN FIRE ENGINE ---
+        // --- ⚡🔥 REALISTIC BLENDED FIRE ENGINE ---
         const canvas = document.getElementById('fire-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
+        // Use screen blend mode so overlapping blurry circles look like continuous bright flames
+        ctx.globalCompositeOperation = 'screen';
+
         let particles = [];
-        const fColors = ['#ffcc00', '#ff6600', '#ff1100', '#990000', '#440000']; // White-hot to dark smoke
+        // Colors that blend well into fire (Yellows, Oranges, Reds)
+        const fColors = ['rgba(255, 200, 0, 0.8)', 'rgba(255, 100, 0, 0.8)', 'rgba(255, 30, 0, 0.6)']; 
 
         class FireParticle {
             constructor(x, y, isBurst = false) {
                 this.x = x;
                 this.y = y;
-                this.size = Math.random() * (isBurst ? 45 : 30) + 10;
-                this.speedX = Math.random() * 2 - 1;
-                this.speedY = Math.random() * -4 - 1 - (isBurst ? Math.random() * 8 : 0);
-                this.color = fColors[Math.floor(Math.random() * (isBurst ? 3 : fColors.length))];
+                this.size = Math.random() * (isBurst ? 50 : 35) + 15;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * -5 - 2 - (isBurst ? Math.random() * 10 : 0);
+                this.color = fColors[Math.floor(Math.random() * fColors.length)];
                 this.life = 1;
-                this.decay = Math.random() * 0.02 + 0.015;
-                this.isBurst = isBurst;
+                this.decay = Math.random() * 0.02 + 0.01;
             }
             update() {
-                this.x += this.speedX + (Math.sin(this.life * 10) * 0.5); // Organic sway
+                this.x += this.speedX + (Math.sin(this.life * 15) * 1.5); // Organic horizontal sway
                 this.y += this.speedY;
                 this.life -= this.decay;
-                this.size *= 0.94; // Shrink as it burns out
+                this.size *= 0.95; // Flames taper off at the top
             }
             draw() {
                 ctx.globalAlpha = Math.max(0, this.life);
+                ctx.fillStyle = this.color;
                 ctx.beginPath();
-                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-                gradient.addColorStop(0, this.color);
-                gradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = gradient;
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
-        // Ambient Fire at Bottom
         function spawnAmbientFire() {
-            if(Math.random() < 0.6) { // Control density
+            if(Math.random() < 0.7) { 
                 particles.push(new FireParticle(Math.random() * canvas.width, canvas.height + 20, false));
             }
         }
 
-        // Explosive Burst on Click
         function createFireBurst(x, y) {
-            for(let i = 0; i < 35; i++) {
+            for(let i = 0; i < 40; i++) {
                 particles.push(new FireParticle(x, y, true));
             }
         }
@@ -335,25 +337,32 @@
                 particles[i].update();
                 particles[i].draw();
             }
-            particles = particles.filter(p => p.life > 0 && p.size > 0.5);
+            particles = particles.filter(p => p.life > 0 && p.size > 1);
             requestAnimationFrame(animateFire);
         }
         animateFire();
 
-        // Global Click listener for fire spawn
-        document.addEventListener('click', (e) => { createFireBurst(e.clientX, e.clientY); });
+        // Hover Effect on Buttons
+        document.querySelectorAll('.fire-trigger').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                if(Math.random() < 0.3) {
+                    const rect = btn.getBoundingClientRect();
+                    createFireBurst(rect.left + Math.random() * rect.width, rect.bottom);
+                }
+            });
+        });
 
-        // Central Trigger Action for Clicks (Audio + Fire + Logic)
         function triggerAction(event, callback) {
             playAlarm();
-            if(callback) { setTimeout(callback, 50); }
+            createFireBurst(event.clientX, event.clientY);
+            if(callback) { setTimeout(callback, 100); }
         }
 
         // --- GSAP PAGE TRANSITIONS ---
         function animatePageIn(pageId) {
             gsap.fromTo(`#page-${pageId} .gsap-item`, 
-                { y: 30, opacity: 0 }, 
-                { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "back.out(1.2)" }
+                { y: 40, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: "back.out(1.2)" }
             );
         }
 
@@ -362,7 +371,7 @@
         const alarmAudio = new Audio(alarmBase64);
         function playAlarm() { alarmAudio.currentTime = 0; alarmAudio.play().catch(e=>console.log("Audio blocked.")); }
 
-        // --- QUOTES (LOWERCASE STRINGS -> CSS Renders them Title Case 'Somnath') ---
+        // --- LOWERCASE QUOTES FOR TITLE CASE ---
         const QUOTES = [
             "lakhon ki bheed form bharti hai, par selection sirf uss ziddi ka hota hai jo raat ke 3 baje tak table pe baitha ho.",
             "interview room mein shiver karne walo ki jagah nahi hai. command the room.",
@@ -433,7 +442,7 @@
 
             let typeSpeed = isDeleting ? 15 : 40; 
             if(!isDeleting && charIdx === currentText.length) {
-                typeSpeed = 900000; // 15 MINUTE EXACT DELAY
+                typeSpeed = 900000; // 15 MINUTE
                 isDeleting = true;
             } else if(isDeleting && charIdx === 0) {
                 isDeleting = false;
@@ -443,7 +452,7 @@
             setTimeout(typeWriter, typeSpeed);
         }
 
-        // --- DATABASES (LOWERCASE) ---
+        // --- LOWERCASE DATABASES ---
         const REWARDS_DAILY = ["gaming night", "reels / fun night", "the 'I am the best' log", "fav food night", "productive night", "night travel + fav song", "shopping night", "coffee night", "body growth fuel", "emotional release"];
         const REWARDS_SAT = ["movie night", "fly free (go somewhere)", "full day chill: pure rest"];
         const REWARD_RARE = "system rules se chutti";
@@ -463,13 +472,13 @@
             { id: 'wallet', icon: 'database', name: 'ledger' }, { id: 'settings', icon: 'cpu', name: 'root' }
         ];
 
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v28')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v29')) || {
             lastEvalDate: new Date().toLocaleDateString(), tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
             lastRelapse: "pure", lastGroomingTs: null, rewards: [], curses: [], history: []
         };
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v28', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v29', JSON.stringify(sys)); }
 
         function init() {
             Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#884444';
@@ -530,6 +539,7 @@
         }
 
         function go(id) {
+            createFireBurst(window.innerWidth / 2, window.innerHeight / 2);
             document.querySelectorAll('.tab-page').forEach(e=>e.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
             document.getElementById(`page-${id}`).classList.add('active');
@@ -550,16 +560,17 @@
                 return f.map(t => `
                     <div class="titan-panel flex items-center justify-between p-4 mb-3 border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'}">
                         <div class="flex items-center gap-4 flex-1">
-                            <div onclick="triggerAction(event, () => togT(${t.i}))" class="task-toggle ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
+                            <div onclick="triggerAction(event, () => togT(${t.i}))" class="task-toggle fire-trigger ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
                             <span class="text-sm md:text-lg pr-4 ${t.done?'text-[#10b981] line-through':'text-slate-100'}">${t.t}</span>
                         </div>
-                        <button onclick="triggerAction(event, () => delT(${t.i}))" class="text-red-600 hover:text-white p-2 transition-colors"><i data-lucide="x"></i></button>
+                        <button onclick="triggerAction(event, () => delT(${t.i}))" class="text-red-600 hover:text-white p-2 transition-colors fire-trigger"><i data-lucide="x"></i></button>
                     </div>`).join('');
             };
             document.getElementById('task-list-quests').innerHTML = render('QUEST');
             document.getElementById('task-list-combat').innerHTML = render('COMBAT');
             document.getElementById('task-list-looks').innerHTML = render('LOOKS');
             lucide.createIcons();
+            addHoverListeners();
         }
 
         function uiKarma() {
@@ -575,7 +586,7 @@
             document.getElementById('active-rewards').innerHTML = sys.rewards.length ? sys.rewards.map((r,i) => `
                 <li class="flex justify-between items-center titan-panel p-4 border border-emerald-900/50">
                     <span class="text-emerald-400 text-sm md:text-base flex-1 pr-4">${r}</span>
-                    <button onclick="triggerAction(event, () => clrR(${i}))" class="btn-inferno outline !p-2 !text-xs !border-emerald-500 !text-emerald-500">claim</button>
+                    <button onclick="triggerAction(event, () => clrR(${i}))" class="btn-inferno outline !p-2 !text-xs !border-emerald-500 !text-emerald-500 fire-trigger">claim</button>
                 </li>`).join('') : '<li class="text-red-900 text-sm">no drops</li>';
 
             document.getElementById('active-penalties').innerHTML = sys.curses.length ? sys.curses.map((c,i) => {
@@ -583,20 +594,21 @@
                     const ul = Date.now()>=c.lock;
                     return `<li class="flex flex-col gap-3 titan-panel p-4 border border-red-900/80">
                         <span class="text-[#ff1100] text-sm md:text-base">${c.t}</span>
-                        ${ul ? `<button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno danger !p-3 !text-sm w-full">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
+                        ${ul ? `<button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno danger !p-3 !text-sm w-full fire-trigger">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
                     </li>`;
                 } else if(c.type==='MULTI') {
                     return `<li class="flex justify-between items-center titan-panel p-4 border border-[#ff5500]/50">
                         <span class="text-[#ff5500] text-sm md:text-base flex-1 pr-4">${c.t} (${c.d}d)</span>
-                        <button onclick="triggerAction(event, () => progC(${i}))" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500]" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
+                        <button onclick="triggerAction(event, () => progC(${i}))" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500] fire-trigger" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
                     </li>`;
                 } else {
                     return `<li class="flex justify-between items-center titan-panel p-4 border border-red-900/80">
                         <span class="text-red-500 text-sm md:text-base flex-1 pr-4">${c.t}</span>
-                        <button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno outline !p-2 !text-xs">clear</button>
+                        <button onclick="triggerAction(event, () => clrC(${i}))" class="btn-inferno outline !p-2 !text-xs fire-trigger">clear</button>
                     </li>`;
                 }
             }).join('') : '<li class="text-red-900 text-sm">system clear</li>';
+            addHoverListeners();
         }
 
         function uiGrooming() {
@@ -629,9 +641,10 @@
                 let l = Math.max(0, r.t - Date.now()), d = Math.floor(l/86400000), h = Math.floor((l%86400000)/3600000), m = Math.floor((l%3600000)/60000), s = Math.floor((l%60000)/1000);
                 return `<div class="titan-panel p-5 flex justify-between items-center ${r.failed?'border-red-900 bg-red-950/10':''}">
                     <div class="flex flex-col"><span class="text-sm md:text-base text-slate-300">${r.n}</span><span class="text-xl md:text-3xl ${r.failed?'text-red-600':'text-[#ff1100]'}">${r.failed?'FAILED':`${d}d ${h}h ${m}m ${s}s`}</span></div>
-                    <button onclick="triggerAction(event, () => delR(${i}))" class="text-red-600 hover:text-white p-3"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <button onclick="triggerAction(event, () => delR(${i}))" class="text-red-600 hover:text-white p-3 fire-trigger"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>`;
             }).join(''); lucide.createIcons();
+            addHoverListeners();
         }
 
         function uiTrades() {
@@ -651,6 +664,20 @@
                     <div class="flex flex-col"><span class="text-sm md:text-base">${w.tag}</span><span class="text-[10px] text-red-900">${w.d}</span></div>
                     <span class="${w.t==='In'?'text-[#10b981]':'text-[#ff1100]'} text-xl md:text-2xl">${w.t==='In'?'+':'-'}₹${w.a}</span>
                 </div>`).join('');
+        }
+
+        function addHoverListeners() {
+            document.querySelectorAll('.fire-trigger').forEach(btn => {
+                // Ensure we don't attach multiple times
+                btn.removeEventListener('mousemove', hoverFire);
+                btn.addEventListener('mousemove', hoverFire);
+            });
+        }
+        function hoverFire(e) {
+            if(Math.random() < 0.4) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                particles.push(new FireParticle(rect.left + Math.random() * rect.width, rect.bottom, false));
+            }
         }
 
         function addTask() { let v = document.getElementById('task-input').value.trim(); if(v){ sys.tasks.push({t:v, done:false, type:'QUEST'}); document.getElementById('task-input').value=''; save(); ui(); } }
@@ -690,7 +717,7 @@
         function factoryReset() {
             let r = document.getElementById('reset-reason').value.trim();
             if(r.split(/\s+/).filter(w=>w.length>0).length < 50) return alert("insufficient justification.");
-            localStorage.removeItem('monarch2026_v28'); location.reload();
+            localStorage.removeItem('monarch2026_v29'); location.reload();
         }
 
         window.onload = init;
