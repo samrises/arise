@@ -27,11 +27,12 @@
 
         :root {
             --bg-void: #030101;
-            --surface-dark: rgba(10, 2, 2, 0.85);
+            --surface-dark: #0a0101;
             --border-glow: #4a0505;
             --neon-blood: #ff1100;
             --neon-fire: #ff6600;
             --text-muted: #884444;
+            --level-gold: #ffcc00;
         }
 
         body {
@@ -41,89 +42,65 @@
 
         /* REALISTIC FLAME CANVAS LAYER */
         #fire-canvas { 
-            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 0; 
-            filter: blur(3px) contrast(1.3); 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 55vh; pointer-events: none; z-index: 0; 
+            filter: blur(4px) contrast(1.3); mix-blend-mode: screen;
         }
 
         .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9000; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; opacity: 0.3; }
 
-        /* UPGRADED TACTICAL PANELS */
         .titan-panel {
-            background: var(--surface-dark);
-            backdrop-filter: blur(12px);
+            background: rgba(10, 2, 2, 0.95);
             border: 1px solid var(--border-glow);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.05);
-            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            border-radius: 6px;
             position: relative; z-index: 10;
         }
 
-        /* UPGRADED INPUTS */
         .inferno-input {
-            background: rgba(0,0,0,0.5); border: 1px solid var(--border-glow); border-bottom: 2px solid var(--border-glow);
-            color: var(--neon-fire); padding: 1rem 0.8rem; width: 100%; outline: none; border-radius: 6px;
-            font-size: 1.2rem; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            background: rgba(0,0,0,0.6); border: 1px solid var(--border-glow); border-bottom: 2px solid var(--border-glow);
+            color: var(--neon-fire); padding: 1rem 0.8rem; width: 100%; outline: none; border-radius: 4px;
+            font-size: 1.2rem; transition: all 0.3s;
         }
-        .inferno-input:focus { border-color: var(--neon-blood); box-shadow: 0 10px 20px -5px rgba(255,17,0,0.4); background: rgba(20,0,0,0.8); }
+        .inferno-input:focus { border-color: var(--neon-blood); box-shadow: 0 10px 20px -5px rgba(255,17,0,0.4); }
         .inferno-input::placeholder { color: var(--text-muted); }
 
-        /* 🚀 NEW ATTRACTIVE BUTTON HOVERS */
         .btn-inferno {
             position: relative; overflow: hidden;
-            background: linear-gradient(135deg, #7a0000 0%, #d80e0e 100%); 
-            color: #fff; padding: 1.2rem 2rem;
+            background: var(--neon-blood); color: #000; padding: 1.2rem 2rem;
             font-weight: 900; letter-spacing: 1px; cursor: pointer; 
             display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-            box-shadow: 0 5px 15px rgba(255,17,0,0.3); border-radius: 6px; 
-            border: 1px solid #ff3300;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 0 15px rgba(255,17,0,0.2); border-radius: 4px; 
+            transition: transform 0.1s, background 0.2s;
         }
-        .btn-inferno:hover { 
-            background: linear-gradient(135deg, #ff1100 0%, #ff6600 100%); 
-            color: #fff; 
-            border-color: #ffcc00;
-            box-shadow: 0 10px 25px rgba(255,85,0,0.7), inset 0 0 15px rgba(255,255,255,0.3); 
-            transform: translateY(-3px) scale(1.02);
-        }
-        .btn-inferno:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(255,17,0,0.8); }
-        
-        .btn-inferno.outline { 
-            background: rgba(20,0,0,0.5); border: 1px solid var(--neon-blood); color: var(--neon-blood); 
-            box-shadow: none;
-        }
-        .btn-inferno.outline:hover { 
-            background: var(--neon-blood); color: #000; border-color: #fff;
-            box-shadow: 0 0 20px rgba(255,17,0,0.6);
-        }
-        .btn-inferno:disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; pointer-events: none; }
+        .btn-inferno:hover { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        .btn-inferno:active { transform: scale(0.95); }
+        .btn-inferno.outline { background: transparent; border: 2px solid var(--neon-blood); color: var(--neon-blood); }
+        .btn-inferno.outline:hover { background: var(--neon-blood); color: #000; }
+        .btn-inferno:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; pointer-events: none; }
 
-        /* BUTTON CLICK RIPPLE */
         .ripple {
             position: absolute; border-radius: 50%; transform: scale(0);
-            animation: ripple-anim 600ms linear; background-color: rgba(255, 255, 255, 0.5);
-            pointer-events: none;
+            animation: ripple-anim 600ms linear; background-color: rgba(255, 255, 255, 0.6);
         }
         @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
 
-        .progress-track { background: #1a0000; height: 8px; width: 100%; overflow: hidden; border-radius: 4px; border: 1px solid #3a0000;}
-        .progress-fill { background: linear-gradient(90deg, #880000, #ff1100, #ff6600); height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon-blood); }
+        .progress-track { background: #1a0000; height: 6px; width: 100%; overflow: hidden; border-radius: 3px; }
+        .progress-fill { background: var(--neon-blood); height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--neon-blood); }
+        .hp-fill { background: var(--level-gold); height: 100%; transition: width 0.5s; box-shadow: 0 0 10px var(--level-gold); }
 
         .main-container { display: flex; flex-direction: column; height: 100dvh; z-index: 10; position: relative; }
         .main-viewport { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1rem; padding-bottom: 120px; }
         @media (min-width: 768px) { .main-viewport { padding: 2.5rem; padding-bottom: 2.5rem; } }
 
-        /* NAV STYLES */
         .nav-item { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; gap: 4px; cursor: pointer; transition: all 0.3s; }
-        .nav-item:hover { color: var(--neon-fire); transform: translateY(-3px); }
-        .nav-item.active { color: var(--neon-blood); filter: drop-shadow(0 0 10px rgba(255,17,0,0.8)); }
-        .nav-item.active i { transform: scale(1.15); }
+        .nav-item:active i { transform: scale(0.8); }
+        .nav-item.active { color: var(--neon-blood); filter: drop-shadow(0 0 10px rgba(255,17,0,0.6)); transform: scale(1.1); }
         .mobile-nav { background: rgba(5, 1, 1, 0.98); border-top: 1px solid var(--border-glow); padding-bottom: env(safe-area-inset-bottom); z-index: 50; }
 
         .tab-page { display: none; }
         .tab-page.active { display: block; }
 
-        /* TASK CHECKBOX */
-        .task-toggle { position: relative; overflow: hidden; width: 26px; height: 26px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); background: rgba(0,0,0,0.5);}
-        .task-toggle:hover { border-color: var(--neon-fire); transform: scale(1.1); }
+        .task-toggle { position: relative; overflow: hidden; width: 24px; height: 24px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; transition: all 0.2s; background: rgba(0,0,0,0.5);}
         .task-toggle:active { transform: scale(0.8); }
         .task-toggle.done { border-color: #10b981; background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.5); }
 
@@ -133,22 +110,29 @@
         .typewriter-text::after { content: '█'; animation: blink 1s step-end infinite; color: var(--neon-blood); }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* TRADING BREACH SHAKE */
-        .breach-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; border: 2px solid var(--neon-blood) !important; box-shadow: 0 0 30px rgba(255,17,0,0.3) !important;}
+        .breach-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; border: 2px solid var(--neon-blood) !important; }
         @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
 
-        /* RR DASHBOARD MINI CARDS */
-        .rr-card { background: rgba(0,0,0,0.6); border: 1px solid var(--border-glow); border-radius: 6px; padding: 10px; text-align: center; }
+        /* HP DEDUCTION RED FLASH */
+        .hp-damage { animation: damageFlash 0.4s ease-out; }
+        @keyframes damageFlash { 0% { box-shadow: inset 0 0 50px rgba(255,0,0,0.8); } 100% { box-shadow: inset 0 0 0 transparent; } }
     </style>
 </head>
-<body class="relative flex">
+<body class="relative flex" id="main-body">
     <canvas id="fire-canvas"></canvas>
     <div class="scanlines"></div>
 
     <aside class="hidden md:flex flex-col w-72 h-[100dvh] bg-[#030101] border-r border-[#220000] z-40 fixed left-0 top-0 p-8">
-        <div class="mb-12">
+        <div class="mb-10">
             <h1 class="text-4xl text-[#ff1100] font-black drop-shadow-[0_0_15px_rgba(255,17,0,0.5)]">Sammm.</h1>
             <p class="text-xs text-red-800 mt-2 tracking-widest">Give up Or Stand up With Me And Show them What Your Father Raised !</p>
+        </div>
+        <div class="mb-10 p-4 border border-[#ffcc00]/30 rounded bg-[#ffcc00]/5 relative overflow-hidden" id="desktop-hp-box">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-[#ffcc00] font-black tracking-widest">TITAN LVL <span id="desktop-level">1</span></span>
+                <span class="text-[10px] text-white" id="desktop-hp-text">0 / 100 HP</span>
+            </div>
+            <div class="progress-track"><div id="desktop-hp-bar" class="hp-fill w-0"></div></div>
         </div>
         <nav class="flex flex-col gap-4" id="desktop-nav"></nav>
     </aside>
@@ -157,14 +141,20 @@
         <main class="main-viewport" id="pages-container">
             
             <header class="mb-8 md:mb-12 gsap-header">
-                <h1 class="md:hidden text-4xl text-[#ff1100] mb-4 drop-shadow-[0_0_15px_rgba(255,17,0,0.4)]">Sam Ready ?</h1>
+                <div class="flex justify-between items-start mb-4 md:hidden">
+                    <h1 class="text-4xl text-[#ff1100] font-black drop-shadow-[0_0_15px_rgba(255,17,0,0.4)]">Sam Ready ?</h1>
+                    <div class="w-36 text-right p-2 border border-[#ffcc00]/30 bg-[#ffcc00]/5 rounded" id="mobile-hp-box">
+                        <div class="text-[10px] text-[#ffcc00] mb-1 font-black">LVL <span id="mobile-level">1</span>: <span id="mobile-hp-text" class="text-white">0/100</span></div>
+                        <div class="progress-track"><div id="mobile-hp-bar" class="hp-fill w-0"></div></div>
+                    </div>
+                </div>
                 <div id="global-quote" class="typewriter-text text-sm md:text-xl text-white leading-relaxed min-h-[4rem] flex items-center">loading directive...</div>
             </header>
 
             <div id="page-tasks" class="tab-page active">
                 <div class="flex flex-col md:flex-row gap-4 mb-12 gsap-item">
                     <input type="text" id="task-input" class="inferno-input flex-1" placeholder="forge new directive...">
-                    <button onclick="createRipple(event); addTask()" class="btn-inferno shrink-0">deploy objective</button>
+                    <button onclick="createRipple(event); addTask()" class="btn-inferno shrink-0">deploy</button>
                 </div>
                 
                 <div class="mb-10 gsap-item">
@@ -246,33 +236,56 @@
                         <input type="number" id="raid-h" class="inferno-input text-center" placeholder="hrs">
                         <input type="number" id="raid-m" class="inferno-input text-center" placeholder="mins">
                     </div>
-                    <button onclick="createRipple(event); startRaid()" class="btn-inferno w-full">ignite countdown</button>
+                    <button onclick="createRipple(event); startRaid()" class="btn-inferno w-full">ignite goal</button>
                 </div>
                 <div id="raid-list" class="flex flex-col gap-3 gsap-item"></div>
             </div>
 
-            <div id="page-trading" class="tab-page">
-                <div class="titan-panel p-6 mb-8 gsap-item border-l-4 border-l-[#00e5ff]">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="title-sub text-[#00e5ff]">Tactical R/R Matrix</span>
-                        <span class="text-[10px] text-slate-400">1% RISK | 1:2.5 REWARD</span>
+            <div id="page-risk" class="tab-page">
+                <div class="titan-panel p-8 mb-8 border-t-4 border-t-[#00e5ff] gsap-item text-center">
+                    <h2 class="text-3xl text-[#00e5ff] mb-2 drop-shadow-[0_0_10px_rgba(0,229,255,0.4)]">CAPITAL ENGINE</h2>
+                    <p class="text-xs text-slate-400 mb-6">1% RISK | 2.5% TARGET | CONSISTENCY RULE APPLIED</p>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-4 justify-center">
+                        <input type="number" id="dynamic-capital" class="inferno-input text-center text-2xl max-w-xs bg-[#000]" placeholder="INITIAL CAPITAL ($)">
+                        <button onclick="createRipple(event); updateCapital()" class="btn-inferno outline whitespace-nowrap">SET CAPITAL</button>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div class="rr-card"><div class="text-[10px] text-slate-500">$5k acc</div><div class="text-rose-500 text-xs">R: $50</div><div class="text-emerald-400 text-xs">T: $125</div></div>
-                        <div class="rr-card"><div class="text-[10px] text-slate-500">$10k acc</div><div class="text-rose-500 text-xs">R: $100</div><div class="text-emerald-400 text-xs">T: $250</div></div>
-                        <div class="rr-card"><div class="text-[10px] text-slate-500">$25k acc</div><div class="text-rose-500 text-xs">R: $250</div><div class="text-emerald-400 text-xs">T: $625</div></div>
-                        <div class="rr-card"><div class="text-[10px] text-slate-500">$50k acc</div><div class="text-rose-500 text-xs">R: $500</div><div class="text-emerald-400 text-xs">T: $1250</div></div>
-                    </div>
+                    <p class="text-[10px] text-red-500 mt-3">*CHANGING CAPITAL WILL WIPE TRADE HISTORY & RESET CONSISTENCY.</p>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 gsap-item">
+                    <div class="titan-panel p-6 text-center border-b-2 border-b-slate-600 flex flex-col justify-center">
+                        <h4 class="text-sm text-slate-500 tracking-widest mb-4 border-b border-red-900 pb-2">PER TRADE METRICS</h4>
+                        <div class="flex justify-around">
+                            <div><div class="text-xs text-rose-500 mb-1">MAX RISK (1%)</div><div class="text-3xl text-rose-500 font-black" id="calc-risk">$0.00</div></div>
+                            <div><div class="text-xs text-[#10b981] mb-1">PROFIT TGT (2.5%)</div><div class="text-3xl text-[#10b981] font-black" id="calc-reward">$0.00</div></div>
+                        </div>
+                    </div>
+                    <div class="titan-panel p-6 text-center border-b-2 border-b-[#ffcc00] flex flex-col justify-center">
+                        <h4 class="text-sm text-slate-500 tracking-widest mb-4 border-b border-red-900 pb-2">CONSISTENCY TRACKER (MAX 50%)</h4>
+                        <div class="flex justify-between items-center mb-2 px-4">
+                            <span class="text-xs text-slate-400">TOTAL PROFIT:</span>
+                            <span class="text-lg text-white" id="cons-total">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4 px-4">
+                            <span class="text-xs text-slate-400">BEST TRADE:</span>
+                            <span class="text-lg text-[#00e5ff]" id="cons-max">$0.00 (0%)</span>
+                        </div>
+                        <div class="text-sm tracking-widest" id="cons-status">NO DATA</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-trading" class="tab-page">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="titan-panel p-6 md:p-8 gsap-item" id="trade-box">
                         <div class="flex justify-between items-center mb-6 border-b border-red-900/50 pb-2">
-                            <span class="text-xs text-red-600 tracking-widest"><i data-lucide="alert-triangle" class="inline w-3 h-3 mr-1 mb-1"></i> LIMIT: 2 TRADES / 2 LOSSES</span>
-                            <span class="text-xs text-white bg-red-900/40 px-2 py-1 rounded" id="trade-count-display">0/2 LOGGED</span>
+                            <span class="text-xs text-red-600 tracking-widest"><i data-lucide="alert-triangle" class="inline w-3 h-3 mr-1 mb-1"></i> LIMIT: 2 LOSSES</span>
+                            <span class="text-xs text-white bg-red-900/40 px-2 py-1 rounded" id="loss-count-display">0/2 LOSSES</span>
                         </div>
-                        <input type="text" id="trade-asset" class="inferno-input mb-6" placeholder="asset (e.g. xauusd)">
-                        <div class="flex gap-4 mb-6">
+                        <input type="text" id="trade-asset" class="inferno-input mb-4" placeholder="asset (e.g. xauusd)">
+                        <input type="text" id="trade-reason" class="inferno-input mb-4 text-emerald-400" placeholder="trade reason / setup (required)">
+                        <div class="flex gap-4 mb-4">
                             <input type="number" id="trade-entry" class="inferno-input" placeholder="entry price">
                             <input type="number" id="trade-exit" class="inferno-input" placeholder="exit price">
                         </div>
@@ -298,7 +311,7 @@
                         <input type="text" id="wallet-tag" class="inferno-input" placeholder="description tag">
                     </div>
                     <div class="flex gap-4">
-                        <button onclick="createRipple(event); transact('In')" class="btn-inferno flex-1" style="background: linear-gradient(135deg, #065f46 0%, #10b981 100%); border-color: #34d399;">deposit</button>
+                        <button onclick="createRipple(event); transact('In')" class="btn-inferno flex-1" style="background: #10b981; color:#000;">deposit</button>
                         <button onclick="createRipple(event); transact('Out')" class="btn-inferno outline flex-1">deduct</button>
                     </div>
                 </div>
@@ -317,31 +330,29 @@
         </main>
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-2 py-2" id="mobile-nav"></nav>
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-1 py-2" id="mobile-nav"></nav>
 
     <script>
-        // --- ⚡🔥 REALISTIC BLENDED FIRE ENGINE ---
+        // --- ⚡🔥 REALISTIC FIRE ENGINE (NO BUBBLES) ---
         const canvas = document.getElementById('fire-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-
-        ctx.globalCompositeOperation = 'screen';
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight * 0.5; }
+        window.addEventListener('resize', resize); resize();
 
         let particles = [];
-        const fColors = ['rgba(255, 200, 0, 0.8)', 'rgba(255, 100, 0, 0.8)', 'rgba(255, 30, 0, 0.6)']; 
-
-        class FireParticle {
-            constructor(x, y, isBurst = false) {
-                this.x = x; this.y = y;
-                this.size = Math.random() * (isBurst ? 50 : 35) + 15;
-                this.speedX = Math.random() * 3 - 1.5;
-                this.speedY = Math.random() * -5 - 2 - (isBurst ? Math.random() * 10 : 0);
-                this.color = fColors[Math.floor(Math.random() * fColors.length)];
-                this.life = 1; this.decay = Math.random() * 0.02 + 0.01;
+        class FlameParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20; 
+                this.size = Math.random() * 25 + 10;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * -5 - 2; 
+                this.color = Math.random() > 0.5 ? '#ff3300' : '#ffaa00'; 
+                this.life = 1;
+                this.decay = Math.random() * 0.03 + 0.01;
             }
             update() {
-                this.x += this.speedX + (Math.sin(this.life * 15) * 1.5);
+                this.x += this.speedX + (Math.sin(this.life * 10) * 0.5);
                 this.y += this.speedY;
                 this.life -= this.decay;
                 this.size *= 0.95; 
@@ -350,24 +361,14 @@
                 ctx.globalAlpha = Math.max(0, this.life);
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.ellipse(this.x, this.y, this.size / 2, this.size, 0, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
-        function spawnAmbientFire() {
-            if(Math.random() < 0.7) { 
-                particles.push(new FireParticle(Math.random() * canvas.width, canvas.height + 20, false));
-            }
-        }
-
-        function createFireBurst(x, y) {
-            for(let i = 0; i < 40; i++) { particles.push(new FireParticle(x, y, true)); }
-        }
-
         function animateFire() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            spawnAmbientFire();
+            if(Math.random() < 0.7) particles.push(new FlameParticle()); 
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update(); particles[i].draw();
             }
@@ -376,7 +377,6 @@
         }
         animateFire();
 
-        // BUTTON RIPPLE & FIRE TRIGGER
         function createRipple(event) {
             const button = event.currentTarget;
             const circle = document.createElement("span");
@@ -392,14 +392,10 @@
             circle.classList.add("ripple");
 
             const existing = button.querySelector(".ripple");
-            if (existing) { existing.remove(); }
+            if (existing) existing.remove();
             button.appendChild(circle);
-
-            // Also trigger fire canvas
-            createFireBurst(clientX, clientY);
         }
 
-        // --- GSAP PAGE TRANSITIONS ---
         function animatePageIn(pageId) {
             gsap.fromTo(`#page-${pageId} .gsap-item`, 
                 { y: 20, opacity: 0 }, 
@@ -407,13 +403,10 @@
             );
         }
 
-        // --- GOD MODE AUDIO ---
-        // YAHAN APNA BASE 64 PASTE KARNA
-        const alarmBase64 = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAOAAADWAA...";
-        const alarmAudio = new Audio(alarmBase64);
+        const alarmAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAOAAADWAA...");
         function playAlarm() { alarmAudio.currentTime = 0; alarmAudio.play().catch(e=>console.log("Audio blocked.")); }
 
-        // --- DYNAMIC QUOTES (INCLUDING TRADING PUNISHMENTS) ---
+        // --- DYNAMIC QUOTES ---
         const NORMAL_QUOTES = [
             "lakhon ki bheed form bharti hai, par selection sirf uss ziddi ka hota hai jo raat ke 3 baje tak table pe baitha ho.",
             "interview room mein shiver karne walo ki jagah nahi hai. command the room.",
@@ -447,7 +440,7 @@
         const TRADING_ERROR_QUOTES = [
             "revenge trading is a loser's game. step away from the screen.",
             "the market does not care about your ego. you broke the rule, you pay the price.",
-            "2 trades limit. that was the rule. your lack of discipline is why you fail.",
+            "2 losses reached. that was the rule. your lack of discipline is why you fail.",
             "stop-loss is a shield, not a suggestion. you failed your psychology test today.",
             "a professional accepts the loss and logs off. an amateur burns the account.",
             "you let emotions control the mouse. authorization revoked.",
@@ -457,11 +450,8 @@
         let quoteIdx = 0, charIdx = 0, isDeleting = false;
         function typeWriter() {
             const quoteEl = document.getElementById('global-quote');
-            
             let activePool = NORMAL_QUOTES;
-            if(sys.tradingBreached && Math.random() < 0.4) { 
-                activePool = TRADING_ERROR_QUOTES;
-            }
+            if(sys.tradingBreached && Math.random() < 0.4) activePool = TRADING_ERROR_QUOTES;
             
             if(quoteIdx >= activePool.length) quoteIdx = 0;
             const currentText = activePool[quoteIdx];
@@ -476,7 +466,7 @@
 
             let typeSpeed = isDeleting ? 15 : 40; 
             if(!isDeleting && charIdx === currentText.length) {
-                typeSpeed = 900000; // 15 MINUTE EXACT DELAY
+                typeSpeed = 900000; // 15 MIN DELAY
                 isDeleting = true;
             } else if(isDeleting && charIdx === 0) {
                 isDeleting = false;
@@ -486,7 +476,7 @@
             setTimeout(typeWriter, typeSpeed);
         }
 
-        // --- DATABASES (LOWERCASE) ---
+        // --- DATABASES ---
         const REWARDS_DAILY = ["gaming night", "reels / fun night", "the 'I am the best' log", "fav food night", "productive night", "night travel + fav song", "shopping night", "coffee night", "body growth fuel", "emotional release"];
         const REWARDS_SAT = ["movie night", "fly free (go somewhere)", "full day chill: pure rest"];
         const REWARD_RARE = "system rules se chutti";
@@ -502,18 +492,21 @@
         const TABS = [
             { id: 'tasks', icon: 'flame', name: 'grind' }, { id: 'karma', icon: 'zap', name: 'karma' },
             { id: 'report', icon: 'bar-chart-2', name: 'report' }, { id: 'awaken', icon: 'crosshair', name: 'protocol' },
-            { id: 'raids', icon: 'clock', name: 'raids' }, { id: 'trading', icon: 'activity', name: 'trade' }, 
+            { id: 'raids', icon: 'clock', name: 'raids' }, 
+            { id: 'risk', icon: 'target', name: 'r/r' }, 
+            { id: 'trading', icon: 'activity', name: 'trade' }, 
             { id: 'wallet', icon: 'database', name: 'ledger' }, { id: 'settings', icon: 'cpu', name: 'root' }
         ];
 
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v33')) || {
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v35')) || {
             lastEvalDate: new Date().toLocaleDateString(), tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
             lastRelapse: "pure", lastGroomingTs: null, rewards: [], curses: [], history: [],
-            tradesToday: 0, lossToday: 0, tradingBreached: false
+            lossToday: 0, tradingBreached: false,
+            level: 1, hp: 0, maxHp: 100, capital: 10000 // RPG & CAPITAL
         };
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v33', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v35', JSON.stringify(sys)); }
 
         function init() {
             Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#884444';
@@ -525,10 +518,56 @@
             quoteIdx = Math.floor(Math.random() * NORMAL_QUOTES.length);
             typeWriter(); 
             
+            document.getElementById('dynamic-capital').value = sys.capital;
+            
             checkEval();
             if(sys.tasks.filter(t=>t.type==='COMBAT').length === 0) populateAwaken();
             
-            go('tasks'); setInterval(tickRaids, 1000); ui();
+            go('tasks'); 
+            setInterval(() => {
+                const now = new Date().toLocaleDateString();
+                if(sys.lastEvalDate !== now) checkEval();
+                tickRaids();
+            }, 1000); 
+            
+            ui();
+        }
+
+        // --- RPG HP SYSTEM ---
+        function gainHp(amount) {
+            sys.hp += amount;
+            if(sys.hp >= sys.maxHp) {
+                sys.level++;
+                sys.hp = sys.hp - sys.maxHp;
+                sys.maxHp = Math.floor(sys.maxHp * 1.5);
+                playAlarm(); alert(`LEVEL UP! YOU ARE NOW TITAN LEVEL ${sys.level}`);
+            }
+            save(); updateHPUI();
+        }
+
+        function loseHp(amount) {
+            sys.hp -= amount;
+            // Visual red flash for damage
+            document.getElementById('main-body').classList.add('hp-damage');
+            setTimeout(() => document.getElementById('main-body').classList.remove('hp-damage'), 400);
+
+            while(sys.hp < 0 && sys.level > 1) {
+                sys.level--;
+                sys.maxHp = Math.ceil(sys.maxHp / 1.5);
+                sys.hp += sys.maxHp;
+            }
+            if(sys.level === 1 && sys.hp < 0) sys.hp = 0;
+            save(); updateHPUI();
+        }
+
+        function updateHPUI() {
+            const pct = Math.round((sys.hp / sys.maxHp) * 100);
+            document.getElementById('desktop-level').innerText = sys.level;
+            document.getElementById('desktop-hp-text').innerText = `${sys.hp} / ${sys.maxHp} HP`;
+            document.getElementById('desktop-hp-bar').style.width = `${pct}%`;
+            document.getElementById('mobile-level').innerText = sys.level;
+            document.getElementById('mobile-hp-text').innerText = `${sys.hp}/${sys.maxHp}`;
+            document.getElementById('mobile-hp-bar').style.width = `${pct}%`;
         }
 
         function populateAwaken() {
@@ -569,9 +608,8 @@
                 if(sys.rewards.includes("full day chill: pure rest")) sys.tasks = [];
                 else { sys.tasks = sys.tasks.filter(t => t.type === 'QUEST'); sys.tasks.forEach(t => t.done = false); }
 
-                sys.tradesToday = 0; sys.lossToday = 0; sys.tradingBreached = false;
-
-                sys.lastEvalDate = today; save(); populateAwaken();
+                sys.lossToday = 0; sys.tradingBreached = false;
+                sys.lastEvalDate = today; save(); populateAwaken(); ui();
             }
         }
 
@@ -585,17 +623,17 @@
         }
 
         function ui() {
-            uiTasks(); uiRaids(); uiTrades(); uiWallet(); uiKarma(); uiGrooming(); uiReport();
+            updateHPUI(); uiTasks(); uiRaids(); uiTrades(); uiWallet(); uiKarma(); uiGrooming(); uiReport(); uiRiskReward();
             document.getElementById('last-relapse-text').innerText = `last breach: ${sys.lastRelapse}`;
         }
 
-        // --- TASKS & GSAP DONE ANIMATION ---
+        // --- TASKS ---
         function uiTasks() {
             const render = (type) => {
                 let f = sys.tasks.map((t, i) => ({...t, i})).filter(t => t.type === type).sort((a, b) => a.done - b.done);
                 if(f.length===0) return '<div class="text-red-900 text-sm tracking-widest">no directives</div>';
                 return f.map(t => `
-                    <div id="task-box-${t.i}" class="titan-panel flex items-center justify-between p-4 mb-3 border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'}">
+                    <div id="task-box-${t.i}" class="titan-panel flex items-center justify-between p-4 mb-2 border-l-4 ${t.done?'border-l-[#10b981] opacity-40':'border-l-[#ff1100]'}">
                         <div class="flex items-center gap-4 flex-1">
                             <div onclick="togT(${t.i})" class="task-toggle ${t.done?'done':''}">${t.done?'<i data-lucide="check" class="w-4 h-4 text-black"></i>':''}</div>
                             <span class="text-sm md:text-base pr-4 ${t.done?'text-[#10b981] line-through':'text-slate-100'}">${t.t}</span>
@@ -614,15 +652,19 @@
             sys.tasks[i].done = !sys.tasks[i].done; 
             
             if(!wasDone) {
+                gainHp(25);
                 const box = document.getElementById(`task-box-${i}`);
                 gsap.fromTo(box, 
                     { backgroundColor: "rgba(16, 185, 129, 0.4)", scale: 1.02 }, 
-                    { backgroundColor: "rgba(10, 1, 1, 0.95)", scale: 1, duration: 0.5, ease: "power2.out", onComplete: () => { save(); ui(); } }
+                    { backgroundColor: "rgba(10, 2, 2, 0.95)", scale: 1, duration: 0.5, ease: "power2.out", onComplete: () => { save(); ui(); } }
                 );
                 box.querySelector('.task-toggle').classList.add('done');
                 box.querySelector('.task-toggle').innerHTML = '<i data-lucide="check" class="w-4 h-4 text-black"></i>';
                 lucide.createIcons();
-            } else { save(); ui(); }
+            } else { 
+                loseHp(25); // Penalty for un-doing
+                save(); ui(); 
+            }
         }
         function addTask() { let v = document.getElementById('task-input').value.trim(); if(v){ sys.tasks.push({t:v, done:false, type:'QUEST'}); document.getElementById('task-input').value=''; save(); ui(); } }
         function delT(i) { playAlarm(); sys.tasks.splice(i,1); save(); ui(); }
@@ -647,19 +689,19 @@
             document.getElementById('active-penalties').innerHTML = sys.curses.length ? sys.curses.map((c,i) => {
                 if(c.type==='RELAPSE') {
                     const ul = Date.now()>=c.lock;
-                    return `<li class="flex flex-col gap-3 titan-panel p-4 border border-red-900/80">
-                        <span class="text-[#ff1100] text-sm md:text-base">${c.t}</span>
-                        ${ul ? `<button onclick="createRipple(event); clrC(${i})" class="btn-inferno danger !p-3 !text-sm w-full">complete</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
+                    return `<li class="flex flex-col gap-2 titan-panel p-4 border border-red-900/80">
+                        <span class="text-[#ff1100] text-sm">${c.t}</span>
+                        ${ul ? `<button onclick="createRipple(event); clrC(${i})" class="btn-inferno danger !p-2 !text-xs w-full">endure penalty</button>` : `<span class="text-xs text-red-800">locked till: ${new Date(c.lock).toLocaleString()}</span>`}
                     </li>`;
                 } else if(c.type==='MULTI') {
                     return `<li class="flex justify-between items-center titan-panel p-4 border border-[#ff5500]/50">
-                        <span class="text-[#ff5500] text-sm md:text-base flex-1 pr-4">${c.t} (${c.d}d)</span>
-                        <button onclick="createRipple(event); progC(${i})" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500]" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'done'}</button>
+                        <span class="text-[#ff5500] text-sm flex-1 pr-4">${c.t} (${c.d}d)</span>
+                        <button onclick="createRipple(event); progC(${i})" class="btn-inferno outline !p-2 !text-xs !border-[#ff5500] !text-[#ff5500]" ${c.doneToday?'disabled':''}>${c.doneToday?'logged':'endure'}</button>
                     </li>`;
                 } else {
                     return `<li class="flex justify-between items-center titan-panel p-4 border border-red-900/80">
-                        <span class="text-red-500 text-sm md:text-base flex-1 pr-4">${c.t}</span>
-                        <button onclick="createRipple(event); clrC(${i})" class="btn-inferno outline !p-2 !text-xs">clear</button>
+                        <span class="text-red-500 text-sm flex-1 pr-4">${c.t}</span>
+                        <button onclick="createRipple(event); clrC(${i})" class="btn-inferno outline !p-2 !text-xs">endure penalty</button>
                     </li>`;
                 }
             }).join('') : '<li class="text-red-900 text-sm">system clear</li>';
@@ -692,34 +734,85 @@
         function drawChart() {
             const ctx = document.getElementById('monthChart').getContext('2d');
             if(mChart) mChart.destroy();
-            mChart = new Chart(ctx, { type: 'line', data: { labels: sys.history.map(h=>h.d.slice(0,5)), datasets: [{ data: sys.history.map(h=>h.s), borderColor: '#ff1100', backgroundColor: 'rgba(255,17,0,0.1)', fill: true, tension: 0.3, borderWidth: 4, pointRadius: 3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100, grid: { color: '#3a0000' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }});
+            mChart = new Chart(ctx, { type: 'line', data: { labels: sys.history.map(h=>h.d.slice(0,5)), datasets: [{ data: sys.history.map(h=>h.s), borderColor: '#ff1100', backgroundColor: 'rgba(255,17,0,0.1)', fill: true, tension: 0.2, borderWidth: 3, pointRadius: 2 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100, grid: { color: '#3a0000' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }});
         }
 
+        // --- RAIDS ---
         function uiRaids() {
             document.getElementById('raid-list').innerHTML = sys.raids.map((r,i) => {
                 let l = Math.max(0, r.t - Date.now()), d = Math.floor(l/86400000), h = Math.floor((l%86400000)/3600000), m = Math.floor((l%3600000)/60000), s = Math.floor((l%60000)/1000);
                 return `<div class="titan-panel p-5 flex justify-between items-center ${r.failed?'border-red-900 bg-red-950/10':''}">
                     <div class="flex flex-col"><span class="text-sm md:text-base text-slate-300">${r.n}</span><span class="text-xl md:text-3xl ${r.failed?'text-red-600':'text-[#ff1100]'}">${r.failed?'FAILED':`${d}d ${h}h ${m}m ${s}s`}</span></div>
-                    <button onclick="createRipple(event); delR(${i})" class="text-red-600 hover:text-white p-3"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <div class="flex gap-2">
+                        ${!r.failed ? `<button onclick="createRipple(event); claimRaid(${i})" class="text-emerald-500 hover:text-white p-3"><i data-lucide="check" class="w-6 h-6"></i></button>` : ''}
+                        <button onclick="createRipple(event); delR(${i})" class="text-red-600 hover:text-white p-3"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    </div>
                 </div>`;
             }).join(''); lucide.createIcons();
         }
 
         function startRaid() {
             let n = document.getElementById('raid-name').value, d = parseInt(document.getElementById('raid-d').value)||0, h = parseInt(document.getElementById('raid-h').value)||0, m = parseInt(document.getElementById('raid-m').value)||0;
-            if(!n) return; sys.raids.push({ n, t: Date.now() + (d*86400000+h*3600000+m*60000), failed: false });
+            if(!n) return; sys.raids.push({ n, t: Date.now() + (d*86400000+h*3600000+m*60000), failed: false, hpDeducted: false });
             ['raid-name','raid-d','raid-h','raid-m'].forEach(id=>document.getElementById(id).value=''); save(); uiRaids();
         }
+        function claimRaid(i) { gainHp(50); sys.raids.splice(i,1); save(); uiRaids(); }
         function delR(i) { sys.raids.splice(i,1); save(); uiRaids(); }
-        function tickRaids() { if(document.getElementById('page-raids').classList.contains('active')) { let c=false; sys.raids.forEach(r => { if(r.t - Date.now() <= 0 && !r.failed) { r.failed = true; c = true; } }); if(c){save(); uiRaids();} else uiRaids(); } }
+        
+        function tickRaids() { 
+            let c=false; 
+            sys.raids.forEach(r => { 
+                if(r.t - Date.now() <= 0 && !r.failed) { 
+                    r.failed = true; 
+                    if(!r.hpDeducted) { loseHp(50); r.hpDeducted = true; } // Deduct HP on timeout
+                    c = true; 
+                } 
+            }); 
+            if(document.getElementById('page-raids').classList.contains('active') || c){ save(); uiRaids(); } 
+        }
 
-        // --- TRADING LOGIC WITH THE 3-LOSS EXTREME RULE ---
+        // --- RISK REWARD & TRADING LOGIC ---
+        function updateCapital() {
+            let newCap = parseFloat(document.getElementById('dynamic-capital').value);
+            if(newCap && newCap !== sys.capital) {
+                if(confirm("UPDATING CAPITAL WILL WIPE TRADE HISTORY AND RESET CONSISTENCY TRACKER. PROCEED?")) {
+                    sys.capital = newCap; sys.trades = []; sys.lossToday = 0; sys.tradingBreached = false;
+                    save(); ui(); 
+                } else {
+                    document.getElementById('dynamic-capital').value = sys.capital;
+                }
+            }
+        }
+
+        function uiRiskReward() {
+            let cap = sys.capital;
+            document.getElementById('calc-risk').innerText = '$' + (cap * 0.01).toFixed(2);
+            document.getElementById('calc-reward').innerText = '$' + (cap * 0.025).toFixed(2);
+
+            // Calculate Consistency Rule (Max win should not exceed 50% of total profit)
+            let totalWinPnl = 0; let maxWin = 0;
+            sys.trades.forEach(t => {
+                if(t.s === 'win') {
+                    let p = parseFloat(t.pnl) || 0;
+                    totalWinPnl += p;
+                    if(p > maxWin) maxWin = p;
+                }
+            });
+            let consPct = totalWinPnl > 0 ? (maxWin / totalWinPnl) * 100 : 0;
+            let passed = consPct <= 50;
+
+            document.getElementById('cons-total').innerText = '$' + totalWinPnl.toFixed(2);
+            document.getElementById('cons-max').innerText = '$' + maxWin.toFixed(2) + ` (${consPct.toFixed(1)}%)`;
+            document.getElementById('cons-status').innerText = totalWinPnl === 0 ? "NO WIN DATA" : (passed ? "MAINTAINED" : "VIOLATED (>50%)");
+            document.getElementById('cons-status').className = totalWinPnl === 0 ? "text-slate-500 tracking-widest" : (passed ? "text-[#10b981] font-black tracking-widest" : "text-[#ff1100] font-black tracking-widest");
+        }
+
         function uiTrades() {
             const btn = document.getElementById('btn-log-trade');
             const box = document.getElementById('trade-box');
-            const countDisplay = document.getElementById('trade-count-display');
+            const countDisplay = document.getElementById('loss-count-display');
 
-            countDisplay.innerText = `${sys.tradesToday}/2 LOGGED`;
+            countDisplay.innerText = `${sys.lossToday}/2 LOSSES`;
 
             if(sys.tradingBreached) {
                 btn.disabled = true;
@@ -732,9 +825,9 @@
             }
 
             document.getElementById('trade-history').innerHTML = sys.trades.map(t => {
-                let c = t.s==='win'?'text-[#10b981]':'text-[#ff1100]';
+                let c = t.s==='win'?'text-[#10b981]':(t.s==='loss'?'text-[#ff1100]':'text-[#ff9900]');
                 return `<div class="titan-panel p-4 flex justify-between mb-3">
-                    <div class="flex flex-col"><span class="text-sm md:text-base">${t.a}</span><span class="text-[10px] text-red-900">${t.d}</span></div>
+                    <div class="flex flex-col"><span class="text-sm md:text-base">${t.a} <span class="text-xs text-slate-500">(${t.r})</span></span><span class="text-[10px] text-red-900">${t.d}</span></div>
                     <div class="text-right flex flex-col"><span class="${c} text-sm md:text-base">${t.s}</span><span class="text-slate-400 text-xs md:text-sm">$${t.pnl}</span></div>
                 </div>`;
             }).join('');
@@ -747,7 +840,7 @@
         }
 
         function triggerExtremePenalty() {
-            playAlarm();
+            loseHp(100); // EXTREME HP LOSS
             let tD = new Date(Date.now() + 7*86400000).setHours(22,0,0,0);
             sys.curses.push({ t: `EXTREME TRADING PENALTY: ${ALL_USER_PENALTIES[Math.floor(Math.random() * ALL_USER_PENALTIES.length)]}`, type: 'RELAPSE', lock: tD });
             alert("SYSTEM BREACHED 3 TIMES. 7-DAY EXTREME PENALTY INITIATED.");
@@ -756,21 +849,24 @@
         function logTrade() {
             if(sys.tradingBreached) return;
 
-            let a=document.getElementById('trade-asset').value, st=document.getElementById('trade-status').value, pnl=document.getElementById('trade-pnl').value||'0';
-            if(!a) return; 
+            let a=document.getElementById('trade-asset').value, r=document.getElementById('trade-reason').value, st=document.getElementById('trade-status').value, pnl=document.getElementById('trade-pnl').value||'0';
+            if(!a || !r) return alert("ASSET AND REASON ARE STRICTLY REQUIRED."); 
 
-            if(sys.tradesToday >= 2) {
-                sys.lossToday++; 
-                if(sys.lossToday >= 3) { triggerExtremePenalty(); sys.tradingBreached = true; save(); ui(); } 
-                else { triggerTradingBreach("MAX 2 TRADES RULE VIOLATED."); }
+            // If already at 2 losses, any further trade attempts logic
+            if(sys.lossToday >= 2) {
+                if(st === 'loss') { triggerExtremePenalty(); sys.tradingBreached = true; save(); ui(); } 
+                else { triggerTradingBreach("MAX 2 LOSSES HIT. STOP TRADING."); }
                 return;
             }
 
-            sys.tradesToday++;
             if(st === 'loss') sys.lossToday++;
 
-            sys.trades.unshift({ a, s:st, pnl, d: new Date().toLocaleString() }); 
+            sys.trades.unshift({ a, r, s:st, pnl, d: new Date().toLocaleString() }); 
             
+            // Clear inputs for next trade
+            document.getElementById('trade-asset').value = ''; document.getElementById('trade-reason').value = '';
+            document.getElementById('trade-entry').value = ''; document.getElementById('trade-exit').value = ''; document.getElementById('trade-pnl').value = '';
+
             if(sys.lossToday === 2) { triggerTradingBreach("2 LOSSES HIT. TRADING LOCKED FOR TODAY."); } 
             else if (sys.lossToday >= 3) { triggerExtremePenalty(); sys.tradingBreached = true; save(); ui(); } 
             else { save(); ui(); }
@@ -793,7 +889,8 @@
         }
 
         function reportRelapse() {
-            playAlarm(); sys.lastRelapse = new Date().toLocaleString();
+            loseHp(100);
+            sys.lastRelapse = new Date().toLocaleString();
             let tD = new Date(Date.now() + 7*86400000).setHours(22,0,0,0);
             sys.curses.push({ t: `7-day lockdown: ${ALL_USER_PENALTIES[Math.floor(Math.random() * ALL_USER_PENALTIES.length)]}`, type: 'RELAPSE', lock: tD });
             save(); ui(); 
@@ -802,7 +899,7 @@
         function factoryReset() {
             let r = document.getElementById('reset-reason').value.trim();
             if(r.split(/\s+/).filter(w=>w.length>0).length < 50) return alert("insufficient justification.");
-            localStorage.removeItem('monarch2026_v33'); location.reload();
+            localStorage.removeItem('monarch2026_v35'); location.reload();
         }
 
         window.onload = init;
