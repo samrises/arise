@@ -6,7 +6,6 @@
     <title>Sam - Be Ready for Fly</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@800;900&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,6 +23,8 @@
         }
         *::-webkit-scrollbar { display: none; }
         h1, h2, h3, .font-black { font-weight: 900 !important; }
+
+        .no-cap { text-transform: none !important; }
 
         :root {
             --bg-void: #000000; 
@@ -48,56 +49,32 @@
         }
 
         .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255,255,255,0.03);
-            border-radius: 12px;
-            position: relative; z-index: 10;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255,255,255,0.03);
+            border-radius: 12px; position: relative; z-index: 10; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .glass-panel:hover {
-            border-color: rgba(0, 229, 255, 0.4);
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 229, 255, 0.05);
-            transform: translateY(-2px);
-        }
+        .glass-panel:hover { border-color: rgba(0, 229, 255, 0.4); box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 229, 255, 0.05); transform: translateY(-2px); }
 
         .glass-input {
-            background: rgba(0,0,0,0.6); 
-            border: 1px solid var(--glass-border); border-bottom: 2px solid var(--glass-border);
-            color: var(--neon-cyan); padding: 1.2rem 1rem; width: 100%; outline: none; border-radius: 8px;
-            font-size: 1.1rem; transition: all 0.3s;
-            backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-bottom: 2px solid var(--glass-border);
+            color: var(--neon-cyan); padding: 1.2rem 1rem; width: 100%; outline: none; border-radius: 8px; font-size: 1.1rem; transition: all 0.3s; backdrop-filter: blur(4px);
         }
-        .glass-input:focus { 
-            border-color: var(--neon-cyan); box-shadow: 0 10px 25px -5px rgba(0,229,255,0.2); 
-            background: rgba(0, 229, 255, 0.05);
-        }
-        .glass-input::placeholder { color: var(--text-muted); }
+        .glass-input:focus { border-color: var(--neon-cyan); box-shadow: 0 10px 25px -5px rgba(0,229,255,0.2); background: rgba(0, 229, 255, 0.05); }
+        .glass-input::placeholder { color: var(--text-muted); text-transform: capitalize !important; }
 
         .btn-aero {
-            position: relative; overflow: hidden;
-            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-cyan) 100%); 
-            color: #000; padding: 1.2rem 2rem;
-            font-weight: 900; letter-spacing: 1.5px; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-            box-shadow: 0 0 20px rgba(0,229,255,0.2); border-radius: 8px; 
-            border: none;
-            transition: transform 0.1s, box-shadow 0.2s, background 0.3s;
+            position: relative; overflow: hidden; background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-cyan) 100%); 
+            color: #000; padding: 1.2rem 2rem; font-weight: 900; letter-spacing: 1.5px; cursor: pointer; 
+            display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 0 20px rgba(0,229,255,0.2); border-radius: 8px; border: none; transition: transform 0.1s, box-shadow 0.2s, background 0.3s;
         }
         .btn-aero:hover { box-shadow: 0 0 35px rgba(0,229,255,0.5); color: #000; transform: translateY(-2px) scale(1.02); }
         .btn-aero:active { transform: scale(0.95); }
-        
         .btn-aero.outline { background: rgba(0, 229, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); box-shadow: none; backdrop-filter: blur(4px); }
         .btn-aero.outline:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 25px rgba(0,229,255,0.3); }
-        
         .btn-aero.danger { background: linear-gradient(135deg, #990000 0%, var(--danger) 100%); color: #fff; box-shadow: 0 0 20px rgba(255,0,85,0.2); }
         .btn-aero.danger:hover { box-shadow: 0 0 35px rgba(255,0,85,0.5); transform: translateY(-2px) scale(1.02); }
-
         .btn-aero.success { background: linear-gradient(135deg, #065f46 0%, var(--success) 100%); color: #000; box-shadow: 0 0 20px rgba(16,185,129,0.2); }
         .btn-aero.success:hover { box-shadow: 0 0 35px rgba(16,185,129,0.5); transform: translateY(-2px) scale(1.02); }
-
         .btn-aero:disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; pointer-events: none; }
 
         .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: ripple-anim 600ms linear; background-color: rgba(255, 255, 255, 0.6); pointer-events: none; }
@@ -111,8 +88,7 @@
         .main-viewport { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1rem; padding-bottom: 160px !important; }
         @media (min-width: 768px) { .main-viewport { padding: 2.5rem; padding-bottom: 2.5rem !important; } }
 
-        .nav-item { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; gap: 4px; cursor: pointer; transition: all 0.3s; }
-        .nav-item:active i { transform: scale(0.8); }
+        .nav-item { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; gap: 2px; cursor: pointer; transition: all 0.3s; }
         .nav-item.active { color: var(--neon-cyan); filter: drop-shadow(0 0 10px rgba(0,229,255,0.6)); transform: scale(1.15); }
         .mobile-nav { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); padding-bottom: max(env(safe-area-inset-bottom), 10px); z-index: 60; }
 
@@ -120,7 +96,6 @@
         .tab-page.active { display: block; }
 
         .task-toggle { position: relative; overflow: hidden; width: 26px; height: 26px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; transition: all 0.2s; background: rgba(0,0,0,0.5);}
-        .task-toggle:active { transform: scale(0.8); }
         .task-toggle.done { border-color: var(--success); background: var(--success); box-shadow: 0 0 15px rgba(16,185,129,0.5); }
 
         .superb-title { display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
@@ -135,7 +110,7 @@
         .hp-damage::before { content: ''; position: fixed; inset: 0; z-index: 99999; background: radial-gradient(circle, transparent 20%, rgba(255,0,85,0.4) 100%); animation: dmgFlash 0.5s ease-out; pointer-events: none; }
         @keyframes dmgFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-        /* 🎥 CINEMATIC STICKMAN ANIMATION OVERLAY */
+        /* 🎥 CINEMATIC OVERLAY */
         #cinematic-overlay { z-index: 9999999; perspective: 1000px; }
         .cine-blur { backdrop-filter: blur(8px); }
 
@@ -149,7 +124,7 @@
         .running .arm-l { transform-origin: 12px 9px; animation: run-arm-l 0.3s infinite linear; }
         .running .arm-r { transform-origin: 12px 9px; animation: run-arm-r 0.3s infinite linear; }
 
-        .laser-bullet { width: 15px; height: 4px; background: #ff0055; border-radius: 2px; box-shadow: 0 0 15px #ff0055; }
+        .laser-bullet { width: 10px; height: 3px; background: #ff0055; border-radius: 2px; box-shadow: 0 0 10px #ff0055; }
     </style>
 </head>
 <body class="relative flex" id="main-body">
@@ -157,40 +132,21 @@
 
     <div id="cinematic-overlay" class="hidden fixed inset-0 flex items-center justify-center overflow-hidden bg-black/90 cine-blur">
         <div id="cine-ground" class="absolute w-full h-[2px] bg-white/10" style="bottom: 40%;"></div>
-        
         <div id="cine-pit" class="absolute h-[6px] bg-[#000000] hidden" style="bottom: calc(40% - 2px); width: 80px; left: 50%; transform: translateX(-50%); z-index: 5;"></div>
         
-        <div id="cine-char" class="absolute text-white" style="width: 34px; height: 50px; bottom: 40%; left: -100px; z-index: 10;">
+        <div id="cine-char" class="absolute text-white" style="width: 17px; height: 25px; bottom: 40%; left: -100px; z-index: 10;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-                <circle cx="12" cy="5" r="2.5"></circle>
-                <line x1="12" y1="7.5" x2="12" y2="14"></line>
-                <line x1="12" y1="9" x2="7" y2="13" class="arm-l"></line>
-                <line x1="12" y1="9" x2="17" y2="13" class="arm-r"></line>
-                <line x1="12" y1="14" x2="8" y2="21" class="leg-l"></line>
-                <line x1="12" y1="14" x2="16" y2="21" class="leg-r"></line>
+                <circle cx="12" cy="5" r="2.5"></circle><line x1="12" y1="7.5" x2="12" y2="14"></line><line x1="12" y1="9" x2="7" y2="13" class="arm-l"></line><line x1="12" y1="9" x2="17" y2="13" class="arm-r"></line><line x1="12" y1="14" x2="8" y2="21" class="leg-l"></line><line x1="12" y1="14" x2="16" y2="21" class="leg-r"></line>
             </svg>
         </div>
-
-        <div id="cine-shooter" class="absolute text-[#ff0055] hidden" style="width: 34px; height: 50px; bottom: 40%; right: -100px; transform: scaleX(-1); z-index: 10;">
+        <div id="cine-shooter" class="absolute text-[#ff0055] hidden" style="width: 17px; height: 25px; bottom: 40%; right: -100px; transform: scaleX(-1); z-index: 10;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full drop-shadow-[0_0_10px_rgba(255,0,85,0.8)]">
-                <circle cx="12" cy="5" r="2.5"></circle>
-                <line x1="12" y1="7.5" x2="12" y2="14"></line>
-                <line x1="12" y1="9" x2="7" y2="13" class="arm-l"></line>
-                <line x1="12" y1="9" x2="20" y2="9"></line>
-                <line x1="12" y1="14" x2="8" y2="21" class="leg-l"></line>
-                <line x1="12" y1="14" x2="16" y2="21" class="leg-r"></line>
+                <circle cx="12" cy="5" r="2.5"></circle><line x1="12" y1="7.5" x2="12" y2="14"></line><line x1="12" y1="9" x2="7" y2="13" class="arm-l"></line><line x1="12" y1="9" x2="20" y2="9"></line><line x1="12" y1="14" x2="8" y2="21" class="leg-l"></line><line x1="12" y1="14" x2="16" y2="21" class="leg-r"></line>
             </svg>
         </div>
-        <div id="cine-bullet" class="absolute laser-bullet hidden" style="bottom: calc(40% + 28px); z-index: 15;"></div>
-
-        <div id="cine-target" class="absolute text-[#10b981]" style="bottom: 40%; display: none; z-index: 5;">
-            <i data-lucide="gem" class="w-12 h-12 drop-shadow-[0_0_20px_rgba(16,185,129,0.8)] mb-1"></i>
-        </div>
-
-        <div id="cine-bomb" class="absolute text-[#ff0055]" style="top: -150px; left: 50%; transform: translateX(-50%); display: none; z-index: 20;">
-            <i data-lucide="bomb" class="w-14 h-14 drop-shadow-[0_0_20px_rgba(255,0,85,0.8)]"></i>
-        </div>
-
+        <div id="cine-bullet" class="absolute laser-bullet hidden" style="bottom: calc(40% + 14px); z-index: 15;"></div>
+        <div id="cine-target" class="absolute text-[#10b981]" style="bottom: 40%; display: none; z-index: 5;"><i data-lucide="gem" class="w-8 h-8 drop-shadow-[0_0_20px_rgba(16,185,129,0.8)] mb-1"></i></div>
+        <div id="cine-bomb" class="absolute text-[#ff0055]" style="top: -100px; left: 50%; transform: translateX(-50%); display: none; z-index: 20;"><i data-lucide="bomb" class="w-10 h-10 drop-shadow-[0_0_20px_rgba(255,0,85,0.8)]"></i></div>
         <div id="cine-boom" class="absolute inset-0 bg-[#ff0055] opacity-0 mix-blend-screen pointer-events-none z-50"></div>
     </div>
 
@@ -198,10 +154,10 @@
         <div class="absolute inset-0 bg-black/80 backdrop-blur-md" id="alert-overlay"></div>
         <div class="relative glass-panel p-8 text-center max-w-md w-full border-t-4 border-t-[#00e5ff] rounded-2xl shadow-2xl shadow-cyan-900/20">
             <i id="alert-icon" data-lucide="terminal" class="w-12 h-12 text-[#00e5ff] mx-auto mb-4 drop-shadow-[0_0_10px_rgba(0,229,255,0.5)]"></i>
-            <h3 class="text-xl text-white font-black mb-6 leading-snug" id="alert-msg">message goes here</h3>
+            <h3 class="text-xl text-white font-black mb-6 leading-snug" id="alert-msg" style="white-space: pre-line;">message goes here</h3>
             <input type="number" id="alert-input" class="hidden glass-input mb-6 text-center" placeholder="amount ($)">
-            
             <div class="flex gap-4">
+                <button id="alert-btn-cancel" class="hidden btn-aero outline flex-1">cancel</button>
                 <button id="alert-btn-ok" class="btn-aero flex-1">acknowledge</button>
             </div>
         </div>
@@ -259,21 +215,31 @@
             </div>
 
             <div id="page-karma" class="tab-page">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="glass-panel p-8 flex flex-col justify-center relative overflow-hidden gsap-item border-t-4 border-t-[#00e5ff]">
-                        <h3 class="text-[#00e5ff] text-sm mb-4 tracking-widest">sync rate</h3>
-                        <div class="text-7xl md:text-8xl text-white font-black drop-shadow-[0_0_20px_rgba(0,229,255,0.5)]" id="sync-rate-text">0%</div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-panel p-6 flex flex-col justify-center relative overflow-hidden gsap-item border-t-4 border-t-[#00e5ff] lg:col-span-1">
+                        <h3 class="text-[#00e5ff] text-xs mb-2 tracking-widest">sync rate</h3>
+                        <div class="text-6xl text-white font-black drop-shadow-[0_0_20px_rgba(0,229,255,0.5)] mb-2" id="sync-rate-text">0%</div>
                         <div class="absolute bottom-0 left-0 w-full"><div class="progress-track"><div id="sync-bar" class="progress-fill w-0"></div></div></div>
                     </div>
-                    <div class="glass-panel p-8 flex flex-col justify-center border-l-4 border-l-[#ff0055] gsap-item">
-                        <h3 class="text-[#ff0055] text-sm mb-2 tracking-widest">system integrity</h3>
-                        <p id="last-relapse-text" class="text-sm text-slate-300 mb-8">last breach: pure</p>
-                        <button onclick="createRipple(event); reportRelapse()" class="btn-aero danger w-full">report fatal breach</button>
+                    
+                    <div class="glass-panel p-6 flex flex-col justify-center relative gsap-item border-t-4 border-t-[#fbbf24] lg:col-span-1 text-center">
+                        <i data-lucide="flame" class="absolute top-4 right-4 w-6 h-6 text-[#fbbf24] opacity-50"></i>
+                        <h3 class="text-[#fbbf24] text-xs mb-2 tracking-widest">purity streak</h3>
+                        <div class="text-5xl text-white font-black mb-1"><span id="streak-days-text">0</span></div>
+                        <p class="text-[10px] text-slate-400">days without breach (auto-hp bonus)</p>
+                    </div>
+
+                    <div class="glass-panel p-6 flex flex-col justify-center border-l-4 border-l-[#ff0055] gsap-item lg:col-span-1">
+                        <h3 class="text-[#ff0055] text-xs mb-2 tracking-widest">system integrity</h3>
+                        <p id="last-relapse-text" class="text-xs text-slate-300 mb-6">last breach: pure</p>
+                        <button onclick="createRipple(event); reportRelapse()" class="btn-aero danger w-full !py-3">report breach</button>
                     </div>
                 </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="glass-panel p-6 border-t-2 border-t-[#10b981] gsap-item">
                         <div class="superb-title"><i data-lucide="award" class="w-5 h-5 text-[#10b981]"></i><span class="title-sub text-[#10b981]">acquired drops</span></div>
+                        <p class="text-[10px] text-slate-400 mb-4">*claiming deducts from capital</p>
                         <ul id="active-rewards" class="flex flex-col gap-4"></ul>
                     </div>
                     <div class="glass-panel p-6 border-t-2 border-t-[#ff0055] gsap-item">
@@ -330,6 +296,29 @@
             </div>
 
             <div id="page-trading" class="tab-page">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-panel p-6 border-l-4 border-l-[#00e5ff] flex justify-between items-center gsap-item">
+                        <div>
+                            <div class="text-[10px] text-[#00e5ff] tracking-widest mb-1">initial capital ($)</div>
+                            <input type="number" id="dynamic-capital" class="bg-transparent text-2xl text-white font-black outline-none w-32 border-b border-white/20" placeholder="0.00">
+                        </div>
+                        <button onclick="createRipple(event); updateCapital()" class="btn-aero outline text-[10px] px-4 py-2">set capital</button>
+                    </div>
+                    <div class="glass-panel p-6 border-l-4 border-l-[#fbbf24] flex flex-col justify-center gsap-item">
+                        <div class="flex justify-between border-b border-white/10 pb-2 mb-2">
+                            <div>
+                                <div class="text-[10px] text-slate-400 tracking-widest">net pnl</div>
+                                <div id="trade-net-pnl" class="text-xl font-black text-white">$0.00</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] text-[#fbbf24] tracking-widest">max win limit (50%)</div>
+                                <div id="cons-max" class="text-sm text-[#00e5ff] font-bold mt-1">$0.00 (0%)</div>
+                                <div id="cons-status" class="text-[9px] mt-1 tracking-widest text-slate-500">no data</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="glass-panel p-6 md:p-8 gsap-item" id="trade-box">
                         <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
@@ -375,10 +364,26 @@
             </div>
 
             <div id="page-settings" class="tab-page">
+                <div class="glass-panel p-8 md:p-12 max-w-2xl mx-auto text-center border-t-4 border-t-[#00e5ff] gsap-item mb-8">
+                    <h3 class="text-lg text-[#00e5ff] font-black mb-2">SYSTEM NOTIFICATIONS</h3>
+                    <p class="text-[10px] text-slate-400 mb-6">ENABLE BROWSER PUSH NOTIFICATIONS FOR ALERTS.</p>
+                    <button onclick="createRipple(event); enablePushNotifications()" class="btn-aero w-full">ENABLE PUSH NOTIFICATIONS</button>
+                </div>
+
+                <div class="glass-panel p-8 md:p-12 max-w-2xl mx-auto text-center border-t-4 border-t-[#10b981] gsap-item mb-8">
+                    <h3 class="text-lg text-[#10b981] font-black mb-2">DATA BACKUP & RESTORE</h3>
+                    <p class="text-[10px] text-slate-400 mb-6">EXPORT YOUR SYSTEM STATE AS A JSON FILE TO PREVENT DATA LOSS.</p>
+                    <div class="flex gap-4">
+                        <button onclick="createRipple(event); exportJSON()" class="btn-aero outline flex-1 border-[#10b981] text-[#10b981] hover:bg-[#10b981] hover:text-black">EXPORT JSON</button>
+                        <input type="file" id="json-upload" class="hidden" accept=".json" onchange="importJSON(event)">
+                        <button onclick="createRipple(event); document.getElementById('json-upload').click()" class="btn-aero outline flex-1 border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-black">IMPORT JSON</button>
+                    </div>
+                </div>
+
                 <div class="glass-panel p-8 md:p-12 max-w-2xl mx-auto text-center border-t-4 border-t-[#ff0055] gsap-item">
                     <div class="superb-title justify-center"><span class="title-sub text-2xl text-[#ff0055]">system purge</span></div>
                     <p class="text-sm text-slate-400 mb-8">warning: action is irreversible. minimum 50 word justification required.</p>
-                    <textarea id="reset-reason" class="glass-input h-32 mb-8 text-sm" placeholder="type justification here..." style="text-transform: none !important;"></textarea>
+                    <textarea id="reset-reason" class="glass-input h-32 mb-8 text-sm no-cap" placeholder="type justification here..."></textarea>
                     <button onclick="createRipple(event); factoryReset()" class="btn-aero danger w-full">authorize purge</button>
                 </div>
             </div>
@@ -386,56 +391,72 @@
         </main>
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-1 py-3" id="mobile-nav"></nav>
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 mobile-nav flex justify-around z-50 px-2 py-3" id="mobile-nav"></nav>
 
     <script>
-        // --- 💨 CUSTOM GLASS ALERTS (100% CANCEL BUTTON REMOVED) ---
+        // --- 💨 CUSTOM ALERTS (NO CANCEL EVER UNLESS PROMPT) ---
         let promptCallback = null;
 
         window.alert = window.customAlert = function(msg, isPrompt = false, callback = null) {
             document.getElementById('alert-msg').innerText = msg;
             const box = document.getElementById('custom-alert-box');
             const input = document.getElementById('alert-input');
+            const btnCancel = document.getElementById('alert-btn-cancel');
             const btnOk = document.getElementById('alert-btn-ok');
 
             box.classList.remove('hidden');
             input.value = '';
             btnOk.onclick = null;
+            btnCancel.onclick = null;
 
             if(isPrompt) {
                 input.style.display = 'block';
+                btnCancel.style.display = 'block'; 
                 setTimeout(() => input.focus(), 100);
                 promptCallback = callback;
                 
                 btnOk.onclick = () => {
                     let val = parseFloat(input.value);
                     closeAlert();
-                    // If valid amount, pass it. If empty/NaN, we just close (simulating cancel).
-                    if(!isNaN(val) && promptCallback) {
-                        promptCallback(val);
-                    }
+                    if(!isNaN(val) && promptCallback) promptCallback(val);
                 };
+                btnCancel.onclick = (e) => { e.preventDefault(); closeAlert(); };
             } else {
                 input.style.display = 'none';
+                btnCancel.style.display = 'none';
                 btnOk.onclick = () => closeAlert();
             }
 
-            gsap.fromTo(box.querySelector('.glass-panel'), 
-                { scale: 0.9, opacity: 0, y: 10 }, 
-                { scale: 1, opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
-            );
+            gsap.fromTo(box.querySelector('.glass-panel'), { scale: 0.9, opacity: 0, y: 10 }, { scale: 1, opacity: 1, y: 0, duration: 0.3, ease: "power2.out" });
         };
 
         function closeAlert() {
             const box = document.getElementById('custom-alert-box');
-            gsap.to(box.querySelector('.glass-panel'), {
-                scale: 0.95, opacity: 0, duration: 0.2, 
-                onComplete: () => box.classList.add('hidden')
-            });
+            gsap.to(box.querySelector('.glass-panel'), { scale: 0.95, opacity: 0, duration: 0.2, onComplete: () => box.classList.add('hidden') });
+        }
+
+        // --- PUSH NOTIFICATIONS ---
+        function enablePushNotifications() {
+            if (!("Notification" in window)) {
+                customAlert("Your browser does not support desktop notifications.");
+            } else if (Notification.permission === "granted") {
+                customAlert("Notifications are already enabled.");
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("System Awakened", { body: "You will now receive system alerts."});
+                    }
+                });
+            }
+        }
+
+        function sendPushNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, { body: body });
+            }
         }
 
         // --- 🎥 CINEMATIC 4.5s SHUFFLED VECTOR ANIMATIONS ---
-        
         function playRewardAnimation(callback) {
             const overlay = document.getElementById('cinematic-overlay');
             const char = document.getElementById('cine-char');
@@ -445,13 +466,13 @@
             if(!overlay) return;
             overlay.classList.remove('hidden');
             
-            // Hide penalties
             document.getElementById('cine-bomb').style.display = 'none'; 
             document.getElementById('cine-pit').style.display = 'none'; 
             document.getElementById('cine-shooter').style.display = 'none'; 
             document.getElementById('cine-bullet').style.display = 'none';
             target.style.display = 'block';
 
+            let scaleVal = 3; 
             let centerX = window.innerWidth / 2;
             let rand = Math.random();
             let tl = gsap.timeline({ onComplete: () => {
@@ -461,8 +482,7 @@
             }});
 
             if(rand < 0.5) {
-                // REWARD 1: Run, Jump & Grab Gem, Run Away (4.5s)
-                gsap.set(char, { x: -100, y: 0, rotation: 0, opacity: 1, filter: "drop-shadow(0 0 10px #00e5ff)", color: "#ffffff" });
+                gsap.set(char, { x: -100, y: 0, scale: scaleVal, rotation: 0, opacity: 1, filter: "drop-shadow(0 0 10px #00e5ff)", color: "#ffffff" });
                 gsap.set(target, { x: centerX + 30, y: 0, opacity: 1, scale: 1, filter: "drop-shadow(0 0 10px #10b981)" });
                 
                 char.classList.add('running');
@@ -476,8 +496,7 @@
                   .to(char, { x: window.innerWidth + 100, duration: 1.5, ease: "none" });
 
             } else {
-                // REWARD 2: Run to center, Dance/Jump 5 times (4.5s)
-                gsap.set(char, { x: -100, y: 0, rotation: 0, opacity: 1, filter: "drop-shadow(0 0 10px #00e5ff)", color: "#ffffff" });
+                gsap.set(char, { x: -100, y: 0, scale: scaleVal, rotation: 0, opacity: 1, filter: "drop-shadow(0 0 10px #00e5ff)", color: "#ffffff" });
                 gsap.set(target, { x: centerX + 40, y: 0, opacity: 1, scale: 1, filter: "drop-shadow(0 0 10px #10b981)" });
                 
                 char.classList.add('running');
@@ -506,8 +525,9 @@
             target.style.display = 'none'; boom.style.opacity = 0; 
             pit.style.display = 'none'; shooter.style.display = 'none'; bullet.style.display = 'none'; bomb.style.display = 'none';
 
+            let scaleVal = 3;
             let centerX = window.innerWidth / 2;
-            gsap.set(char, { x: -100, y: 0, rotation: 0, opacity: 1, filter: "drop-shadow(0 0 10px #ff0055)", color: "#ffffff" });
+            gsap.set(char, { x: -100, y: 0, scale: scaleVal, rotation: 0, opacity: 1, filter: "drop-shadow(0 0 10px #ff0055)", color: "#ffffff" });
             char.classList.add('running');
 
             let rand = Math.random();
@@ -518,22 +538,20 @@
             }});
 
             if(rand < 0.33) {
-                // PENALTY 1: BOMB DROP (4.5s)
                 bomb.style.display = 'block';
                 gsap.set(bomb, { y: -300, x: centerX, opacity: 1, scale: 1 });
                 gsap.set(boom, { backgroundColor: "#ff0055", opacity: 0 });
 
                 tl.to(char, { x: centerX, duration: 1.5, ease: "none" })
                   .add(() => char.classList.remove('running'))
-                  .to(char, { x: centerX + 5, duration: 0.1, yoyo: true, repeat: 9 }) // Shake 1s
-                  .to(bomb, { y: -20, duration: 1.5, ease: "power2.in" }, "-=1") // Bomb drops exactly during shake
-                  .to(boom, { opacity: 1, duration: 0.1 }) // Explosion
+                  .to(char, { x: centerX + 5, duration: 0.1, yoyo: true, repeat: 9 }) 
+                  .to(bomb, { y: -20, duration: 1.5, ease: "power2.in" }, "-=1") 
+                  .to(boom, { opacity: 1, duration: 0.1 }) 
                   .set([char, bomb], { opacity: 0 })
-                  .to(overlay, { x: -20, duration: 0.05, yoyo: true, repeat: 9 }) // Screen shake
+                  .to(overlay, { x: -20, duration: 0.05, yoyo: true, repeat: 9 }) 
                   .to(boom, { opacity: 0, duration: 0.4 });
             } 
             else if (rand < 0.66) {
-                // PENALTY 2: PIT FALL (4.5s)
                 pit.style.display = 'block';
                 gsap.set(pit, { scaleX: 0, opacity: 1 });
                 gsap.set(boom, { backgroundColor: "#ff0055", opacity: 0 });
@@ -547,11 +565,10 @@
                   .set(pit, { scaleX: 0 });
             } 
             else {
-                // PENALTY 3: THE SHOOTER (4.5s)
                 shooter.style.display = 'block';
                 bullet.style.display = 'block';
-                gsap.set(shooter, { x: window.innerWidth + 100, y: 0, opacity: 1 });
-                gsap.set(bullet, { x: centerX + 100, opacity: 0 });
+                gsap.set(shooter, { x: window.innerWidth + 100, y: 0, scale: scaleVal, opacity: 1 });
+                gsap.set(bullet, { x: centerX + 100, opacity: 0, scale: scaleVal });
                 gsap.set(boom, { backgroundColor: "#ff0055", opacity: 0 });
 
                 tl.to(char, { x: centerX - 60, duration: 1.5, ease: "none" })
@@ -567,7 +584,7 @@
             }
         }
 
-        // --- ⚡ STRAIGHT WIND & SPARKS ENGINE ---
+        // --- ⚡ STRAIGHT WIND ENGINE ---
         const canvas = document.getElementById('storm-canvas');
         const ctx = canvas.getContext('2d');
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -651,34 +668,21 @@
         }
 
         function animatePageIn(pageId) {
-            gsap.fromTo(`#page-${pageId} .gsap-item`, 
-                { opacity: 0, y: 15 }, 
-                { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }
-            );
+            gsap.fromTo(`#page-${pageId} .gsap-item`, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" });
         }
 
         const alarmAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAOAAADWAA...");
         function playAlarm() { alarmAudio.currentTime = 0; alarmAudio.play().catch(e=>console.log("Audio blocked.")); }
 
-        // --- HARDCORE QUOTES (LOWERCASE IN JS, RENDERED TITLE CASE) ---
+        // --- HARDCORE QUOTES ---
         const NORMAL_QUOTES = [
-            "discipline equals freedom.",
-            "the market transfers money from the impatient to the patient.",
-            "risk management is the ultimate survival skill.",
-            "amateurs focus on gains. professionals focus on losses.",
-            "make the market bend to your discipline.",
-            "stoicism is the mastery over emotion.",
-            "comfort is the enemy of progress.",
-            "execute flawlessly. leave emotion at the door.",
-            "a loss is just data. adjust and move.",
-            "master yourself, master the market."
+            "discipline equals freedom.", "the market transfers money from the impatient to the patient.", "risk management is the ultimate survival skill.",
+            "amateurs focus on gains. professionals focus on losses.", "make the market bend to your discipline.", "stoicism is the mastery over emotion.",
+            "comfort is the enemy of progress.", "execute flawlessly. leave emotion at the door.", "a loss is just data. adjust and move.", "master yourself, master the market."
         ];
         const TRADING_ERROR_QUOTES = [
-            "revenge trading is financial suicide. step away.",
-            "the market does not care about your ego.",
-            "you broke the rules. you pay the price.",
-            "2 losses hit. do not destroy your capital.",
-            "authorization revoked. terminal locked."
+            "revenge trading is financial suicide. step away.", "the market does not care about your ego.", "you broke the rules. you pay the price.",
+            "2 losses hit. do not destroy your capital.", "authorization revoked. terminal locked."
         ];
 
         let quoteIdx = 0, charIdx = 0, isDeleting = false;
@@ -710,7 +714,7 @@
             setTimeout(typeWriter, typeSpeed);
         }
 
-        const REWARDS_DAILY = ["gaming night", "reels / fun night", "the 'I am the best' log", "fav food night", "productive night", "night travel + fav song", "shopping night", "coffee night", "body growth fuel", "emotional release"];
+        const REWARDS_DAILY = ["gaming night", "reels / fun night", "the 'i am the best' log", "fav food night", "productive night", "night travel + fav song", "shopping night", "coffee night", "body growth fuel", "emotional release"];
         const REWARDS_SAT = ["movie night", "fly free (go somewhere)", "full day chill: pure rest"];
         const REWARD_RARE = "system rules se chutti";
 
@@ -725,25 +729,23 @@
         const TABS = [
             { id: 'tasks', icon: 'zap', name: 'grind' }, { id: 'karma', icon: 'shield', name: 'karma' },
             { id: 'report', icon: 'bar-chart-2', name: 'report' }, { id: 'awaken', icon: 'crosshair', name: 'protocol' },
-            { id: 'raids', icon: 'clock', name: 'raids' }, 
-            { id: 'trading', icon: 'activity', name: 'trade' }, 
-            { id: 'wallet', icon: 'database', name: 'ledger' }, { id: 'settings', icon: 'cpu', name: 'sys' }
+            { id: 'raids', icon: 'clock', name: 'raids' }, { id: 'trading', icon: 'activity', name: 'trade' }, 
+            { id: 'wallet', icon: 'database', name: 'ledger' }, { id: 'settings', icon: 'settings', name: 'sys' }
         ];
 
         // Ensure clean DB initialization
-        let sys = JSON.parse(localStorage.getItem('monarch2026_v48'));
-        if (!sys || sys.subWallets) { 
-            // If corrupt or from old v46/v47 with subWallets, reset.
+        let sys = JSON.parse(localStorage.getItem('monarch2026_v56'));
+        if (!sys || sys.subWallets || sys.apiKey !== undefined) { 
             sys = {
-                lastEvalDate: new Date().toLocaleDateString(), tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
+                startDate: Date.now(), lastEvalDate: new Date().toLocaleDateString(), tasks: [], raids: [], trades: [], wallet: [], balance: 0, 
                 lastRelapse: "pure", lastGroomingTs: null, rewards: [], curses: [], history: [],
-                lossToday: 0, tradingBreached: false, level: 1, hp: 0, maxHp: 100
+                lossToday: 0, tradingBreached: false, level: 1, hp: 0, maxHp: 100, capital: 10000
             };
         }
 
         let mChart = null;
 
-        function save() { localStorage.setItem('monarch2026_v48', JSON.stringify(sys)); }
+        function save() { localStorage.setItem('monarch2026_v56', JSON.stringify(sys)); }
 
         function init() {
             Chart.defaults.font.family = 'Jost'; Chart.defaults.font.weight = '800'; Chart.defaults.color = '#64748b';
@@ -755,6 +757,8 @@
             quoteIdx = Math.floor(Math.random() * NORMAL_QUOTES.length);
             typeWriter(); 
             
+            document.getElementById('dynamic-capital').value = sys.capital || 10000;
+
             checkEval();
             if(sys.tasks.filter(t=>t.type==='COMBAT').length === 0) populateAwaken();
             
@@ -766,13 +770,45 @@
             }, 1000); 
             
             ui();
+            
+            // 🔥 ON LOAD NOTIFICATIONS 🔥
+            checkOnLoadAlerts();
+        }
+
+        function checkOnLoadAlerts() {
+            setTimeout(() => {
+                let pendingTasks = sys.tasks.filter(t => !t.done).length;
+                let activeRaids = sys.raids.length;
+                let tradeStatus = sys.lossToday >= 2 ? "LOCKED (MAX LOSSES HIT)" : `${sys.lossToday}/2 LOSSES`;
+                
+                let hasAlerts = false;
+                let msg = "[SYSTEM SUMMARY]\n\n";
+
+                if (pendingTasks > 0) {
+                    msg += `➤ ${pendingTasks} Pending Directives.\n`;
+                    hasAlerts = true;
+                }
+                if (activeRaids > 0) {
+                    msg += `➤ ${activeRaids} Active Dungeons (Raids).\n`;
+                    hasAlerts = true;
+                }
+                if(sys.lossToday > 0 || pendingTasks > 0) {
+                    msg += `➤ Trading: ${tradeStatus}\n`;
+                    hasAlerts = true;
+                }
+
+                if(hasAlerts) {
+                    sendPushNotification("Monarch Zephyr: Status Update", `Tasks: ${pendingTasks} | Raids: ${activeRaids} | Trades: ${tradeStatus}`);
+                    customAlert(msg, false);
+                }
+            }, 1500);
         }
 
         function gainHp(amount) {
             sys.hp += amount;
             if(sys.hp >= sys.maxHp) {
                 sys.level++; sys.hp = sys.hp - sys.maxHp; sys.maxHp = Math.floor(sys.maxHp * 1.5);
-                playAlarm(); alert(`level up! you are now titan level ${sys.level}`);
+                playAlarm(); customAlert(`[LEVEL UP]\n\nYou are now Titan Level ${sys.level}.`);
             }
             save(); updateHPUI();
         }
@@ -816,6 +852,9 @@
                 
                 if(missed > 0) loseHp(missed * 25);
 
+                let daysPure = sys.lastRelapse === "pure" ? Math.floor((Date.now() - sys.startDate) / 86400000) : Math.floor((Date.now() - new Date(sys.lastRelapse).getTime()) / 86400000);
+                if(daysPure > 0) gainHp(daysPure * 2); 
+
                 let score = tot > 0 ? Math.round((dn / tot) * 100) : 0;
                 sys.history.push({ d: sys.lastEvalDate, s: score, dn: dn, m: missed }); 
                 if(sys.history.length>30) sys.history.shift(); 
@@ -851,10 +890,13 @@
 
         function ui() {
             updateHPUI(); uiTasks(); uiRaids(); uiTrades(); uiWallet(); uiKarma(); uiGrooming(); uiReport(); 
+            
+            let daysPure = sys.lastRelapse === "pure" ? Math.floor((Date.now() - sys.startDate) / 86400000) : Math.floor((Date.now() - new Date(sys.lastRelapse).getTime()) / 86400000);
+            document.getElementById('streak-days-text').innerText = daysPure;
             document.getElementById('last-relapse-text').innerText = `last breach: ${sys.lastRelapse}`;
         }
 
-        // --- TASKS (INSTANT SYNC UPDATE) ---
+        // --- TASKS ---
         function uiTasks() {
             const render = (type) => {
                 let f = sys.tasks.map((t, i) => ({...t, i})).filter(t => t.type === type).sort((a, b) => a.done - b.done);
@@ -878,7 +920,6 @@
             let wasDone = sys.tasks[i].done;
             sys.tasks[i].done = !wasDone; 
             
-            // 🔥 REAL-TIME INSTANT UPDATE FIX 🔥
             let tempDn = sys.tasks.filter(t=>t.done).length;
             let tempPct = sys.tasks.length === 0 ? 0 : Math.round((tempDn/sys.tasks.length)*100);
             document.getElementById('sync-rate-text').innerText = `${tempPct}%`;
@@ -940,7 +981,7 @@
         }
 
         function clrR(i) { 
-            alert("enter reward expense amount ($):", true, (amount) => {
+            customAlert("enter reward expense amount to deduct from capital ($):", true, (amount) => {
                 playRewardAnimation(() => {
                     sys.balance -= amount;
                     sys.wallet.unshift({ t: 'Out', a: amount, tag: "reward claim", d: new Date().toLocaleString() });
@@ -961,7 +1002,7 @@
             if(!sys.lastGroomingTs) return;
             const left = (15 * 86400000) - (Date.now() - sys.lastGroomingTs);
             txt.innerText = `last log: ${new Date(sys.lastGroomingTs).toLocaleDateString()}`;
-            if(left > 0) { btn.disabled = true; btn.innerText = `locked (${Math.ceil(left / 86400000)} days)`; btn.classList.add('outline'); } 
+            if(left > 0) { btn.disabled = true; btn.innerText = `locked (${Math.ceil(left / 86400000)}d)`; btn.classList.add('outline'); } 
             else { btn.disabled = false; btn.innerText = `authorize log`; btn.classList.remove('outline'); }
         }
         function logGrooming() { sys.lastGroomingTs = Date.now(); save(); uiGrooming(); }
@@ -994,7 +1035,7 @@
                         <span class="text-2xl text-white font-black">${pad(d)}d ${pad(h)}h ${pad(m)}m ${pad(s)}s</span>
                     </div>
                     <div class="flex gap-3 w-full md:w-auto">
-                        <button onclick="createRipple(event); claimRaid(${i})" class="btn-aero success flex-1 md:flex-none">claim</button>
+                        <button onclick="createRipple(event); claimRaid(${i})" class="btn-aero success flex-1 md:flex-none">claim (+50 hp)</button>
                         <button onclick="createRipple(event); delR(${i})" class="btn-aero outline px-4 border-[#ff0055] text-[#ff0055]"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 </div>`;
@@ -1005,8 +1046,8 @@
         function startRaid() {
             let n = document.getElementById('raid-name').value.trim(), d = parseInt(document.getElementById('raid-d').value) || 0, h = parseInt(document.getElementById('raid-h').value) || 0, m = parseInt(document.getElementById('raid-m').value) || 0;
             let totalMs = (d * 86400000) + (h * 3600000) + (m * 60000);
-            if(!n) return alert("target name required.");
-            if(totalMs <= 0) return alert("set a valid duration.");
+            if(!n) return customAlert("target name required.");
+            if(totalMs <= 0) return customAlert("set a valid duration.");
             sys.raids.push({ n: n, t: Date.now() + totalMs });
             ['raid-name','raid-d','raid-h','raid-m'].forEach(id=>document.getElementById(id).value=''); save(); uiRaids();
         }
@@ -1021,6 +1062,7 @@
             for(let i = sys.raids.length - 1; i >= 0; i--) {
                 let r = sys.raids[i];
                 if(r.t - Date.now() <= 0) { 
+                    sendPushNotification("Raid Failed", `You failed the objective: ${r.n}. Penalty enforced.`);
                     playPenaltyAnimation(() => {
                         loseHp(50); sys.raids.splice(i, 1); save(); uiRaids();
                     });
@@ -1030,8 +1072,57 @@
             if(document.getElementById('page-raids').classList.contains('active') && !c) uiRaids(); 
         }
 
-        // --- TRADING ---
+        // --- TRADING & NET PNL ---
+        function updateCapital() {
+            let newCap = parseFloat(document.getElementById('dynamic-capital').value);
+            if(newCap && newCap !== sys.capital) {
+                if(confirm("updating capital will wipe trade history and reset consistency tracker. proceed?")) {
+                    sys.capital = newCap; sys.trades = []; sys.lossToday = 0; sys.tradingBreached = false;
+                    save(); ui(); 
+                } else {
+                    document.getElementById('dynamic-capital').value = sys.capital;
+                }
+            }
+        }
+
         function uiTrades() {
+            let totalWinPnl = 0; let maxWin = 0; let netPnl = 0;
+            sys.trades.forEach(t => {
+                let p = parseFloat(t.pnl) || 0;
+                if(t.s === 'win') {
+                    totalWinPnl += p; netPnl += p;
+                    if(p > maxWin) maxWin = p;
+                } else if(t.s === 'loss') {
+                    if(p > 0) p = -p; 
+                    netPnl += p;
+                }
+            });
+            
+            let consPct = totalWinPnl > 0 ? (maxWin / totalWinPnl) * 100 : 0;
+            let passed = consPct <= 50;
+
+            document.getElementById('cons-max').innerText = `$${maxWin.toFixed(2)} (${consPct.toFixed(1)}%)`;
+            const consStatus = document.getElementById('cons-status');
+            if(totalWinPnl === 0) {
+                consStatus.innerText = "no win data";
+                consStatus.className = "text-[10px] mt-2 tracking-widest text-slate-500";
+            } else if(passed) {
+                consStatus.innerText = "consistency maintained";
+                consStatus.className = "text-[10px] mt-2 tracking-widest text-[#10b981] font-black";
+            } else {
+                consStatus.innerText = "rule violated (>50%)";
+                consStatus.className = "text-[10px] mt-2 tracking-widest text-[#ff0055] font-black";
+            }
+
+            const pnlBox = document.getElementById('trade-net-pnl');
+            if(netPnl >= 0) {
+                pnlBox.innerText = `+$${netPnl.toFixed(2)}`;
+                pnlBox.className = "text-4xl font-black mt-2 text-[#10b981]";
+            } else {
+                pnlBox.innerText = `-$${Math.abs(netPnl).toFixed(2)}`;
+                pnlBox.className = "text-4xl font-black mt-2 text-[#ff0055]";
+            }
+
             const btn = document.getElementById('btn-log-trade'), box = document.getElementById('trade-box'), countDisplay = document.getElementById('loss-count-display');
             countDisplay.innerText = `${sys.lossToday}/2 losses`;
 
@@ -1053,15 +1144,16 @@
             playPenaltyAnimation(() => {
                 loseHp(100); 
                 sys.curses.push({ t: `EXTREME TRADING PENALTY: ${ALL_USER_PENALTIES[Math.floor(Math.random() * ALL_USER_PENALTIES.length)]}`, type: 'RELAPSE', lock: new Date(Date.now() + 7*86400000).setHours(22,0,0,0) });
-                alert("system breached 3 times. 7-day extreme penalty initiated.");
+                sendPushNotification("System Breached", "Max losses hit. Extreme penalty initiated.");
+                customAlert("[FATAL BREACH]\n\nSystem breached 3 times.\n7-day extreme penalty initiated.");
                 save(); ui();
             });
         }
 
         function logTrade() {
-            if(sys.tradingBreached) return alert("authorization revoked for today.");
+            if(sys.tradingBreached) return customAlert("authorization revoked for today.");
             let a = document.getElementById('trade-asset').value.trim(), r = document.getElementById('trade-reason').value.trim(), st = document.getElementById('trade-status').value, pnl = document.getElementById('trade-pnl').value || '0';
-            if(!a || !r) return alert("asset and reason required."); 
+            if(!a || !r) return customAlert("asset and reason required."); 
 
             ['trade-asset','trade-reason','trade-entry','trade-exit','trade-pnl'].forEach(id=>document.getElementById(id).value='');
 
@@ -1078,7 +1170,7 @@
             else { save(); ui(); }
         }
 
-        // --- LEDGER ---
+        // --- CLEAN LEDGER ---
         function uiWallet() {
             document.getElementById('wallet-balance').innerText = `$${sys.balance.toLocaleString()}`;
             document.getElementById('wallet-history').innerHTML = sys.wallet.map(w => `
@@ -1090,7 +1182,7 @@
 
         function transact(t) {
             let a = parseFloat(document.getElementById('wallet-amt').value); 
-            if(!a||a<=0) return alert("enter a valid amount.");
+            if(!a||a<=0) return customAlert("enter a valid amount.");
             let reason = document.getElementById('wallet-tag').value.trim() || "manual adj";
 
             if(t === 'In') {
@@ -1116,10 +1208,39 @@
             });
         }
 
+        // --- JSON BACKUP SYNC ---
+        function exportJSON() {
+            const data = JSON.stringify(sys);
+            const blob = new Blob([data], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; 
+            a.download = `monarch_backup_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(imported && imported.hp !== undefined) {
+                        localStorage.setItem('monarch2026_v56', JSON.stringify(imported));
+                        customAlert("data restored successfully. system rebooting...");
+                        setTimeout(() => location.reload(), 1500);
+                    } else { customAlert("invalid data format."); }
+                } catch(err) { customAlert("failed to parse file."); }
+            };
+            reader.readAsText(file);
+        }
+
         function factoryReset() {
             let r = document.getElementById('reset-reason').value.trim();
-            if(r.split(/\s+/).filter(w=>w.length>0).length < 50) return alert("insufficient justification.");
-            localStorage.removeItem('monarch2026_v48'); location.reload();
+            if(r.split(/\s+/).filter(w=>w.length>0).length < 50) return customAlert("insufficient justification.");
+            localStorage.removeItem('monarch2026_v56'); location.reload();
         }
 
         window.onload = init;
