@@ -9,9 +9,6 @@
 <meta name="theme-color" content="#000000"/>
 <title>Monarch Zephyr V5 | Hunter: Sam</title>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
 <style>
 :root{
   --bg:#000;--blue:#0088ff;--cyan:#00e5ff;
@@ -205,7 +202,7 @@ textarea.inp{resize:vertical;min-height:90px;}
 .wfill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:4px;transition:width .6s ease;}
 
 /* ── CHART ── */
-.cwrap{background:rgba(255,255,255,.015);border:1px solid rgba(0,136,255,.1);border-radius:10px;padding:12px;}
+.cwrap{background:rgba(255,255,255,.015);border:1px solid rgba(0,136,255,.1);border-radius:10px;padding:12px;position:relative;height:180px;}
 
 /* ── QUOTE CARD ── */
 .qcard{background:linear-gradient(135deg,rgba(0,136,255,.06),rgba(168,85,247,.06));border:1px solid rgba(0,229,255,.14);border-radius:13px;padding:14px 16px 12px;margin-bottom:12px;text-align:center;position:relative;}
@@ -708,6 +705,9 @@ textarea.inp{resize:vertical;min-height:90px;}
 <!-- MUSIC BANNER -->
 <div id="music-ban" class="banner bn-p" style="margin:0 0 12px;display:none;">🎵 Tonight: Music Mode Activated — Sleep Well, Sam.</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
 <script>
 // ════════════════════════════════════════════════════════
 // QUOTES — 55 total (Solo Leveling, Naruto, Goku, Vegeta, OS)
@@ -1645,23 +1645,49 @@ function logWeight(){
 // ════════════════════════════════════════════════════════
 let cS=null,cW=null;
 function renderCharts(){
-  const co={plugins:{legend:{labels:{color:"rgba(255,255,255,.38)",font:{size:10,family:"Share Tech Mono"}}}},scales:{x:{ticks:{color:"rgba(255,255,255,.2)",font:{size:9}},grid:{color:"rgba(255,255,255,.03)"}},y:{ticks:{color:"rgba(255,255,255,.2)",font:{size:9}},grid:{color:"rgba(255,255,255,.03)"}}}};
-  const c1=document.getElementById("sync-chart").getContext("2d");
-  if(cS)cS.destroy();
-  // FIX: ensure history30 has valid data, fill gaps, proper labels
-  const h30=ST.history30.filter(h=>h&&h.date&&typeof h.score==="number");
-  const labels=h30.length?h30.map(h=>{const d=h.date.split("-");return (d[1]||"")+"/"+( d[2]||"");}):[dayjs().format("MM/DD")];
-  const scores=h30.length?h30.map(h=>Math.max(0,Math.min(100,h.score))):[0];
-  cS=new Chart(c1,{type:"line",data:{labels,datasets:[{label:"Sync %",data:scores,borderColor:"#00e5ff",backgroundColor:"rgba(0,229,255,.06)",pointBackgroundColor:"#00e5ff",tension:.4,fill:true,pointRadius:3,pointHoverRadius:5}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,min:0,max:100}}}});
-  const c2=document.getElementById("wt-chart").getContext("2d");
-  if(cW)cW.destroy();
-  cW=new Chart(c2,{type:"line",data:{labels:ST.weightLog.length?ST.weightLog.map(w=>w.d):["Start"],datasets:[{label:"Weight",data:ST.weightLog.length?ST.weightLog.map(w=>w.w):[58],borderColor:"#0088ff",backgroundColor:"rgba(0,136,255,.06)",pointBackgroundColor:"#0088ff",tension:.4,fill:true,pointRadius:3},{label:"Target 75Kg",data:ST.weightLog.length?ST.weightLog.map(()=>75):[75],borderColor:"rgba(251,191,36,.35)",borderDash:[5,5],pointRadius:0}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,min:50,max:82}}}});
-  const lw=ST.weightLog.length?ST.weightLog[ST.weightLog.length-1].w:58;
-  const pct=Math.min(100,Math.max(0,((lw-58)/(75-58))*100));
-  document.getElementById("wt-fill").style.width=pct+"%";
-  document.getElementById("wt-lbl").textContent="Current: "+lw+"Kg";
-}
+  if(typeof Chart==="undefined"){setTimeout(renderCharts,400);return;}
+  var rp=document.getElementById("panel-report");
+  if(!rp||!rp.classList.contains("act"))return;
+  var tickC="rgba(255,255,255,.22)";
+  var gridC="rgba(255,255,255,.04)";
+  var legC="rgba(255,255,255,.4)";
 
+  // SYNC CHART
+  var c1El=document.getElementById("sync-chart");
+  if(!c1El)return;
+  if(cS){try{cS.destroy();}catch(er){}cS=null;}
+  c1El.style.width="100%";c1El.style.height="160px";c1El.removeAttribute("height");
+  var raw=Array.isArray(ST.history30)?ST.history30:[];
+  var h30=raw.filter(function(h){return h&&h.date&&typeof h.score==="number";});
+  var sLabels=h30.length?h30.map(function(h){var p=h.date.split("-");return p[1]+"/"+p[2];}):["Today"];
+  var sData=h30.length?h30.map(function(h){return Math.max(0,Math.min(100,h.score));}):[getSR()];
+  try{
+    cS=new Chart(c1El,{type:"line",data:{labels:sLabels,datasets:[{label:"Sync Rate %",data:sData,borderColor:"#00e5ff",backgroundColor:"rgba(0,229,255,.08)",pointBackgroundColor:"#00e5ff",pointRadius:4,pointHoverRadius:6,tension:0.4,fill:true,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{labels:{color:legC,font:{size:10}}},tooltip:{backgroundColor:"rgba(0,0,0,.85)",titleColor:"#00e5ff",bodyColor:"rgba(255,255,255,.7)"}},scales:{x:{ticks:{color:tickC,font:{size:9},maxRotation:45},grid:{color:gridC}},y:{min:0,max:100,ticks:{color:tickC,font:{size:9},callback:function(v){return v+"%";}},grid:{color:gridC}}}}});
+  }catch(er){console.warn("Sync chart:",er);}
+
+  // WEIGHT CHART
+  var c2El=document.getElementById("wt-chart");
+  if(!c2El)return;
+  if(cW){try{cW.destroy();}catch(er){}cW=null;}
+  c2El.style.width="100%";c2El.style.height="160px";c2El.removeAttribute("height");
+  var wLog=Array.isArray(ST.weightLog)?ST.weightLog:[];
+  var wL=wLog.length?wLog.map(function(w){return w.d;}):["Start"];
+  var wV=wLog.length?wLog.map(function(w){return Number(w.w)||58;}):[58];
+  var wT=wLog.length?wLog.map(function(){return 75;}):[75];
+  var minY=Math.max(50,Math.min.apply(null,wV)-2);
+  var maxY=Math.max(76,Math.max.apply(null,wV)+3);
+  try{
+    cW=new Chart(c2El,{type:"line",data:{labels:wL,datasets:[{label:"Sam (Kg)",data:wV,borderColor:"#0088ff",backgroundColor:"rgba(0,136,255,.08)",pointBackgroundColor:"#0088ff",pointRadius:4,pointHoverRadius:6,tension:0.4,fill:true,borderWidth:2},{label:"Target 75Kg",data:wT,borderColor:"rgba(251,191,36,.5)",backgroundColor:"transparent",borderDash:[6,4],pointRadius:0,borderWidth:1.5,fill:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{labels:{color:legC,font:{size:10}}},tooltip:{backgroundColor:"rgba(0,0,0,.85)",titleColor:"#0088ff",bodyColor:"rgba(255,255,255,.7)"}},scales:{x:{ticks:{color:tickC,font:{size:9},maxRotation:45},grid:{color:gridC}},y:{min:minY,max:maxY,ticks:{color:tickC,font:{size:9},callback:function(v){return v+"Kg";}},grid:{color:gridC}}}}});
+  }catch(er){console.warn("Weight chart:",er);}
+
+  // PROGRESS BAR
+  var lw=wV[wV.length-1]||58;
+  var pct=Math.min(100,Math.max(0,((lw-58)/17)*100));
+  var fe=document.getElementById("wt-fill");
+  var le=document.getElementById("wt-lbl");
+  if(fe)fe.style.width=pct+"%";
+  if(le)le.textContent="Current: "+lw+"Kg";
+}
 // ════════════════════════════════════════════════════════
 // PROTOCOL
 // ════════════════════════════════════════════════════════
@@ -1978,7 +2004,7 @@ function goTab(tab,btn){
   document.querySelectorAll(".tb").forEach(b=>b.classList.remove("act"));
   document.getElementById("panel-"+tab).classList.add("act");
   btn.classList.add("act");btn.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
-  if(tab==="report")setTimeout(renderCharts,50);
+  if(tab==="report"){setTimeout(renderCharts,150);}
   if(tab==="ironforge")renderIronForge();
   if(tab==="ascend")renderAscend();
   if(tab==="karma")renderKarma();
