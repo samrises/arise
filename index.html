@@ -8,8 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#000000"/>
 <title>Monarch Zephyr V5 | Hunter: Sam</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;800;900&family=Share+Tech+Mono&display=swap');
 :root{
   --bg:#000;--blue:#0088ff;--cyan:#00e5ff;
   --green:#10b981;--red:#ff003c;--gold:#fbbf24;--purple:#a855f7;
@@ -458,8 +459,11 @@ textarea.inp{resize:vertical;min-height:90px;}
       <div class="gc gc-g mb12">
         <div class="st cg">Today's Workout: <span id="split-name" class="cc">—</span></div>
         <div id="workout-exs"></div>
-        <button class="btn b-green mb8 mt12" onclick="workoutDone();R(event,this);P(event,'#10b981')">✓ Workout Done +50 Hp</button>
-        <button class="btn b-red" onclick="workoutMissed();R(event,this);P(event,'#ff003c')">✗ Workout Missed -50 Hp</button>
+        <div id="workout-status-msg" style="display:none;padding:12px;border-radius:10px;text-align:center;font-size:13px;font-weight:900;margin-top:10px;"></div>
+        <div id="workout-btn-wrap" style="margin-top:10px;">
+          <button class="btn b-green mb8" id="btn-workout-done" onclick="workoutDone();R(event,this);P(event,'#10b981')">✓ Workout Done +50 Hp</button>
+          <button class="btn b-red" id="btn-workout-miss" onclick="workoutMissed();R(event,this);P(event,'#ff003c')">✗ Workout Missed -50 Hp</button>
+        </div>
       </div>
       <div class="gc gc-c mb12">
         <div class="st cc">Nutrition Protocol</div>
@@ -585,14 +589,19 @@ textarea.inp{resize:vertical;min-height:90px;}
 
     <!-- ORACLE TAB -->
     <div class="panel" id="panel-oracle">
-      <div class="gc gc-p mb12">
-        <div class="st cp">🔮 Sam's Intelligence Report</div>
-        <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.28);margin-bottom:14px;line-height:1.6;">System analyzes your LocalStorage data — patterns, habits, streaks. Updated every time you open this tab.</div>
-        <button class="btn b-purple mb8" onclick="runOracle();R(event,this);P(event,'#a855f7')">⚡ Run Analysis Now</button>
-        <div id="oracle-rank-wrap" style="text-align:center;padding:16px 0;display:none;">
-          <div style="font-size:11px;font-weight:900;color:rgba(255,255,255,.35);letter-spacing:2px;margin-bottom:6px;">Hunter Rank</div>
-          <div id="oracle-rank" style="font-size:48px;font-weight:900;font-family:'Share Tech Mono',monospace;"></div>
-          <div id="oracle-rank-lbl" style="font-size:11px;font-weight:900;letter-spacing:2px;margin-top:4px;"></div>
+      <div style="text-align:center;padding:20px 0 10px;">
+        <div id="oracle-rank-wrap" style="display:none;">
+          <div style="font-size:10px;font-weight:900;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:8px;text-transform:uppercase;">Hunter Rank — Sam</div>
+          <div id="oracle-rank" style="font-size:64px;font-weight:900;font-family:'Share Tech Mono',monospace;line-height:1;transition:all .5s;"></div>
+          <div id="oracle-rank-lbl" style="font-size:12px;font-weight:900;letter-spacing:2px;margin-top:8px;"></div>
+          <div id="oracle-avg" style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);margin-top:4px;font-family:'Share Tech Mono',monospace;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,.2),transparent);margin:16px 0;"></div>
+        </div>
+        <div id="oracle-scanning" style="display:none;padding:20px 0;">
+          <div style="font-size:12px;font-weight:900;color:var(--cyan);letter-spacing:2px;" id="oracle-scan-txt">Scanning System Data...</div>
+          <div style="width:60%;height:2px;background:rgba(0,229,255,.1);margin:12px auto;border-radius:2px;overflow:hidden;">
+            <div id="oracle-scan-bar" style="height:100%;width:0%;background:var(--cyan);transition:width .1s;border-radius:2px;"></div>
+          </div>
         </div>
       </div>
       <div id="oracle-out"></div>
@@ -705,9 +714,309 @@ textarea.inp{resize:vertical;min-height:90px;}
 <!-- MUSIC BANNER -->
 <div id="music-ban" class="banner bn-p" style="margin:0 0 12px;display:none;">🎵 Tonight: Music Mode Activated — Sleep Well, Sam.</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+<script>
+
+/* GSAP Inline Shim */
+var gsap=(function(){
+  function animate(el,from,to,dur,ease,cb){
+    if(!el)return;
+    var els=typeof el==='string'?document.querySelectorAll(el):[el];
+    els.forEach(function(e){
+      if(!e)return;
+      var start=performance.now();
+      var d=(dur||0.3)*1000;
+      var fk=from?Object.keys(from):[];
+      var tk=Object.keys(to||{});
+      var startVals={};
+      // capture start values
+      tk.forEach(function(k){
+        if(k==='x')startVals[k]=parseFloat(e.style.transform&&e.style.transform.match(/translateX\(([^)]+)\)/)?e.style.transform.match(/translateX\(([^)]+)\)/)[1]:0)||0;
+        else if(k==='y')startVals[k]=parseFloat(e.style.transform&&e.style.transform.match(/translateY\(([^)]+)\)/)?e.style.transform.match(/translateY\(([^)]+)\)/)[1]:0)||0;
+        else if(k==='opacity')startVals[k]=parseFloat(e.style.opacity||1);
+        else if(k==='scale')startVals[k]=1;
+        else if(k==='x'||k==='rotate')startVals[k]=0;
+        else startVals[k]=parseFloat(e.style[k])||0;
+      });
+      if(from){fk.forEach(function(k){
+        if(k==='opacity')e.style.opacity=from[k];
+        else if(k==='x'||k==='y'||k==='scale'){var t=e.style.transform||'';e.style.transform=t;}
+        else e.style[k]=from[k];
+      });}
+      function step(now){
+        var p=Math.min((now-start)/d,1);
+        var ep=p<0.5?2*p*p:-1+(4-2*p)*p; // ease in-out
+        tk.forEach(function(k){
+          var sv=from&&from[k]!==undefined?from[k]:startVals[k];
+          var ev=to[k];
+          if(typeof ev!=='number'&&typeof sv!=='number')return;
+          var val=sv+(ev-sv)*ep;
+          if(k==='opacity')e.style.opacity=val;
+          else if(k==='x'){var ct=e.style.transform.replace(/translateX\([^)]*\)/,'');e.style.transform=ct+'translateX('+val+'px)';}
+          else if(k==='y'){var ct=e.style.transform.replace(/translateY\([^)]*\)/,'');e.style.transform=ct+'translateY('+val+'px)';}
+          else if(k==='scale'){var ct=e.style.transform.replace(/scale\([^)]*\)/,'');e.style.transform=ct+'scale('+val+')';}
+          else e.style[k]=val+(/color|background/.test(k)?'':'');
+        });
+        if(p<1)requestAnimationFrame(step);
+        else if(cb)cb();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  return {
+    to:function(el,opts){animate(el,null,opts,opts.duration,opts.ease,opts.onComplete);},
+    from:function(el,opts){animate(el,opts,{opacity:1,x:0,y:0,scale:1},opts.duration,opts.ease,opts.onComplete);},
+    fromTo:function(el,from,to){
+      var d=to;
+      var cb=d.onComplete;
+      if(d.repeat&&d.yoyo){
+        // simple bounce for button punch
+        var orig={};
+        ['scale','x','y','opacity'].forEach(function(k){if(from[k]!==undefined)orig[k]=typeof el==='string'?1:(k==='opacity'?parseFloat(document.querySelector(el)||{style:{opacity:1}}.style.opacity||1):1);});
+        animate(el,from,to,(d.duration||0.1),d.ease,function(){
+          animate(el,to,from,(d.duration||0.1),d.ease,function(){if(cb)cb();});
+        });
+      } else {
+        animate(el,from,to,d.duration,d.ease,cb);
+      }
+    },
+    set:function(el,props){
+      var els=typeof el==='string'?document.querySelectorAll(el):[el];
+      els.forEach(function(e){if(!e)return;Object.keys(props).forEach(function(k){
+        if(k==='opacity')e.style.opacity=props[k];
+        else if(k==='x'){e.style.transform=(e.style.transform||'').replace(/translateX\([^)]*\)/,'')+'translateX('+props[k]+'px)';}
+        else if(k==='scale'){e.style.transform=(e.style.transform||'').replace(/scale\([^)]*\)/,'')+'scale('+props[k]+')';}
+        else e.style[k]=props[k];
+      });});
+    }
+  };
+})();
+
+
+/* DayJS Inline Shim */
+var dayjs=(function(){
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var SMONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function Dayjs(d){this._d=d?new Date(d):new Date();}
+  Dayjs.prototype={
+    format:function(f){
+      var d=this._d;
+      var Y=d.getFullYear(),M=d.getMonth(),D=d.getDate();
+      var h=d.getHours(),m=d.getMinutes(),s=d.getSeconds();
+      var dow=d.getDay();
+      return f
+        .replace('YYYY',Y)
+        .replace('MM',String(M+1).padStart(2,'0'))
+        .replace('DD',String(D).padStart(2,'0'))
+        .replace('HH',String(h).padStart(2,'0'))
+        .replace('mm',String(m).padStart(2,'0'))
+        .replace('ss',String(s).padStart(2,'0'))
+        .replace('dddd',DAYS[dow])
+        .replace('ddd',DAYS[dow].slice(0,3))
+        .replace('MMMM',MONTHS[M])
+        .replace('MMM',SMONTHS[M])
+        .replace('D',D)
+        .replace('[W]ww',function(){
+          var jan1=new Date(Y,0,1);
+          var wk=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
+          return 'W'+String(wk).padStart(2,'0');
+        });
+    },
+    diff:function(other,unit){
+      var ms=this._d-(other&&other._d?other._d:new Date(other));
+      if(unit==='day')return Math.floor(ms/86400000);
+      if(unit==='hour')return Math.floor(ms/3600000);
+      return ms;
+    },
+    day:function(){return this._d.getDay();},
+    hour:function(){return this._d.getHours();},
+    minute:function(){return this._d.getMinutes();},
+    startOf:function(u){var d=new Date(this._d);if(u==='year')d.setMonth(0,1);d.setHours(0,0,0,0);return new Dayjs(d);},
+    valueOf:function(){return this._d.getTime();}
+  };
+  var fn=function(d){return new Dayjs(d);};
+  return fn;
+})();
+
+
+/* Chart.js Inline — Full Working Line Chart */
+var Chart=(function(){
+  var _instances={};
+  function Ch(canvas,cfg){
+    this.id=canvas.id||('c'+Date.now());
+    this.canvas=canvas;
+    this.cfg=cfg;
+    if(_instances[this.id]){try{_instances[this.id]._clear();}catch(e){}}
+    _instances[this.id]=this;
+    var self=this;
+    this._ro=new ResizeObserver(function(){self._draw();});
+    this._ro.observe(canvas.parentElement||canvas);
+    this._draw();
+  }
+  Ch.prototype._clear=function(){
+    if(this._ro)this._ro.disconnect();
+    var ctx=this.canvas.getContext('2d');
+    ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    delete _instances[this.id];
+  };
+  Ch.prototype.destroy=function(){this._clear();};
+  Ch.prototype._draw=function(){
+    var canvas=this.canvas;
+    var cfg=this.cfg;
+    var parent=canvas.parentElement;
+    var W=parent?parent.clientWidth:300;
+    var H=parent?parent.clientHeight:160;
+    if(W<10)W=300;if(H<10)H=160;
+    var dpr=window.devicePixelRatio||1;
+    canvas.width=W*dpr;canvas.height=H*dpr;
+    canvas.style.width=W+'px';canvas.style.height=H+'px';
+    var ctx=canvas.getContext('2d');
+    ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,W,H);
+
+    var data=cfg.data||{};
+    var datasets=data.datasets||[];
+    var labels=data.labels||[];
+    var opts=cfg.options||{};
+    var scales=opts.scales||{};
+    var yO=scales.y||{};
+    var xO=scales.x||{};
+
+    // Padding
+    var PT=24,PR=12,PB=40,PL=46;
+    var pw=W-PL-PR,ph=H-PT-PB;
+    if(pw<10||ph<10)return;
+
+    // Compute Y range
+    var allV=[];
+    datasets.forEach(function(ds){
+      (ds.data||[]).forEach(function(v){if(typeof v==='number')allV.push(v);});
+    });
+    if(!allV.length){allV=[0,100];}
+    var yMin=yO.min!==undefined?yO.min:Math.floor(Math.min.apply(null,allV));
+    var yMax=yO.max!==undefined?yO.max:Math.ceil(Math.max.apply(null,allV));
+    if(yMax===yMin){yMin=yMin-5;yMax=yMax+5;}
+
+    function tx(i){return PL+(labels.length>1?i/(labels.length-1):0.5)*pw;}
+    function ty(v){return PT+(1-(v-yMin)/(yMax-yMin))*ph;}
+
+    // BG
+    ctx.fillStyle='rgba(0,0,0,0)';
+    ctx.fillRect(0,0,W,H);
+
+    // Grid + Y axis labels
+    var ySteps=5;
+    for(var yi=0;yi<=ySteps;yi++){
+      var yv=yMin+(yMax-yMin)*(yi/ySteps);
+      var yp=ty(yv);
+      ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(PL,yp);ctx.lineTo(PL+pw,yp);ctx.stroke();
+      var yCb=yO.ticks&&yO.ticks.callback;
+      var yLbl=yCb?yCb(Math.round(yv)*1):Math.round(yv);
+      ctx.fillStyle='rgba(255,255,255,.25)';
+      ctx.font='9px Share Tech Mono,monospace';
+      ctx.textAlign='right';ctx.textBaseline='middle';
+      ctx.fillText(String(yLbl),PL-5,yp);
+    }
+
+    // X axis labels
+    var maxXLabels=Math.floor(pw/36);
+    var xStep=Math.max(1,Math.ceil(labels.length/maxXLabels));
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    ctx.font='9px Share Tech Mono,monospace';
+    ctx.textAlign='center';ctx.textBaseline='top';
+    for(var xi=0;xi<labels.length;xi+=xStep){
+      ctx.fillText(String(labels[xi]).slice(0,8),tx(xi),H-PB+6);
+    }
+
+    // Border
+    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+    ctx.strokeRect(PL,PT,pw,ph);
+
+    // Datasets
+    datasets.forEach(function(ds,di){
+      var ddata=ds.data||[];
+      if(!ddata.length)return;
+      var col=ds.borderColor||['#00e5ff','#0088ff','#fbbf24'][di]||'#fff';
+      var bw=ds.borderWidth||2;
+      var dash=ds.borderDash||[];
+      var pr=ds.pointRadius!==undefined?ds.pointRadius:3;
+      var fill=ds.fill!==false&&ds.backgroundColor&&ds.backgroundColor!=='transparent';
+
+      // Clip to plot area
+      ctx.save();
+      ctx.beginPath();ctx.rect(PL-1,PT-1,pw+2,ph+2);ctx.clip();
+
+      ctx.setLineDash(dash);
+      ctx.strokeStyle=col;ctx.lineWidth=bw;
+      ctx.lineJoin='round';ctx.lineCap='round';
+
+      // Smooth line (bezier)
+      ctx.beginPath();
+      for(var i=0;i<ddata.length;i++){
+        var px=tx(i),py=ty(ddata[i]);
+        if(i===0){ctx.moveTo(px,py);}
+        else{
+          var ppx=tx(i-1),ppy=ty(ddata[i-1]);
+          var cpx=(ppx+px)/2;
+          ctx.bezierCurveTo(cpx,ppy,cpx,py,px,py);
+        }
+      }
+      ctx.stroke();
+
+      // Fill area
+      if(fill){
+        ctx.setLineDash([]);
+        ctx.lineTo(tx(ddata.length-1),ty(yMin));
+        ctx.lineTo(tx(0),ty(yMin));
+        ctx.closePath();
+        ctx.fillStyle=ds.backgroundColor;
+        ctx.fill();
+      }
+
+      // Points
+      if(pr>0){
+        ctx.setLineDash([]);
+        ctx.fillStyle=ds.pointBackgroundColor||col;
+        for(var i=0;i<ddata.length;i++){
+          ctx.beginPath();
+          ctx.arc(tx(i),ty(ddata[i]),pr,0,Math.PI*2);
+          ctx.fill();
+          // Hover glow on last point
+          if(i===ddata.length-1){
+            ctx.beginPath();
+            ctx.arc(tx(i),ty(ddata[i]),pr+3,0,Math.PI*2);
+            ctx.strokeStyle=col;ctx.lineWidth=1;ctx.globalAlpha=0.3;
+            ctx.stroke();ctx.globalAlpha=1;
+          }
+        }
+      }
+      ctx.restore();
+    });
+
+    // Legend
+    var legOpts=opts.plugins&&opts.plugins.legend;
+    if(!legOpts||legOpts.display!==false){
+      var lx=PL,ly=PT-12;
+      ctx.textBaseline='middle';ctx.textAlign='left';
+      datasets.forEach(function(ds){
+        if(!ds.label)return;
+        var col=ds.borderColor||'#fff';
+        ctx.fillStyle=col;
+        ctx.fillRect(lx,ly-3,12,2);
+        ctx.fillStyle='rgba(255,255,255,.4)';
+        ctx.font='9px Share Tech Mono,monospace';
+        ctx.fillText(ds.label,lx+16,ly);
+        lx+=ctx.measureText(ds.label).width+34;
+      });
+    }
+  };
+  Ch.register=function(){};
+  return Ch;
+})();
+
+
+</script>
 <script>
 // ════════════════════════════════════════════════════════
 // QUOTES — 55 total (Solo Leveling, Naruto, Goku, Vegeta, OS)
@@ -871,6 +1180,7 @@ let ST={
   cycleStart:SS.get("cycleStart")??dayjs().format("YYYY-MM-DD"),
   cqStart:SS.get("cqStart")??null, cqDone:SS.get("cqDone")??[],
   weeklyData:SS.get("weeklyData")??{workouts:0,meals:0,dungeons:0,hpChange:0},
+  workoutToday:SS.get("workoutToday")??null,
   lastDebrief:SS.get("lastDebrief")??null,
   notifOn:SS.get("notifOn")??false,
   qIdx:SS.get("qIdx")??0, qDate:SS.get("qDate")??null,
@@ -911,260 +1221,438 @@ function save(){Object.keys(ST).forEach(k=>SS.set(k,ST[k]));}
 })();
 
 // ════════════════════════════════════════════════════════
-// CINEMATIC — Pure Canvas 2D, DPR-scaled
+// CINEMATIC — Professional Particle + Energy System
 // ════════════════════════════════════════════════════════
-const CC=document.getElementById("cin");
-const CX=CC.getContext("2d");
-let cinAF=null;
+var CC=document.getElementById("cin");
+var CX=CC.getContext("2d");
+var cinAF=null;
 
 function setupCC(){
-  const dpr=window.devicePixelRatio||1;
-  CC.width=window.innerWidth*dpr;CC.height=window.innerHeight*dpr;
-  CC.style.width=window.innerWidth+"px";CC.style.height=window.innerHeight+"px";
+  var dpr=window.devicePixelRatio||1;
+  CC.width=window.innerWidth*dpr;
+  CC.height=window.innerHeight*dpr;
+  CC.style.width=window.innerWidth+"px";
+  CC.style.height=window.innerHeight+"px";
   CX.setTransform(dpr,0,0,dpr,0,0);
 }
 function clrCC(){CX.clearRect(0,0,window.innerWidth,window.innerHeight);}
-
-function drawFlash(col,a){
-  CX.save();CX.globalAlpha=a;CX.fillStyle=col;CX.fillRect(0,0,window.innerWidth,window.innerHeight);CX.restore();
-}
-
-// Draw stickman — crisp, large, clearly visible
-function drawMan(x,y,sz,col="#ffffff",lean=0,armUp=false){
-  CX.save();
-  CX.translate(x,y);if(lean)CX.rotate(lean);
-  CX.strokeStyle=col;CX.lineWidth=Math.max(3,sz*.06);CX.lineCap="round";CX.lineJoin="round";
-  CX.shadowColor=col;CX.shadowBlur=8;
-  // head
-  CX.beginPath();CX.arc(0,-sz*.52,sz*.16,0,Math.PI*2);CX.stroke();
-  // body
-  CX.beginPath();CX.moveTo(0,-sz*.36);CX.lineTo(0,sz*.22);CX.stroke();
-  // arms
-  if(armUp){
-    CX.beginPath();CX.moveTo(0,-sz*.1);CX.lineTo(-sz*.28,-sz*.1);CX.stroke();
-    CX.beginPath();CX.moveTo(0,-sz*.1);CX.lineTo(sz*.28,-sz*.1);CX.stroke();
-  } else {
-    CX.beginPath();CX.moveTo(0,-sz*.1);CX.lineTo(-sz*.3,sz*.1);CX.stroke();
-    CX.beginPath();CX.moveTo(0,-sz*.1);CX.lineTo(sz*.3,sz*.1);CX.stroke();
-  }
-  // legs
-  CX.beginPath();CX.moveTo(0,sz*.22);CX.lineTo(-sz*.2,sz*.58);CX.stroke();
-  CX.beginPath();CX.moveTo(0,sz*.22);CX.lineTo(sz*.2,sz*.58);CX.stroke();
-  CX.restore();
-}
-
-function drawGem(x,y,r){
-  CX.save();CX.translate(x,y);
-  CX.shadowColor="#10b981";CX.shadowBlur=20;
-  CX.fillStyle="#10b981";CX.strokeStyle="#00ffaa";CX.lineWidth=2.5;
-  CX.beginPath();
-  CX.moveTo(0,-r);CX.lineTo(r*.75,-r*.3);
-  CX.lineTo(r*.55,r*.7);CX.lineTo(-r*.55,r*.7);
-  CX.lineTo(-r*.75,-r*.3);CX.closePath();
-  CX.fill();CX.stroke();CX.restore();
-}
-
-function drawBomb(x,y,r){
-  CX.save();
-  CX.shadowColor="#ff003c";CX.shadowBlur=18;
-  CX.fillStyle="#1a1a1a";CX.strokeStyle="#ff003c";CX.lineWidth=2.5;
-  CX.beginPath();CX.arc(x,y,r,0,Math.PI*2);CX.fill();CX.stroke();
-  CX.strokeStyle="#fbbf24";CX.lineWidth=2.5;
-  CX.beginPath();CX.moveTo(x,y-r);CX.quadraticCurveTo(x+r*.6,y-r*1.8,x+r*.4,y-r*2.2);CX.stroke();
-  CX.restore();
-}
-
-function drawExplosion(x,y,r,a){
-  CX.save();CX.globalAlpha=a;
-  const g=CX.createRadialGradient(x,y,0,x,y,r);
-  g.addColorStop(0,"rgba(255,220,0,.95)");g.addColorStop(.4,"rgba(255,80,0,.7)");g.addColorStop(1,"rgba(255,0,60,0)");
-  CX.fillStyle=g;CX.beginPath();CX.arc(x,y,r,0,Math.PI*2);CX.fill();CX.restore();
-}
-
-function cinLabel(txt,col,a){
-  const W=window.innerWidth,H=window.innerHeight;
-  CX.save();CX.globalAlpha=a;
-  CX.font="900 clamp(22px,5vw,32px) Jost,sans-serif";
-  const fs=Math.min(32,Math.max(22,W*.05));
-  CX.font=`900 ${fs}px Jost,sans-serif`;
-  CX.fillStyle=col;CX.textAlign="center";CX.shadowColor=col;CX.shadowBlur=16;
-  CX.fillText(txt,W*.5,H*.28);CX.restore();
-}
-
-function cinShake(){
-  let s=10,n=0;
-  const app=document.getElementById("app");
-  function sh(){
-    if(n>14){app.style.transform="";return;}
-    app.style.transform=`translateX(${s*Math.sin(n*1.4)}px)`;
-    s*=.8;n++;requestAnimationFrame(sh);
-  }sh();
-}
-
 function cinEnd(){
   if(cinAF){cancelAnimationFrame(cinAF);cinAF=null;}
-  clrCC();CC.classList.remove("show");
+  clrCC();
+  CC.classList.remove("show");
   document.getElementById("app").style.transform="";
 }
 
-// REWARD 1 — Gem Grab
+// ── SYSTEM VOICE ────────────────────────────────────────
+function speak(text,pitch,rate){
+  if(!window.speechSynthesis)return;
+  try{
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.pitch=pitch||0.8;
+    u.rate=rate||0.9;
+    u.volume=0.9;
+    // Pick a deep voice if available
+    var voices=window.speechSynthesis.getVoices();
+    var deep=voices.find(function(v){return v.name.toLowerCase().includes('male')||v.name.includes('David')||v.name.includes('Alex')||v.name.includes('Daniel');});
+    if(deep)u.voice=deep;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+// ── PARTICLE HELPERS ─────────────────────────────────────
+function lerp(a,b,t){return a+(b-a)*t;}
+function easeOut(t){return 1-Math.pow(1-t,3);}
+function easeIn(t){return t*t*t;}
+
+// ── REWARD ANIM 1 — ENERGY SURGE (Green Explosion) ──────
 function rewAnim1(cb){
   setupCC();CC.classList.add("show");
-  const W=window.innerWidth,H=window.innerHeight;
-  const sz=Math.min(90,H*.12),gx=W*.5,gy=H*.5;
-  let x=-sz,ph=0,t=0,gemVis=true;
-  const TO=setTimeout(()=>{cinEnd();if(cb)cb();},4600);
+  speak("Achievement unlocked. Well done, Sam.",0.7,0.85);
+  var W=window.innerWidth,H=window.innerHeight;
+  var cx=W/2,cy=H/2;
+  var t=0,maxT=200;
+  var particles=[];
+  // Create burst particles
+  for(var i=0;i<80;i++){
+    var angle=Math.random()*Math.PI*2;
+    var spd=2+Math.random()*8;
+    var sz=2+Math.random()*5;
+    particles.push({
+      x:cx,y:cy,
+      vx:Math.cos(angle)*spd,vy:Math.sin(angle)*spd,
+      sz:sz,alpha:1,
+      col:['#10b981','#00e5ff','#00ffaa','#ffffff'][Math.floor(Math.random()*4)],
+      life:0.6+Math.random()*0.4
+    });
+  }
+  // Ring particles
+  var rings=[];
+  for(var r=0;r<3;r++){
+    rings.push({r:0,maxR:(r+1)*Math.min(W,H)*0.22,alpha:0.8,delay:r*15});
+  }
+
   function frame(){
     clrCC();
-    if(ph===0){
-      x=Math.min(gx-sz*.1,x+(gx+sz)/36);
-      drawMan(x,H*.6,sz);drawGem(gx,gy,sz*.22);
-      if(x>=gx-sz*.1){ph=1;t=0;}
-    } else if(ph===1){
-      t++;const jy=H*.6-Math.abs(Math.sin(t*.18))*sz*1.1;
-      drawMan(x,jy,sz,t>18?"#ffffff":"#ffffff",0,t>18);
-      if(t<22&&gemVis)drawGem(gx,gy,sz*.22);
-      if(t===18){gemVis=false;drawFlash("#10b981",.18);}
-      cinLabel("+ Reward Acquired","#10b981",Math.min(1,t/20));
-      if(t>35){ph=2;t=0;}
-    } else if(ph===2){
-      t++;x+=W*.026;
-      drawMan(x,H*.6,sz);
-      drawGem(x+sz*.3,H*.6-sz*.65,sz*.16);
-      if(t===3)drawFlash("#10b981",.2);
-      cinLabel("+ Reward Acquired","#10b981",1);
-      if(x>W+sz){clearTimeout(TO);cinEnd();if(cb)cb();return;}
+    var p=t/maxT;
+    // Dark overlay
+    CX.fillStyle='rgba(0,0,0,'+(p<0.1?p*5:p>0.85?(1-p)*6.6:0.5)+')';
+    CX.fillRect(0,0,W,H);
+
+    // Expanding rings
+    rings.forEach(function(ring){
+      if(t<ring.delay)return;
+      var rp=Math.min((t-ring.delay)/60,1);
+      ring.r=ring.maxR*easeOut(rp);
+      ring.alpha=0.7*(1-rp);
+      CX.save();
+      CX.strokeStyle='rgba(16,185,129,'+ring.alpha+')';
+      CX.lineWidth=3-rp*2;
+      CX.shadowColor='#10b981';
+      CX.shadowBlur=20;
+      CX.beginPath();CX.arc(cx,cy,ring.r,0,Math.PI*2);CX.stroke();
+      CX.restore();
+    });
+
+    // Particles
+    particles.forEach(function(pk){
+      if(t>maxT*pk.life)return;
+      var lp=t/(maxT*pk.life);
+      pk.x+=pk.vx*(1-lp*0.7);
+      pk.y+=pk.vy*(1-lp*0.7);
+      pk.vy+=0.15;// gravity
+      pk.alpha=1-lp;
+      CX.save();
+      CX.globalAlpha=pk.alpha;
+      CX.shadowColor=pk.col;CX.shadowBlur=10;
+      CX.fillStyle=pk.col;
+      CX.beginPath();CX.arc(pk.x,pk.y,pk.sz*(1-lp*0.5),0,Math.PI*2);CX.fill();
+      CX.restore();
+    });
+
+    // Central glow
+    if(p<0.5){
+      var gp=p/0.5;
+      var g=CX.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*0.18*gp);
+      g.addColorStop(0,'rgba(16,185,129,'+(0.9*(1-gp))+')');
+      g.addColorStop(1,'rgba(16,185,129,0)');
+      CX.fillStyle=g;
+      CX.beginPath();CX.arc(cx,cy,Math.min(W,H)*0.18*gp,0,Math.PI*2);CX.fill();
     }
-    cinAF=requestAnimationFrame(frame);
+
+    // Text label
+    if(t>30){
+      var tp=Math.min((t-30)/30,1);
+      CX.save();
+      CX.globalAlpha=tp*(p>0.8?(1-p)*5:1);
+      CX.textAlign='center';CX.textBaseline='middle';
+      CX.shadowColor='#10b981';CX.shadowBlur=20;
+      CX.fillStyle='#10b981';
+      CX.font='900 '+Math.round(Math.min(W*0.09,48))+'px Jost,sans-serif';
+      CX.fillText('+ REWARD UNLOCKED',cx,cy-20);
+      CX.font='800 '+Math.round(Math.min(W*0.04,18))+'px Share Tech Mono,monospace';
+      CX.fillStyle='rgba(255,255,255,.7)';
+      CX.fillText('SYSTEM APPROVES',cx,cy+20);
+      CX.restore();
+    }
+
+    t++;
+    if(t<maxT){cinAF=requestAnimationFrame(frame);}
+    else{cinEnd();if(cb)cb();}
   }
   cinAF=requestAnimationFrame(frame);
 }
 
-// REWARD 2 — Victory Dance
+// ── REWARD ANIM 2 — GOLD MATRIX RAIN ────────────────────
 function rewAnim2(cb){
   setupCC();CC.classList.add("show");
-  const W=window.innerWidth,H=window.innerHeight;
-  const sz=Math.min(90,H*.12),cx=W*.5;
-  let x=-sz,ph=0,t=0,bounces=0;
-  const TO=setTimeout(()=>{cinEnd();if(cb)cb();},4600);
+  speak("Excellent performance. Reward granted.",0.65,0.8);
+  var W=window.innerWidth,H=window.innerHeight;
+  var cols=Math.floor(W/18);
+  var drops=[];
+  for(var i=0;i<cols;i++) drops.push({y:-Math.random()*H,spd:2+Math.random()*4});
+  var chars="01ARISE⚔✦◈アイサムSAM上昇";
+  var t=0,maxT=190;
+
   function frame(){
     clrCC();
-    if(ph===0){
-      x=Math.min(cx,x+(cx+sz)/36);
-      drawMan(x,H*.6,sz);drawGem(cx,H*.5,sz*.22);
-      if(x>=cx){ph=1;t=0;}
-    } else if(ph===1){
-      t++;const jy=H*.6-Math.abs(Math.sin(t*.22))*sz*1.2;
-      const peak=Math.abs(Math.sin(t*.22))>.7;
-      drawMan(cx,jy,sz,"#ffffff",0,peak);
-      drawGem(cx,H*.5,sz*.22);
-      if(peak&&t%13===1){drawFlash("#10b981",.14);bounces++;}
-      cinLabel("+ Victory!","#10b981",Math.min(1,t/18));
-      if(bounces>=5){drawFlash("#10b981",.4);clearTimeout(TO);cinEnd();if(cb)cb();return;}
+    // Fade trail
+    CX.fillStyle='rgba(0,0,0,0.08)';
+    CX.fillRect(0,0,W,H);
+    CX.font='14px Share Tech Mono,monospace';
+    drops.forEach(function(d,i){
+      var x=i*18;
+      // Head char - bright
+      CX.fillStyle='rgba(251,191,36,1)';
+      CX.shadowColor='#fbbf24';CX.shadowBlur=8;
+      CX.fillText(chars[Math.floor(Math.random()*chars.length)],x,d.y);
+      // Trail chars
+      for(var j=1;j<6;j++){
+        CX.fillStyle='rgba(251,191,36,'+(0.8-j*0.13)+')';
+        CX.shadowBlur=2;
+        CX.fillText(chars[Math.floor(Math.random()*chars.length)],x,d.y-j*16);
+      }
+      d.y+=d.spd;
+      if(d.y>H+60) d.y=-Math.random()*100;
+    });
+    CX.shadowBlur=0;
+    // Big label at 40 frames
+    if(t>40){
+      var p=Math.min((t-40)/25,1);
+      var ep=easeOut(p);
+      CX.save();CX.globalAlpha=ep*(t>maxT-30?((maxT-t)/30):1);
+      CX.textAlign='center';CX.textBaseline='middle';
+      CX.fillStyle='rgba(0,0,0,0.6)';
+      CX.fillRect(W/2-180,H/2-40,360,80);
+      CX.strokeStyle='rgba(251,191,36,0.5)';CX.lineWidth=1;
+      CX.strokeRect(W/2-180,H/2-40,360,80);
+      CX.font='900 '+Math.round(Math.min(W*0.08,38))+'px Jost,sans-serif';
+      CX.fillStyle='#fbbf24';CX.shadowColor='#fbbf24';CX.shadowBlur=15;
+      CX.fillText('SYSTEM REWARD',W/2,H/2-10);
+      CX.font='800 '+Math.round(Math.min(W*0.035,15))+'px Share Tech Mono,monospace';
+      CX.fillStyle='rgba(255,255,255,.6)';CX.shadowBlur=0;
+      CX.fillText('HUNTER SAM — PROTOCOL APPROVED',W/2,H/2+18);
+      CX.restore();
     }
-    cinAF=requestAnimationFrame(frame);
+    t++;
+    if(t<maxT){cinAF=requestAnimationFrame(frame);}
+    else{cinEnd();if(cb)cb();}
   }
   cinAF=requestAnimationFrame(frame);
 }
 
-// PENALTY 1 — Bomb Drop
+// ── PENALTY ANIM 1 — RED SHATTER (Glitch Effect) ────────
 function penAnim1(cb){
   setupCC();CC.classList.add("show");
-  const W=window.innerWidth,H=window.innerHeight;
-  const sz=Math.min(90,H*.12),cx=W*.5;
-  let x=-sz,ph=0,t=0,by=-sz*.5;
-  const TO=setTimeout(()=>{cinEnd();if(cb)cb();},4600);
+  speak("Penalty protocol initiated. You failed, Sam.",0.5,0.75);
+  var W=window.innerWidth,H=window.innerHeight;
+  var t=0,maxT=200;
+  var shards=[];
+  var shaken=false;
+  // Create shards
+  var cols=8,rows=10;
+  for(var r=0;r<rows;r++){
+    for(var col=0;col<cols;col++){
+      shards.push({
+        x:col*W/cols,y:r*H/rows,
+        w:W/cols,h:H/rows,
+        vx:(-3+Math.random()*6)*(col<cols/2?-1:1),
+        vy:(-2+Math.random()*4)*(r<rows/2?-1:1),
+        rot:(-0.1+Math.random()*0.2),
+        alpha:1,
+        delay:Math.floor(Math.random()*30)
+      });
+    }
+  }
+
   function frame(){
     clrCC();
-    if(ph===0){
-      x=Math.min(cx,x+(cx+sz)/36);
-      drawMan(x,H*.6,sz);drawBomb(cx,-sz*.5,sz*.22);
-      if(x>=cx){ph=1;t=0;}
-    } else if(ph===1){
-      by+=sz*.14;
-      const shk=Math.sin(t*1.8)*6;
-      drawMan(cx+shk,H*.6,sz);
-      drawBomb(cx,by,sz*.22);
-      t++;
-      if(by>=H*.55){ph=2;t=0;cinShake();}
-    } else if(ph===2){
-      t++;
-      drawFlash("#ff003c",Math.max(0,.75-(t/30)*.75));
-      drawExplosion(cx,H*.55,t*sz*.15,Math.max(0,1-(t/40)));
-      cinLabel("- Hp Deducted","#ff003c",Math.min(1,t/12));
-      if(t>55){clearTimeout(TO);cinEnd();if(cb)cb();return;}
+    var p=t/maxT;
+
+    if(t===0){
+      // Flash red
+      CX.fillStyle='rgba(255,0,60,0.9)';
+      CX.fillRect(0,0,W,H);
     }
-    cinAF=requestAnimationFrame(frame);
+
+    // Shatter shards
+    shards.forEach(function(sh){
+      if(t<sh.delay) return;
+      var sp=(t-sh.delay)/80;
+      sh.alpha=Math.max(0,1-sp*1.2);
+      if(sh.alpha<=0)return;
+      CX.save();
+      CX.globalAlpha=sh.alpha;
+      var mx=sh.x+sh.w/2+sh.vx*(t-sh.delay)*1.2;
+      var my=sh.y+sh.h/2+sh.vy*(t-sh.delay)*1.2+((t-sh.delay)*0.8);
+      CX.translate(mx,my);
+      CX.rotate(sh.rot*(t-sh.delay));
+      CX.fillStyle='rgba(255,0,60,'+(0.15+Math.random()*0.1)+')';
+      CX.strokeStyle='rgba(255,0,60,'+sh.alpha+')';
+      CX.lineWidth=1;
+      CX.fillRect(-sh.w/2,-sh.h/2,sh.w,sh.h);
+      CX.strokeRect(-sh.w/2,-sh.h/2,sh.w,sh.h);
+      CX.restore();
+    });
+
+    // Shake app
+    if(t===30&&!shaken){
+      shaken=true;
+      var s=12,n=0;
+      var app=document.getElementById("app");
+      var iv2=setInterval(function(){
+        if(n>16){app.style.transform="";clearInterval(iv2);return;}
+        app.style.transform='translateX('+(s*Math.sin(n*1.3))+'px)';
+        s*=0.82;n++;
+      },16);
+    }
+
+    // Glitch text
+    if(t>20){
+      var tp=Math.min((t-20)/20,1);
+      CX.save();
+      CX.globalAlpha=tp;
+      // Glitch offset
+      var gx=t<80?(Math.random()-0.5)*8:0;
+      CX.textAlign='center';CX.textBaseline='middle';
+      CX.font='900 '+Math.round(Math.min(W*0.09,44))+'px Jost,sans-serif';
+      // Red channel offset
+      CX.fillStyle='rgba(255,0,60,0.7)';
+      CX.fillText('— PENALTY —',W/2+gx+3,H/2-15);
+      CX.fillStyle='rgba(0,229,255,0.7)';
+      CX.fillText('— PENALTY —',W/2+gx-3,H/2-15);
+      CX.fillStyle='#ffffff';
+      CX.fillText('— PENALTY —',W/2+gx,H/2-15);
+      CX.font='800 '+Math.round(Math.min(W*0.038,16))+'px Share Tech Mono,monospace';
+      CX.fillStyle='rgba(255,80,80,0.9)';CX.shadowColor='#ff003c';CX.shadowBlur=10;
+      CX.fillText('SYSTEM BREACH DETECTED — HP DEDUCTED',W/2,H/2+20);
+      CX.restore();
+    }
+
+    t++;
+    if(t<maxT){cinAF=requestAnimationFrame(frame);}
+    else{cinEnd();if(cb)cb();}
   }
   cinAF=requestAnimationFrame(frame);
 }
 
-// PENALTY 2 — The Pit
+// ── PENALTY ANIM 2 — VOID COLLAPSE ──────────────────────
 function penAnim2(cb){
   setupCC();CC.classList.add("show");
-  const W=window.innerWidth,H=window.innerHeight;
-  const sz=Math.min(90,H*.12),cx=W*.5;
-  let x=-sz,ph=0,t=0,sy=H*.6,rot=0,sc=1;
-  const TO=setTimeout(()=>{cinEnd();if(cb)cb();},4600);
+  speak("The system is disappointed. Penalty applied.",0.4,0.7);
+  var W=window.innerWidth,H=window.innerHeight;
+  var cx=W/2,cy=H/2;
+  var t=0,maxT=210;
+  var spiralPts=[];
+  for(var i=0;i<200;i++){
+    var angle=i*0.3;
+    var r=200-i*0.8;
+    spiralPts.push({x:cx+Math.cos(angle)*r,y:cy+Math.sin(angle)*r,a:angle});
+  }
+
   function frame(){
     clrCC();
-    if(ph===0){
-      x=Math.min(cx,x+(cx+sz)/36);
-      drawMan(x,H*.6,sz);
-      if(x>=cx){ph=1;t=0;}
-    } else if(ph===1){
-      t++;drawMan(cx,H*.6,sz);
-      CX.save();CX.strokeStyle="#ff003c";CX.lineWidth=2.5;CX.globalAlpha=Math.min(1,t/22);
-      for(let i=0;i<6;i++){const a=(i/6)*Math.PI,d=80*(t/28);CX.beginPath();CX.moveTo(cx,H*.7);CX.lineTo(cx+Math.cos(a)*d,H*.7+Math.sin(a)*d*.4);CX.stroke();}
+    var p=t/maxT;
+    CX.fillStyle='rgba(0,0,0,'+(p<0.15?p*4:0.6)+')';
+    CX.fillRect(0,0,W,H);
+
+    // Spiral collapse
+    var progress=Math.min(t/100,1);
+    spiralPts.forEach(function(pt,i){
+      var ip=i/spiralPts.length;
+      if(ip>progress)return;
+      var fade=1-(ip/progress);
+      var scale=1-progress*0.7;
+      CX.save();
+      CX.globalAlpha=fade*0.8;
+      CX.translate(cx+(pt.x-cx)*scale,cy+(pt.y-cy)*scale);
+      CX.fillStyle='rgba(255,0,60,'+(0.6+fade*0.4)+')';
+      CX.shadowColor='#ff003c';CX.shadowBlur=8;
+      CX.beginPath();CX.arc(0,0,2+fade*3,0,Math.PI*2);CX.fill();
       CX.restore();
-      if(t>30){ph=2;t=0;}
-    } else if(ph===2){
-      t++;rot+=.2;sy+=sz*.1;sc=Math.max(0,1-t/50);
-      drawFlash("#ff003c",Math.max(0,.5-(t/50)*.5));
-      CX.save();CX.translate(cx,sy);CX.rotate(rot);CX.scale(sc,sc);CX.translate(-cx,-sy);
-      drawMan(cx,sy,sz);CX.restore();
-      cinLabel("- The Pit Claims You","#ff003c",Math.min(1,t/18));
-      if(sy>H+sz){clearTimeout(TO);cinEnd();if(cb)cb();return;}
+    });
+
+    // Black hole center
+    var holeR=Math.min(W,H)*0.06*easeOut(Math.min(t/60,1));
+    var g=CX.createRadialGradient(cx,cy,0,cx,cy,holeR*2);
+    g.addColorStop(0,'rgba(0,0,0,1)');
+    g.addColorStop(0.5,'rgba(100,0,20,0.5)');
+    g.addColorStop(1,'rgba(255,0,60,0)');
+    CX.fillStyle=g;
+    CX.beginPath();CX.arc(cx,cy,holeR*2,0,Math.PI*2);CX.fill();
+
+    // Text
+    if(t>50){
+      var tp=Math.min((t-50)/25,1);
+      CX.save();CX.globalAlpha=tp*(p>0.85?(1-p)*6.7:1);
+      CX.textAlign='center';CX.textBaseline='middle';
+      CX.font='900 '+Math.round(Math.min(W*0.085,42))+'px Jost,sans-serif';
+      CX.fillStyle='var(--red)';CX.shadowColor='#ff003c';CX.shadowBlur=20;
+      CX.fillText('VOID PENALTY',cx,cy-18);
+      CX.font='800 '+Math.round(Math.min(W*0.035,14))+'px Share Tech Mono,monospace';
+      CX.fillStyle='rgba(255,100,100,.8)';CX.shadowBlur=5;
+      CX.fillText('THE SYSTEM ALWAYS COLLECTS',cx,cy+18);
+      CX.restore();
     }
-    cinAF=requestAnimationFrame(frame);
+
+    t++;
+    if(t<maxT){cinAF=requestAnimationFrame(frame);}
+    else{cinEnd();if(cb)cb();}
   }
   cinAF=requestAnimationFrame(frame);
 }
 
-// PENALTY 3 — Laser Shot
+// ── PENALTY ANIM 3 — ELECTRIC STORM ─────────────────────
 function penAnim3(cb){
   setupCC();CC.classList.add("show");
-  const W=window.innerWidth,H=window.innerHeight;
-  const sz=Math.min(90,H*.12),cx=W*.42,ex=W*.76;
-  let x1=-sz,x2=W+sz,ph=0,t=0,lx=ex-sz*.3;
-  const TO=setTimeout(()=>{cinEnd();if(cb)cb();},4600);
+  speak("Protocol violated. Consequences are mandatory.",0.45,0.78);
+  var W=window.innerWidth,H=window.innerHeight;
+  var t=0,maxT=195;
+  var bolts=[];
+
+  function newBolt(){
+    var sx=Math.random()*W;
+    var pts=[{x:sx,y:0}];
+    var cy2=0;
+    while(cy2<H){
+      cy2+=20+Math.random()*40;
+      pts.push({x:pts[pts.length-1].x+(-60+Math.random()*120),y:cy2});
+    }
+    return{pts:pts,alpha:1,col:Math.random()>0.5?'#ff003c':'#ff6600'};
+  }
+
   function frame(){
     clrCC();
-    if(ph===0){
-      x1=Math.min(cx,x1+(cx+sz)/36);x2=Math.max(ex,x2-(W+sz-ex)/36);
-      drawMan(x1,H*.6,sz,"#ffffff");drawMan(x2,H*.6,sz,"#ff003c");
-      if(x1>=cx&&x2<=ex){ph=1;t=0;}
-    } else if(ph===1){
-      t++;drawMan(cx,H*.6,sz,"#ffffff");drawMan(ex,H*.6,sz,"#ff003c");
-      lx-=(ex-cx)/14;
-      CX.save();CX.strokeStyle="#ff003c";CX.lineWidth=5;CX.shadowColor="#ff003c";CX.shadowBlur=18;CX.globalAlpha=.92;
-      CX.beginPath();CX.moveTo(ex,H*.56);CX.lineTo(Math.max(lx,cx),H*.56);CX.stroke();
-      CX.fillStyle="#fff";CX.beginPath();CX.arc(lx,H*.56,7,0,Math.PI*2);CX.fill();CX.restore();
-      if(lx<=cx){ph=2;t=0;cinShake();drawFlash("#ff003c",.85);}
-    } else if(ph===2){
-      t++;drawMan(ex,H*.6,sz,"#ff003c");
-      const fbx=cx-t*sz*.12,fby=H*.6+t*sz*.08,fbl=Math.min(t*.09,.85);
-      if(fbx>-sz)drawMan(fbx,fby,sz,"#ffffff",fbl);
-      drawFlash("#ff003c",Math.max(0,.5-(t/40)*.5));
-      cinLabel("- System Breach","#ff003c",Math.min(1,t/15));
-      if(t>55){clearTimeout(TO);cinEnd();if(cb)cb();return;}
+    CX.fillStyle='rgba(0,0,0,0.15)';
+    CX.fillRect(0,0,W,H);
+
+    // Spawn bolts
+    if(t%8===0&&t<maxT*0.75) bolts.push(newBolt());
+
+    // Draw bolts
+    bolts.forEach(function(b,bi){
+      b.alpha-=0.04;
+      if(b.alpha<=0){bolts.splice(bi,1);return;}
+      CX.save();
+      CX.globalAlpha=b.alpha;
+      CX.strokeStyle=b.col;
+      CX.lineWidth=1.5+b.alpha*2;
+      CX.shadowColor=b.col;CX.shadowBlur=15;
+      CX.beginPath();
+      b.pts.forEach(function(pt,i){i===0?CX.moveTo(pt.x,pt.y):CX.lineTo(pt.x,pt.y);});
+      CX.stroke();
+      CX.restore();
+    });
+
+    // Red overlay pulse
+    if(t<60){
+      CX.fillStyle='rgba(255,0,60,'+(0.3*Math.sin(t*0.4)*((60-t)/60))+')';
+      CX.fillRect(0,0,W,H);
     }
-    cinAF=requestAnimationFrame(frame);
+
+    // Text
+    if(t>25){
+      var tp=Math.min((t-25)/20,1);
+      var p2=t/maxT;
+      CX.save();CX.globalAlpha=tp*(p2>0.85?(1-p2)*6.7:1);
+      CX.textAlign='center';CX.textBaseline='middle';
+      CX.font='900 '+Math.round(Math.min(W*0.085,42))+'px Jost,sans-serif';
+      CX.fillStyle='#ff003c';CX.shadowColor='#ff003c';CX.shadowBlur=25;
+      CX.fillText('STORM PENALTY',W/2,H/2-18);
+      CX.font='800 '+Math.round(Math.min(W*0.035,14))+'px Share Tech Mono,monospace';
+      CX.fillStyle='rgba(255,150,0,.9)';CX.shadowBlur=8;
+      CX.fillText('FAILURE HAS A PRICE — PAY IT',W/2,H/2+18);
+      CX.restore();
+    }
+
+    t++;
+    if(t<maxT){cinAF=requestAnimationFrame(frame);}
+    else{cinEnd();if(cb)cb();}
   }
   cinAF=requestAnimationFrame(frame);
 }
 
-function trigRew(cb){Math.random()>.5?rewAnim1(cb):rewAnim2(cb);}
+function trigRew(cb){Math.random()>0.5?rewAnim1(cb):rewAnim2(cb);}
 function trigPen(cb){[penAnim1,penAnim2,penAnim3][Math.floor(Math.random()*3)](cb);}
 
 // ════════════════════════════════════════════════════════
@@ -1262,12 +1750,14 @@ function changeHP(delta){
   ST.weeklyData.hpChange=(ST.weeklyData.hpChange||0)+delta;
   if(ST.hp>=ST.maxHp){
     ST.level++;ST.maxHp=Math.round(ST.maxHp*1.5);ST.hp=Math.round(ST.maxHp*.5);
-    save();updateHPUI();showModal("Level Up!","Sam Has Reached Level "+ST.level+"! Max Hp Is Now "+ST.maxHp+".");return;
+    save();updateHPUI();speak("Level up! Hunter Sam advances. The shadow grows stronger.",0.7,0.82);
+    showModal("Level Up!","Sam Has Reached Level "+ST.level+"! Max Hp Is Now "+ST.maxHp+".");return;
   }
   if(ST.hp<0){
     if(ST.level>1){ST.level--;ST.maxHp=Math.round(ST.maxHp/1.5);}
     ST.hp=Math.round(ST.maxHp*.2);
-    save();updateHPUI();showModal("Level Down!","System Integrity Compromised. Sam Dropped To Level "+ST.level+".");return;
+    save();updateHPUI();speak("Level down. System integrity compromised. Rise again.",0.4,0.75);
+    showModal("Level Down!","System Integrity Compromised. Sam Dropped To Level "+ST.level+".");return;
   }
   save();updateHPUI();
 }
@@ -1382,13 +1872,35 @@ function checkMidnight(){
     // 9. ── 80% RULE — SYSTEM ASSIGNS REWARD OR PENALTY ──
     if(totalTasks>0){
       if(score>80){
-        // REWARD — system assigns 1 or 2 rewards
         assignSystemItems("reward", score);
-        ST.lastNightResult={type:"reward",score,date:ST.lastDate};
+        var _rItems=ST.sysAssigned?ST.sysAssigned.items:[];
+        var _rNames=_rItems.map(function(r){return r.name;}).join(" & ")||"Reward";
+        var _rEmoji=_rItems.length?(_rItems[0].e||"🎁"):"🎁";
+        var _rHp=_rItems.reduce(function(a,r){return a+(r.hp||0);},0);
+        var _rFirstItem=ST.sysAssigned&&ST.sysAssigned.items&&ST.sysAssigned.items[0]||null;
+        ST.lastNightResult={
+          type:"reward",
+          score:score,
+          date:ST.lastDate,
+          name:_rFirstItem?_rFirstItem.name:"Reward Earned",
+          emoji:_rFirstItem&&_rFirstItem.e?_rFirstItem.e:"🎁",
+          hp:_rFirstItem?_rFirstItem.hp:25
+        };
       } else {
-        // PENALTY — system assigns 1 or 2 penalties
         assignSystemItems("penalty", score);
-        ST.lastNightResult={type:"penalty",score,date:ST.lastDate};
+        var _pItems=ST.sysAssigned?ST.sysAssigned.items:[];
+        var _pNames=_pItems.map(function(p){return p.name;}).join(" & ")||"Penalty";
+        var _pEmoji=_pItems.length?(_pItems[0].e||"⚡"):"⚡";
+        var _pHp=_pItems.reduce(function(a,p){return a+(p.hp||0);},0);
+        var _pFirstItem=ST.sysAssigned&&ST.sysAssigned.items&&ST.sysAssigned.items[0]||null;
+        ST.lastNightResult={
+          type:"penalty",
+          score:score,
+          date:ST.lastDate,
+          name:_pFirstItem?_pFirstItem.name:"Penalty Applied",
+          emoji:_pFirstItem&&_pFirstItem.e?_pFirstItem.e:"⚡",
+          hp:_pFirstItem?_pFirstItem.hp:-25
+        };
       }
     } else {
       ST.sysAssigned=null;
@@ -1398,7 +1910,7 @@ function checkMidnight(){
 
     // 9. Reset daily data
     ST.tasks=[];ST.mealsDone=[];ST.water=0;ST.sleep=0;ST.glowChecks=[];
-    ST.musicActive=false;ST.claimedToday=[];
+    ST.musicActive=false;ST.claimedToday=[];ST.workoutToday=null;
     save();
   }
   ST.lastDate=today;save();
@@ -1622,6 +2134,24 @@ function renderIronForge(){
   });
   const last=ST.weightLog.length?ST.weightLog[ST.weightLog.length-1]:null;
   document.getElementById("last-wt").textContent=last?"Last: "+last.w+"Kg On "+last.d:"Last Logged: —";
+
+  // Workout status UI — disable buttons after logging
+  var statusMsg=document.getElementById("workout-status-msg");
+  var btnWrap=document.getElementById("workout-btn-wrap");
+  var sp2=getSplit();
+  if(sp2.name==="Rest Day"){
+    if(statusMsg){statusMsg.style.display="block";statusMsg.style.background="rgba(0,136,255,.08)";statusMsg.style.border="1px solid rgba(0,136,255,.25)";statusMsg.style.color="var(--cyan)";statusMsg.textContent="Rest Day — Recovery Is Mandatory. No Workout Required Today.";}
+    if(btnWrap)btnWrap.style.display="none";
+  } else if(ST.workoutToday==="done"){
+    if(statusMsg){statusMsg.style.display="block";statusMsg.style.background="rgba(16,185,129,.08)";statusMsg.style.border="1px solid rgba(16,185,129,.3)";statusMsg.style.color="var(--green)";statusMsg.textContent="✓ Workout Completed Today. +50 Hp Earned. Come Back Tomorrow.";}
+    if(btnWrap)btnWrap.style.display="none";
+  } else if(ST.workoutToday==="missed"){
+    if(statusMsg){statusMsg.style.display="block";statusMsg.style.background="rgba(255,0,60,.08)";statusMsg.style.border="1px solid rgba(255,0,60,.3)";statusMsg.style.color="var(--red)";statusMsg.textContent="✗ Workout Logged As Missed Today. -50 Hp Deducted.";}
+    if(btnWrap)btnWrap.style.display="none";
+  } else {
+    if(statusMsg)statusMsg.style.display="none";
+    if(btnWrap)btnWrap.style.display="block";
+  }
 }
 function toggleMeal(key){
   const i=ST.mealsDone.indexOf(key);
@@ -1629,8 +2159,22 @@ function toggleMeal(key){
   else{ST.mealsDone.splice(i,1);changeHP(-5);ST.weeklyData.meals=Math.max(0,(ST.weeklyData.meals||0)-1);}
   save();renderIronForge();
 }
-function workoutDone(){ST.weeklyData.workouts=(ST.weeklyData.workouts||0)+1;save();trigRew(()=>changeHP(50));showModal("Workout Complete 💪","Sam Conquered Today's Training. +50 Hp Added.");}
-function workoutMissed(){trigPen(()=>changeHP(-50));showModal("Workout Missed","The System Does Not Forget. -50 Hp Deducted.");}
+function workoutDone(){
+  if(ST.workoutToday){showModal("Already Logged","You Already Logged Today's Workout. One Per Day.");return;}
+  speak("Outstanding. Workout complete. Sam is becoming stronger.",0.75,0.88);
+  ST.workoutToday="done";ST.weeklyData.workouts=(ST.weeklyData.workouts||0)+1;save();
+  trigRew(function(){changeHP(50);});
+  renderIronForge();
+  showModal("Workout Complete","Sam Conquered Today's Training. +50 Hp Added To The System.");
+}
+function workoutMissed(){
+  if(ST.workoutToday){showModal("Already Logged","You Already Logged Today's Workout Status. One Per Day.");return;}
+  speak("Workout missed. The system is watching. Do not repeat this.",0.5,0.78);
+  ST.workoutToday="missed";save();
+  trigPen(function(){changeHP(-50);});
+  renderIronForge();
+  showModal("Workout Missed","The System Does Not Forget. -50 Hp Deducted. Do Better Tomorrow.");
+}
 function logWeight(){
   const v=parseFloat(document.getElementById("weigh-inp").value);
   if(!v||v<30||v>250){showModal("Invalid","Please Enter A Valid Weight.");return;}
@@ -1646,8 +2190,7 @@ function logWeight(){
 let cS=null,cW=null;
 function renderCharts(){
   if(typeof Chart==="undefined"){setTimeout(renderCharts,400);return;}
-  var rp=document.getElementById("panel-report");
-  if(!rp||!rp.classList.contains("act"))return;
+  // No panel guard — let chart render anytime it's called
   var tickC="rgba(255,255,255,.22)";
   var gridC="rgba(255,255,255,.04)";
   var legC="rgba(255,255,255,.4)";
@@ -1859,11 +2402,15 @@ function addCP(){
 }
 function delCR(id){ST.customRewards=ST.customRewards.filter(r=>r.id!==id);save();renderKarma();}
 function delCP(id){ST.customPenalties=ST.customPenalties.filter(p=>p.id!==id);save();renderKarma();}
-async function enableNotifs(){
-  if(!("Notification" in window)){showModal("Not Supported","Push Notifications Not Supported In This Browser.");return;}
-  const p=await Notification.requestPermission();
-  if(p==="granted"){ST.notifOn=true;save();showModal("Enabled ✓","System Will Alert Sam When Quests Are Pending.");}
-  else showModal("Denied","Allow Notifications In Browser Settings.");
+function enableNotifs(){
+  if(!("Notification" in window)){
+    showModal("Not Supported","Push Notifications Require A Web Server. Use A Browser Extension Like 'Web Server for Chrome' Or Host On Localhost.");
+    return;
+  }
+  Notification.requestPermission().then(function(p){
+    if(p==="granted"){ST.notifOn=true;save();showModal("Enabled","System Will Alert Sam When Quests Are Pending.");}
+    else showModal("Denied","Allow Notifications In Browser Settings First.");
+  });
 }
 function exportJSON(){
   const data={};Object.keys(localStorage).filter(k=>k.startsWith(NS)).forEach(k=>{data[k]=localStorage.getItem(k);});
@@ -2019,25 +2566,66 @@ function goTab(tab,btn){
 let _reportData=null;
 
 function getMoralStory(score,doneTasks,missedTasks,workoutDone,mealsHit){
-  const doneNames=doneTasks.map(function(t){return t.text;}).join(", ")||"none";
-  const missNames=missedTasks.map(function(t){return t.text;}).join(", ")||"none";
-  const doneLen=doneTasks.length;
-  const missLen=missedTasks.length;
+  var doneNames=doneTasks.map(function(t){return t.text;}).join(", ")||"nothing";
+  var missNames=missedTasks.map(function(t){return t.text;}).join(", ")||"nothing";
+  var doneLen=doneTasks.length;
+  var missLen=missedTasks.length;
+  var rng=Math.floor(Math.random()*4); // 4 variants per tier
+
+  // ── 100% FLAWLESS ────────────────────────────────
   if(score===100){
-    return "Flawless execution today, Sam. Every single quest completed. "+doneLen+" tasks done. This is what separates hunters from the weak. The system logged your performance and it is clean. Do not let tomorrow be the day you break the streak. This standard is yours now. Protect it.";
+    var s100=[
+      "FLAWLESS. Every single quest fell before you today, Sam. "+doneLen+" for "+doneLen+". The system witnessed perfection — not because you felt like it, but because you executed anyway. This is what the shadow monarch looks like before the throne. Don't let tomorrow be the day the streak dies. You know what this standard feels like now. That's dangerous. Keep it.",
+      "100%. The system is silent because there is nothing to critique. Every task completed. Not skipped, not deferred — DONE. You are becoming the person future Sam will thank. Tonight you rest as a winner. Tomorrow you wake as a hunter who knows what full execution tastes like. Do not forget this feeling.",
+      "Perfect sync rate. "+doneLen+" quests. "+doneLen+" victories. Sam operated at maximum capacity today. While others made excuses, you made progress. While others scrolled, you executed. This single day compounds into weeks, into months, into a completely different life. Protect this standard like it's the most valuable thing you own — because it is.",
+      "I have nothing bad to say. Zero. The system logged "+doneLen+" completed tasks and not one left behind. This is the version of you that scares mediocrity. On your worst future days, remember how today felt. Come back to this entry. Read it. Remember that Sam is capable of flawless. Now go sleep like a champion."
+    ];
+    return s100[rng];
   }
+
+  // ── 80–99% STRONG ────────────────────────────────
   if(score>=80){
-    const suf=missLen>1?"s were":"was";
-    return "Strong day, Sam. "+doneLen+" out of "+(doneLen+missLen)+" tasks done. "+score+"% sync rate. You earned your reward tonight. But "+missLen+" quest"+suf+" left incomplete: "+missNames+". The system sees everything. Tomorrow, those go first. Almost perfect is not perfect. Finish stronger.";
+    var suf=missLen>1?"s were":"was";
+    var s80=[
+      "Strong day, Sam. "+score+"% — "+doneLen+" quests conquered. The reward tonight is earned and deserved. But "+missLen+" quest"+suf+" abandoned: "+missNames+". The system doesn't forget those. Tomorrow morning, those tasks go first. Before social media, before comfort — those. Almost perfect is not perfect. A hunter who finishes 80% of a raid still takes damage from the 20% he ignored.",
+      score+"% puts you above the average human by miles. "+doneLen+" tasks done. But let's be real — "+missNames+" was left. That wasn't lack of ability. That was a choice. You chose comfort over those specific tasks. Own that. Tomorrow, those go on the list first and get done first. Strong days are built into great days one missed task at a time.",
+      ""+doneLen+" out of "+(doneLen+missLen)+" — "+score+"%. Reward unlocked, Sam. You earned it. But the "+missLen+" incomplete quest"+suf+" ("+missNames+") will carry over as weight. The system rewards execution AND reminds you of gaps. Close those gaps tomorrow. A chain with one weak link still breaks.",
+      "Good. Not great. "+score+"% means "+missLen+" quest"+suf+" left unfinished: "+missNames+". The fact that you got "+score+"% means you had the energy and time. Something else took priority. Was it worth more than your goals? Evaluate that tonight. Claim your reward — you earned it. But set an alarm for those missed tasks tomorrow."
+    ];
+    return s80[rng];
   }
+
+  // ── 50–79% MEDIOCRE ──────────────────────────────
   if(score>=50){
-    return "Mediocre day, Sam. "+score+"% is not failure but it is not a hunter's performance either. You completed: "+doneNames+". But you left behind: "+missNames+". The gap between who you are and who you want to be lives in those missed tasks. Comfort chose you today. Tomorrow, you choose discipline. The gate does not care about your mood.";
+    var s50=[
+      "Mediocre, Sam. "+score+"%. You completed: "+doneNames+". You abandoned: "+missNames+". The gap between the Sam you are and the Sam you want to be lives in those abandoned quests. Comfort won more battles than discipline today. The gate doesn't care if you were tired. It doesn't negotiate. Tomorrow, you negotiate less with yourself.",
+      score+"% is not a failure — but it's not a hunter's performance. "+doneLen+" done, "+missLen+" untouched. "+missNames+" got left behind. You know why. The system knows why. Stop pretending the 'right time' is coming. The right time was this morning. Tomorrow the right time is when you wake up. Not after breakfast. Not after scrolling. When you wake up.",
+      "Half measures, Sam. "+score+"%. Fifty-plus percent means you started strong and faded — or you picked easy tasks and avoided hard ones. Which was it? "+missNames+" didn't complete itself. Those specific things you avoided are exactly where your growth is hiding. Tomorrow: do the hard one first. The one you dread. That one specifically.",
+      ""+score+"%. The system is unimpressed but not giving up on you. "+doneLen+" quests done is not nothing. But "+missNames+" sits incomplete. The penalty tonight is fair — you didn't fully execute. Tomorrow is a clean slate. No carrying today's excuses. No 'I'll make up for it.' Just a new list and a decision to go harder from 6AM."
+    ];
+    return s50[rng];
   }
+
+  // ── 1–49% WEAK ───────────────────────────────────
   if(score>0){
-    const suf2=doneLen>1?"s":"";
-    return "Weak showing today, Sam. "+score+"% - the system is not impressed. Most quests went untouched: "+missNames+". Only "+doneLen+" task"+suf2+" completed. You have a goal - 75kg, a better face rating, a better life. None of that happens on "+score+"% days. Tonight, reflect hard. Tomorrow, the hunter wakes up before his excuses do.";
+    var suf2=doneLen>1?"s":"";
+    var sw=[
+      "Weak, Sam. "+score+"%. Only "+doneLen+" task"+suf2+" completed out of "+(doneLen+missLen)+". "+missNames+" — those weren't hard to do. You chose not to do them. The system doesn't feel sorry for you and neither should you. Self-pity and penalty both knock on the same door at "+score+"%. Tonight reflects hard. Tomorrow the hunter who wants 75kg, better skin, and a better life shows up at dawn — not at noon after scrolling.",
+      score+"% is a penalty tier. Plain and simple. "+doneLen+" done, "+missLen+" ignored. "+missNames+" sat on the list all day while you did other things. None of those other things were your goals. Your body is still 58kg. Your face rating is still 4/10. Your bank still shows what it shows. Those numbers only change when Sam executes. Not when Sam feels ready.",
+      "The system logged "+doneLen+" completed quest"+suf2+" and "+missLen+" abandoned ones today. "+missNames+" went untouched. This is the kind of day that, compounded over weeks, explains why people stay exactly where they started. You have goals. You have the app. You have the plan. What you used today was the snooze button and the scroll reflex. Tomorrow: zero tolerance.",
+      ""+score+"% — Sam, this is not the level of someone becoming a baddie. This is the level of someone staying average. "+doneLen+" tasks done out of "+(doneLen+missLen)+". "+missNames+" ignored. The penalty you receive tonight is the mildest version of what life charges for this pattern over months. Wake up tomorrow like your goals are on fire. Because they are."
+    ];
+    return sw[rng];
   }
-  return "Nothing. Zero. Not one quest completed today, Sam. The system logged a full blank - "+missLen+" tasks abandoned. This is the version of you that stays weak forever. The shadow monarch did not build his army by doing nothing. Every legend in every story you love - they showed up. You did not. Tomorrow is not promised. But if it comes, do not waste it like today.";
+
+  // ── 0% ZERO ──────────────────────────────────────
+  var s0=[
+    "Zero. Absolute zero, Sam. Not one quest touched. "+missLen+" tasks sat on the list all day untouched — "+missNames+". The shadow monarch did not build his army by resting. Sung Jin-Woo got up from death itself to keep moving. You had tasks that required walking across a room and chose not to. Tomorrow is not guaranteed. If it comes, the first task gets done before you touch your phone. No negotiation. No excuses. Arise.",
+    "The system logged nothing today. Zero percent. "+missLen+" quests abandoned before they started: "+missNames+". You know what's interesting? Every warrior, every hunter, every legend you admire — they all have bad days. The difference is they show up the next day with more aggression, not more excuses. Tomorrow you wake up with something to prove. To yourself. Not to anyone else.",
+    "0%. The harshest entry in the diary. "+missLen+" tasks. Zero done. I won't pretend this doesn't matter — it does. Every zero day is a vote against the Sam who wants 75kg, a 7/10 face, a better life. Naruto never had a zero day. Goku never had a zero day. Even on his worst training days, something got done. Tomorrow: one task first thing. Then another. Build from nothing like a shadow soldier rising.",
+    "Nothing done. The list had "+missLen+" items. "+missNames+". All of them sat there while the day passed. The version of you reading this knows exactly why it happened and knows it wasn't worth it. Tomorrow is a choice. A real one. Not a promise — a choice made at 6AM when the alarm goes off and every comfortable instinct says stay down. The hunter who rises is the one who becomes unrecognizable in 6 months."
+  ];
+  return s0[rng];
 }
 
 function showDailyReport(){
@@ -2140,11 +2728,24 @@ ${d.story}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
-  navigator.clipboard.writeText(text).then(()=>{
-    showModal("Copied ✓","Report Copied To Clipboard. Paste It In Your Diary, Sam.");
-  }).catch(()=>{
+  // Safe clipboard for file:// protocol
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(function(){
+        showModal("Copied","Report Copied To Clipboard. Paste It In Your Diary, Sam.");
+      });
+    } else {
+      // Fallback: use textarea + execCommand
+      var ta=document.createElement("textarea");
+      ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+      document.body.appendChild(ta);ta.focus();ta.select();
+      try{document.execCommand("copy");showModal("Copied","Report Copied. Paste In Your Diary.");}
+      catch(e){showModal("Copy Report","Press Ctrl+C to copy the report shown below.");}
+      document.body.removeChild(ta);
+    }
+  }catch(e){
     showModal("Note","Could Not Auto-Copy. Please Screenshot The Report Instead.");
-  });
+  }
 }
 
 // ════════════════════════════════════════════════════════
@@ -2181,122 +2782,140 @@ function getHunterRank(avgScore,streak,level){
 }
 
 function oracleSection(title,col,items){
-  if(!items.length)return"";
-  return`<div class="gc mb12" style="border-color:${col}40;">
-    <div class="st" style="color:${col};">${title}</div>
-    ${items.map(i=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);">
-      <span style="font-size:16px;flex-shrink:0;">${i.ico}</span>
-      <div><div style="font-size:12px;font-weight:900;color:rgba(255,255,255,.85);text-transform:capitalize;margin-bottom:2px;">${i.title}</div>
-      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.4);line-height:1.5;">${i.detail}</div></div>
-    </div>`).join("")}
-  </div>`;
+  if(!items||!items.length)return"";
+  var html='<div class="gc mb12" style="border-color:'+col+'40;"><div class="st" style="color:'+col+';">'+title+'</div>';
+  items.forEach(function(item){
+    var ico=item.ico||item.i||"◈";
+    var ttl=item.title||item.t||"";
+    var det=item.detail||item.d||"";
+    html+='<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);">'
+      +'<span style="font-size:18px;flex-shrink:0;line-height:1.4;">'+ico+'</span>'
+      +'<div><div style="font-size:12px;font-weight:900;color:rgba(255,255,255,.88);text-transform:capitalize;margin-bottom:3px;">'+ttl+'</div>'
+      +'<div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.42);line-height:1.6;">'+det+'</div></div></div>';
+  });
+  html+='</div>';
+  return html;
 }
 
 function runOracle(){
-  const h30=ST.history30.filter(h=>h&&typeof h.score==="number");
-  const avgScore=h30.length?Math.round(h30.reduce((a,b)=>a+b.score,0)/h30.length):getSR();
-  const rank=getHunterRank(avgScore,ST.streak||0,ST.level||1);
+  var h30=Array.isArray(ST.history30)?ST.history30.filter(function(h){return h&&typeof h.score==='number';}):[];
+  var avgScore=h30.length?Math.round(h30.reduce(function(a,b){return a+b.score;},0)/h30.length):getSR();
+  var rank=getHunterRank(avgScore,ST.streak||0,ST.level||1);
 
-  // Show rank
-  const rw=document.getElementById("oracle-rank-wrap");
-  rw.style.display="block";
-  document.getElementById("oracle-rank").textContent=rank.rank;
-  document.getElementById("oracle-rank").style.color=rank.col;
-  document.getElementById("oracle-rank-lbl").textContent=rank.lbl;
-  document.getElementById("oracle-rank-lbl").style.color=rank.col;
+  // Animated rank reveal
+  var rw=document.getElementById('oracle-rank-wrap');
+  var rEl=document.getElementById('oracle-rank');
+  var rLbl=document.getElementById('oracle-rank-lbl');
+  var rAvg=document.getElementById('oracle-avg');
+  if(rw)rw.style.display='block';
+  if(rEl){
+    rEl.textContent='?';rEl.style.color='rgba(255,255,255,.2)';
+    // Animate reveal
+    var letters=['E','D','C','B','A','S','SS','SSS',rank.rank];
+    var li=0;
+    var iv=setInterval(function(){
+      if(li<letters.length){
+        rEl.textContent=letters[li];
+        rEl.style.color=li<letters.length-1?'rgba(255,255,255,.3)':rank.col;
+        li++;
+      } else {
+        clearInterval(iv);
+        rEl.style.color=rank.col;
+        rEl.style.textShadow='0 0 30px '+rank.col;
+      }
+    },80);
+  }
+  if(rLbl){rLbl.textContent=rank.lbl;rLbl.style.color=rank.col;}
+  if(rAvg){rAvg.textContent='30-Day Avg: '+avgScore+'% | Level: '+ST.level+' | Streak: '+(ST.streak||0)+' Days';}
 
-  const insights=[];
-  const patterns=[];
-  const suggestions=[];
-  const warnings=[];
+  var warnings=[],patterns=[],insights=[],suggestions=[];
 
-  // ── SYNC ANALYSIS ──
+  // SYNC analysis
   if(h30.length>=3){
-    const recent3=h30.slice(-3).map(h=>h.score);
-    const avg3=Math.round(recent3.reduce((a,b)=>a+b,0)/3);
-    if(avg3<50) warnings.push({ico:"🩸",title:"Critical Drop Detected",detail:`Last 3 days average: ${avg3}%. System is losing faith. Below 50% for 3 days signals a dangerous pattern.`});
-    else if(avg3>80) insights.push({ico:"🔥",title:"Hot Streak",detail:`Last 3 days average: ${avg3}%. You're on fire. Don't break the momentum now.`});
+    var r3=h30.slice(-3),a3=Math.round(r3.reduce(function(a,b){return a+b.score;},0)/3);
+    if(a3<50) warnings.push({i:'🩸',t:'Critical Sync Drop',d:'Last 3 days average: '+a3+'%. System is deteriorating. Three consecutive sub-50% days is a pattern, not a bad day.'});
+    else if(a3>80) insights.push({i:'🔥',t:'Hot Streak Active',d:'Last 3 days average: '+a3+'%. You are building serious momentum. Do not break this now.'});
   }
   if(h30.length>=7){
-    const days=h30.slice(-7);
-    const zeros=days.filter(h=>h.score===0).length;
-    if(zeros>=3) warnings.push({ico:"💀",title:"Zero Days Detected",detail:`${zeros} out of last 7 days had 0% completion. This is a crisis pattern. The hunter is sleeping when he should be fighting.`});
-    const perfect=days.filter(h=>h.score===100).length;
-    if(perfect>=3) insights.push({ico:"⚡",title:"Perfectionist Runs",detail:`${perfect} perfect 100% days in the last week. Sam is operating at peak protocol.`});
+    var d7=h30.slice(-7);
+    var zeros=d7.filter(function(h){return h.score===0;}).length;
+    var perfects=d7.filter(function(h){return h.score===100;}).length;
+    if(zeros>=3) warnings.push({i:'💀',t:zeros+' Zero Days This Week',d:'Three or more complete failures in a week is a crisis pattern. The system is watching. Change something tonight.'});
+    if(perfects>=3) insights.push({i:'⚡',t:perfects+' Perfect Days This Week',d:'Sam is operating at peak protocol. '+perfects+'/7 days at 100%. This is what transformation looks like from the inside.'});
   }
 
-  // ── WORKOUT PATTERN ──
-  const wDone=ST.weeklyData?.workouts||0;
-  if(wDone===0) warnings.push({ico:"💪",title:"No Workouts This Week",detail:"Zero workouts logged this week. Your 58kg→75kg goal requires consistent training. Iron Forge is collecting dust."});
-  else if(wDone>=3) insights.push({ico:"🏋️",title:"Training Consistent",detail:`${wDone} workouts completed this week. The body is being built. Keep the cycle going.`});
+  // Workout
+  var wDone=ST.workoutToday;
+  if(wDone==='done') insights.push({i:'💪',t:'Workout Logged Today',d:'Training session recorded. Consistent training is what turns 58kg into 75kg. Keep the cycle.'});
+  else if(wDone==='missed') warnings.push({i:'💪',t:'Workout Missed Today',d:'No training logged today. Your 58kg to 75kg goal requires consistent progressive overload. The body does not build itself.'});
+  else patterns.push({i:'💪',t:'Workout Not Yet Logged',d:'Go to Iron Forge and log today\'s workout. Even if it\'s rest day — log it.'});
 
-  // ── MEAL PATTERN ──
-  const mToday=ST.mealsDone.length;
-  if(mToday<2) patterns.push({ico:"🍱",title:"Meals Frequently Missed",detail:`Only ${mToday}/4 meals logged today. At 58kg you need consistent caloric surplus. Skipping meals kills your 75kg goal.`});
-  else insights.push({ico:"✅",title:"Nutrition On Track",detail:`${mToday}/4 meals logged today. Consistent nutrition = consistent gains.`});
+  // Meals
+  var mHit=ST.mealsDone.length;
+  if(mHit===4) insights.push({i:'🍱',t:'All 4 Meals Hit Today',d:'Full nutrition protocol executed. At 58kg, consistent caloric surplus is non-negotiable for your goals.'});
+  else if(mHit<2) warnings.push({i:'🍱',t:'Only '+mHit+'/4 Meals Logged',d:'Skipping meals at 58kg is sabotaging your own goal. Each missed meal is a missed opportunity to grow.'});
+  else patterns.push({i:'🍱',t:mHit+'/4 Meals Done',d:'Close. Log the remaining '+( 4-mHit)+' meal(s) before midnight or face -'+( 4-mHit)*5+' Hp.'});
 
-  // ── WATER PATTERN ──
-  if(ST.water<2&&ST.water>0) warnings.push({ico:"💧",title:"Chronic Dehydration Risk",detail:`Only ${ST.water}L logged today. Target is 3L. Dehydration hurts skin, energy, and muscle recovery — all three of your goals.`});
-  else if(ST.water>=3) insights.push({ico:"💧",title:"Hydration Goal Met",detail:`${ST.water}L logged. Skin clarity, muscle recovery, energy — all benefit. Keep it daily.`});
-  else if(ST.water===0) warnings.push({ico:"💧",title:"Water Not Logged Today",detail:"No water intake logged. Either you forgot to log or you're dehydrated. Both are problems."});
+  // Water
+  if(ST.water>=3) insights.push({i:'💧',t:'Hydration Goal Met',d:ST.water+'L logged. Skin clarity, energy, muscle recovery — all running at full capacity.'});
+  else if(ST.water>0) patterns.push({i:'💧',t:'Water: '+ST.water+'L / 3L',d:'Need '+(3-ST.water).toFixed(1)+'L more before midnight. Dehydration hurts skin, energy, and gains — all three of your goals.'});
+  else warnings.push({i:'💧',t:'No Water Logged',d:'Nothing logged today. Your body is running dry. Go drink water right now before you read anything else.'});
 
-  // ── SLEEP ──
-  if(ST.sleep>0&&ST.sleep<6) warnings.push({ico:"😴",title:"Sleep Deficit",detail:`${ST.sleep}H logged — far below 8H target. Poor sleep raises cortisol, kills muscle gain, damages skin, and reduces willpower. Everything you're building breaks down without sleep.`});
-  else if(ST.sleep>=8) insights.push({ico:"😴",title:"Recovery Protocol Met",detail:`${ST.sleep}H sleep logged. Your body is repairing. Muscle builds during sleep, not in the gym.`});
+  // Sleep
+  if(ST.sleep>=8) insights.push({i:'😴',t:'Sleep Goal Met',d:ST.sleep+'H logged. Muscle builds during sleep. Skin repairs during sleep. Willpower recharges during sleep.'});
+  else if(ST.sleep>=6) patterns.push({i:'😴',t:'Sleep: '+ST.sleep+'H / 8H',d:'Slightly under target. Even 30 minutes more matters. Get to bed earlier tonight.'});
+  else if(ST.sleep>0) warnings.push({i:'😴',t:'Sleep Deficit: '+ST.sleep+'H',d:'Far below 8H target. Sleep deprivation raises cortisol, kills gains, damages skin, and destroys willpower. The three things you are trying to build.'});
 
-  // ── GLOW-UP ──
-  const gl=ST.glowChecks.length;
-  if(gl<4) patterns.push({ico:"✦",title:"Glow-Up Checklist Low",detail:`Only ${gl}/9 glow checks done today. Face rating 4→7 doesn't happen passively. SPF, skincare, grooming — these need daily execution.`});
-  else if(gl>=8) insights.push({ico:"✦",title:"Glow Protocol Strong",detail:`${gl}/9 glow checks completed. Consistent daily habits compound into visible changes over weeks.`});
+  // Glow
+  var gl=ST.glowChecks.length;
+  if(gl>=8) insights.push({i:'✦',t:'Glow Protocol Strong: '+gl+'/9',d:'Consistent daily skincare compounds into visible results over weeks. Face 4→7 is built in routines like this.'});
+  else if(gl<4) patterns.push({i:'✦',t:'Glow Checklist Low: '+gl+'/9',d:'Only '+gl+' checks done. SPF, face wash, moisturizer — these need daily execution for wheatish skin improvement.'});
 
-  // ── PURITY ──
-  const pur=ST.purityStreak||0;
-  if(pur===0) warnings.push({ico:"🔱",title:"Purity Streak Broken",detail:"Streak is at zero. Masturbation drains energy, motivation, and willpower — all things Sam needs right now. Restart today."});
-  else if(pur<7) patterns.push({ico:"🔱",title:"Purity Building",detail:`${pur} days clean. Next milestone at 7 days: +30 HP bonus. Your energy and focus should already feel different. Don't break it.`});
-  else if(pur>=30) insights.push({ico:"🔱",title:"Purity Master",detail:`${pur} days clean. Sam is operating at full energy. This directly feeds into confidence, skin clarity, and gym performance.`});
-  else insights.push({ico:"🔱",title:"Purity Streak Active",detail:`${pur} days clean. Keep the streak. Every day clean is HP earned and energy preserved.`});
+  // Purity
+  var pur=ST.purityStreak||0;
+  if(pur===0) warnings.push({i:'🔱',t:'Purity Streak: Zero',d:'Streak is broken. Every relapse drains the exact energy and confidence you need for your goals. Restart now. Day 1 again.'});
+  else if(pur<7) patterns.push({i:'🔱',t:'Building Purity: '+pur+' Days',d:'Next milestone at 7 days: +30 Hp. You should already notice more energy and mental clarity. Don\'t break it.'});
+  else if(pur>=30) insights.push({i:'🔱',t:'Purity Master: '+pur+' Days',d:''+pur+' days clean. This directly feeds confidence, skin quality, gym performance, and social presence. Keep going.'});
+  else insights.push({i:'🔱',t:'Purity Streak: '+pur+' Days',d:'Strong. Next milestone at '+(pur<7?7:pur<15?15:30)+' days. The compound effect is real.'});
 
-  // ── DUNGEON ──
-  const expiredDungs=ST.dungeons.filter(d=>d.expired).length;
-  const activeDungs=ST.dungeons.filter(d=>!d.claimed&&!d.expired).length;
-  if(expiredDungs>2) warnings.push({ico:"🏯",title:"Dungeons Keep Expiring",detail:`${expiredDungs} dungeons have expired. You're setting goals but not executing on them. Set realistic timers or fewer dungeons.`});
-  if(activeDungs>0) patterns.push({ico:"🏯",title:"Active Dungeons Running",detail:`${activeDungs} dungeon${activeDungs>1?"s":""} active right now. Don't let them expire. Check the timer.`});
+  // Capital
+  if(ST.capital<100) patterns.push({i:'💰',t:'Capital Low: ₹'+ST.capital,d:'Low capital means reward claims may fail. Consider logging a deposit.'});
 
-  // ── CAPITAL ──
-  if(ST.capital<100) patterns.push({ico:"💰",title:"Capital Running Low",detail:`₹${ST.capital} in reserve. Low capital means reward claims may fail. Consider a deposit.`});
-
-  // ── STREAK ──
-  const str=ST.streak||0;
-  if(str>=7) insights.push({ico:"🔥",title:"Consistency Streak: "+str+" Days",detail:`${str} days without a fatal breach. The compound effect is real. At this rate, Sam's habits are becoming identity.`});
-  else if(str===0) warnings.push({ico:"🔥",title:"No Active Streak",detail:"No streak running. Consistency is the only thing that separates transformation from just trying. Start one today."});
-
-  // ── TODAY SUGGESTIONS ──
-  const day=dayjs().format("dddd");
-  suggestions.push({ico:"📅",title:`Today Is ${day}`,detail:day==="Monday"?"Mondays are make-or-break for the week. Dominate today and the whole week follows.":day==="Friday"?"Friday Mode — pack for travel. Sunday adventure loading. Finish tasks before the weekend tempts you.":day==="Saturday"?"Saturday = Movie Night eligible. Complete your tasks to earn it.":day==="Sunday"?"Sunday: either adventure day or recovery. No slack on protocol.":"Mid-week. No special rules. Execute."});
-  if(getSR()<50) suggestions.push({ico:"⚔️",title:"Priority: Tasks First",detail:`Current sync at ${getSR()}%. Open Grind tab and start executing. Don't open Oracle next — open Grind.`});
-  if(ST.water<3) suggestions.push({ico:"💧",title:"Drink Water Now",detail:"Open Karma tab, log your water. Target 3L before midnight."});
-  if(ST.glowChecks&&ST.glowChecks.length<ST.glowChecks.length) suggestions.push({ico:"✦",title:"Glow Checklist Incomplete",detail:"Open Ascend tab and complete your checklist. Each check = +5 HP."});
-
-  // ── RENDER ──
-  document.getElementById("oracle-out").innerHTML=
-    oracleSection("⚠️ Warnings — Immediate Action Required","var(--red)",warnings)+
-    oracleSection("📊 Pattern Analysis","var(--gold)",patterns)+
-    oracleSection("✅ Strengths & Insights","var(--green)",insights);
+  // Dungeons
+  var expD=ST.dungeons.filter(function(d){return d.expired;}).length;
+  var actD=ST.dungeons.filter(function(d){return !d.claimed&&!d.expired;}).length;
+  if(expD>1) warnings.push({i:'🏯',t:expD+' Dungeons Expired',d:'You set goals but did not execute them. Set fewer dungeons or more realistic timers.'});
+  if(actD>0) suggestions.push({i:'⏱',t:actD+' Active Dungeon'+(actD>1?'s':''),d:'Check the Dungeons tab. Don\'t let them expire.'});
 
   // Today suggestions
-  const tw=document.getElementById("oracle-today-wrap");
-  const td=document.getElementById("oracle-today");
-  if(suggestions.length){
-    tw.style.display="block";
-    td.innerHTML=suggestions.map(s=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,229,255,.06);">
-      <span style="font-size:16px;flex-shrink:0;">${s.ico}</span>
-      <div><div style="font-size:12px;font-weight:900;color:rgba(255,255,255,.85);text-transform:capitalize;margin-bottom:2px;">${s.title}</div>
-      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.4);line-height:1.5;">${s.detail}</div></div>
-    </div>`).join("");
-  }
+  var day=dayjs().format('dddd');
+  if(day==='Friday') suggestions.push({i:'🌍',t:'Friday — Travel Prep Mode',d:'Pack your bag tonight. Plan your Sunday adventure. Claim the Travel Reward if you earned it.'});
+  if(day==='Saturday') suggestions.push({i:'🎬',t:'Saturday — Movie Night Available',d:'If your sync rate earned a reward, Movie Night is available tonight only.'});
+  if(day==='Sunday') suggestions.push({i:'🌍',t:'Sunday — Go Out Day',d:'This is your adventure day, Sam. Don\'t waste a Sunday inside.'});
 
-  // Avg score display in rank section
-  document.getElementById("oracle-rank-lbl").innerHTML+=`<br><span style="font-size:9px;opacity:.55;">30-Day Avg: ${avgScore}% | Level: ${ST.level} | Streak: ${ST.streak||0}D</span>`;
+  var curSR=getSR();
+  if(curSR<80) suggestions.push({i:'⚔',t:'Sync Rate: '+curSR+'% — Need 80%+ For Reward',d:'Complete '+(Math.ceil((ST.tasks.length*0.8)-ST.tasks.filter(function(t){return t.done;}).length))+' more task(s) today to hit the 80% reward threshold.'});
+  else suggestions.push({i:'✅',t:'On Track For Reward Tonight',d:'Sync rate at '+curSR+'%. Keep it above 80% until midnight and the system will assign a reward.'});
+
+  // Render all sections
+  var out=document.getElementById('oracle-out');
+  if(!out)return;
+  out.innerHTML=
+    oracleSection('⚠ Warnings — Act Now','var(--red)',warnings)+
+    oracleSection('📊 Patterns','var(--gold)',patterns)+
+    oracleSection('✅ Strengths','var(--green)',insights);
+
+  var tw=document.getElementById('oracle-today-wrap');
+  var td=document.getElementById('oracle-today');
+  if(tw&&td&&suggestions.length){
+    tw.style.display='block';
+    td.innerHTML=suggestions.map(function(s){
+      return '<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,229,255,.05);">'+
+        '<span style="font-size:18px;flex-shrink:0;">'+s.i+'</span>'+
+        '<div><div style="font-size:12px;font-weight:900;color:rgba(255,255,255,.85);text-transform:capitalize;margin-bottom:2px;">'+s.t+'</div>'+
+        '<div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.4);line-height:1.5;">'+s.d+'</div></div></div>';
+    }).join('');
+  }
 }
 
 // ════════════════════════════════════════════════════════
@@ -2429,7 +3048,7 @@ function init(){
   loadQuote();checkBanners();
   document.getElementById("hdr-date").textContent=dayjs().format("dddd, MMMM D YYYY");
   document.getElementById("sys-info").textContent="Version: 5.0.0 | Last: "+ST.lastDate+" | Mobile Build";
-  setTimeout(showSummary,700);
+  setTimeout(function(){speak("System online. Hunter Sam reporting for duty.",0.72,0.85);showSummary();},700);
   checkDebrief();
   setTimeout(fireNotif,1500);
 }
