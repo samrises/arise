@@ -84,20 +84,51 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 
 /* ── GLOW ICONS throughout app ── */
 @keyframes icon-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@-webkit-keyframes icon-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .glow-icon{
   display:inline-flex;align-items:center;justify-content:center;
   font-size:36px;
   filter:drop-shadow(0 0 8px currentColor);
   animation:icon-float 3s ease-in-out infinite;
 }
-.glow-gold{filter:drop-shadow(0 0 10px rgba(232,197,71,.8)) drop-shadow(0 0 20px rgba(232,197,71,.4))}
-.glow-purple{filter:drop-shadow(0 0 10px rgba(124,58,237,.8)) drop-shadow(0 0 20px rgba(124,58,237,.4))}
-.glow-coral{filter:drop-shadow(0 0 10px rgba(255,107,107,.8)) drop-shadow(0 0 20px rgba(255,107,107,.4))}
-.glow-green{filter:drop-shadow(0 0 10px rgba(34,197,94,.8)) drop-shadow(0 0 20px rgba(34,197,94,.4))}
+.glow-gold{
+  filter:drop-shadow(0 0 8px rgba(232,197,71,.9)) drop-shadow(0 0 18px rgba(232,197,71,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(232,197,71,.9)) drop-shadow(0 0 18px rgba(232,197,71,.5));
+}
+.glow-purple{
+  filter:drop-shadow(0 0 8px rgba(124,58,237,.9)) drop-shadow(0 0 18px rgba(124,58,237,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(124,58,237,.9)) drop-shadow(0 0 18px rgba(124,58,237,.5));
+}
+.glow-coral{
+  filter:drop-shadow(0 0 8px rgba(255,107,107,.9)) drop-shadow(0 0 18px rgba(255,107,107,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(255,107,107,.9)) drop-shadow(0 0 18px rgba(255,107,107,.5));
+}
+.glow-green{
+  filter:drop-shadow(0 0 8px rgba(34,197,94,.9)) drop-shadow(0 0 18px rgba(34,197,94,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(34,197,94,.9)) drop-shadow(0 0 18px rgba(34,197,94,.5));
+}
 .wico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px}
-.wico .gi{
+.wico .gi,.gi{
+  display:inline-block;
   font-size:26px;
   animation:icon-float 3s ease-in-out infinite;
+  -webkit-animation:icon-float 3s ease-in-out infinite;
+}
+.gi.glow-gold{
+  filter:drop-shadow(0 0 8px rgba(232,197,71,.9)) drop-shadow(0 0 18px rgba(232,197,71,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(232,197,71,.9)) drop-shadow(0 0 18px rgba(232,197,71,.5));
+}
+.gi.glow-purple{
+  filter:drop-shadow(0 0 8px rgba(124,58,237,.9)) drop-shadow(0 0 18px rgba(124,58,237,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(124,58,237,.9)) drop-shadow(0 0 18px rgba(124,58,237,.5));
+}
+.gi.glow-coral{
+  filter:drop-shadow(0 0 8px rgba(255,107,107,.9)) drop-shadow(0 0 18px rgba(255,107,107,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(255,107,107,.9)) drop-shadow(0 0 18px rgba(255,107,107,.5));
+}
+.gi.glow-green{
+  filter:drop-shadow(0 0 8px rgba(34,197,94,.9)) drop-shadow(0 0 18px rgba(34,197,94,.5));
+  -webkit-filter:drop-shadow(0 0 8px rgba(34,197,94,.9)) drop-shadow(0 0 18px rgba(34,197,94,.5));
 }
 .bdanger{background:rgba(255,80,80,.1)!important;border-color:rgba(255,80,80,.25)!important;color:#f87171!important}
 
@@ -258,9 +289,36 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 .tstack{display:flex;flex-wrap:wrap;gap:6px}
 .tpill{font-size:11px;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,.04);border:1px solid var(--b);color:#666;font-weight:500}
 .padmin{display:flex;gap:8px;margin-top:12px}
-.proj-footer{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid var(--b);flex-wrap:wrap;gap:8px}
-.btn-view{display:inline-flex!important;visibility:visible!important}
-.btn-view{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--acc,var(--gold));letter-spacing:.04em;background:none;border:1.5px solid var(--acc,var(--gold));border-radius:100px;padding:7px 16px;cursor:pointer;transition:all .2s;font-family:'Jost',sans-serif;text-decoration:none}
+.proj-footer{
+  display:flex!important;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid var(--b);
+  flex-wrap:wrap;
+  gap:8px;
+  visibility:visible!important;
+}
+.btn-view{
+  display:inline-flex!important;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--acc,var(--gold));
+  letter-spacing:.04em;
+  background:transparent;
+  border:1.5px solid var(--acc,var(--gold));
+  border-radius:100px;
+  padding:8px 18px;
+  cursor:pointer;
+  transition:all .2s;
+  font-family:'Jost',sans-serif;
+  text-decoration:none!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
 .btn-view:hover{background:var(--acc,var(--gold));color:#080808}
 
 /* WHY */
@@ -363,6 +421,9 @@ textarea.af-input{resize:vertical;min-height:72px}
   .about-grid{grid-template-columns:1fr;gap:34px}
   .cgrid{grid-template-columns:1fr;gap:34px}
   .proj-grid{grid-template-columns:1fr!important}
+  .proj-card{width:100%!important}
+  .proj-footer{display:flex!important}
+  .btn-view{display:inline-flex!important;min-width:120px}
   .hero-content{padding-bottom:160px!important}
   .nl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
   .nl a{display:none}
@@ -727,6 +788,7 @@ const DP=[
   {id:6,url:"#",title:"Social Content Growth OS",category:"Digital Marketing",description:"Notion-based content system used by 50+ creators for planning, scheduling, and performance tracking.",tech:["Notion","Canva","Buffer","Meta Ads"],accent:"#FF6B6B"}
 ];
 
+const glowClass={"#E8C547":"glow-gold","#7C3AED":"glow-purple","#FF6B6B":"glow-coral","#22C55E":"glow-green"};
 let C={},proj=[],admin=false,editProjId=null,isNewProj=false,editTestId=null,isNewTest=false,tIdx=0;
 
 function loadAll(){
@@ -778,7 +840,7 @@ function renderSkills(){
 document.getElementById("skDomainHeader").innerHTML=`
     <div class="sk-domain-header">
       <div class="sk-domain-icon">
-        <span class="gi ${skGlowMap[d.icon]||'glow-gold'}" style="font-size:42px;animation:icon-float 4s ease-in-out infinite;display:inline-block">${d.icon}</span>
+        <span class="gi ${skGlowMap[d.icon]||"glow-gold"}" style="font-size:42px">${d.icon}</span>
       </div>
       <div>
         <div class="sk-domain-name" style="color:${d.color}">${d.name}</div>
@@ -822,14 +884,10 @@ function renderWhy(){
   document.getElementById("why-label-el").textContent=w.label;
   document.getElementById("why-title-el").textContent=w.title;
   document.getElementById("why-sub-el").textContent=w.sub;
-  const glowClass={
-  "#E8C547":"glow-gold","#7C3AED":"glow-purple",
-  "#FF6B6B":"glow-coral","#22C55E":"glow-green"
-};
-document.getElementById("whyGrid").innerHTML=w.items.map(i=>`
+  document.getElementById("whyGrid").innerHTML=w.items.map(i=>`
     <div class="why-card">
       <div class="wico" style="background:${i.c}14">
-        <span class="gi ${glowClass[i.c]||''}" style="font-size:26px;animation:icon-float 3s ease-in-out infinite">${i.icon}</span>
+        <span class="gi ${glowClass[i.c]||"glow-gold"}">${i.icon}</span>
       </div>
       <div style="font-size:15px;font-weight:800;margin-bottom:7px">${i.t}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.65">${i.d}</div>
