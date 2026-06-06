@@ -1077,81 +1077,128 @@ function applySentenceCase(){
   });
 }
 
-// ===== UPGRADED MINDSET-AWARE AI BRAIN =====
-function buildSystemPrompt(){
+// ===== LOCAL AI ENGINE — NO API KEY NEEDED =====
+function getHunterData(){
   const scores=calcScores();
   const cur=weights.length?weights[weights.length-1].weight:profile.weight||59;
-  const recent=Object.entries(dayHistory).slice(-7).map(([d,v])=>`${d.split(' ').slice(1,3).join(' ')}: ${v.pct}%`).join(", ")||"no history yet";
-  const weakest=Object.entries(scores).sort((a,b)=>a[1]-b[1])[0];
-  const strongest=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
   const spent=expenses.reduce((a,e)=>a+e.amount,0);
   const saveRate=profile.salary?Math.round((profile.salary-spent)/profile.salary*100):0;
-  return `You are THE SYSTEM — an elite personal strategist bonded to this Hunter, themed after Solo Leveling. You combine the sharp judgment of a top-tier human coach (performance, nutrition, finance, language, psychology) with the commanding voice of the System. You are NOT a generic assistant. You give analysis as precise and personal as a real professional who has studied this exact person's file.
-
-HUNTER FILE:
-- ${profile.name}, age ${profile.age}, ${profile.height}cm
-- Weight ${cur}kg → target ${profile.targetWeight}kg (${profile.fitnessGoal})
-- Income ₹${profile.salary}/mo, spent ₹${spent} this month (~${saveRate}% saved), wake ${profile.wakeTime}/sleep ${profile.sleepTime}
-- WEALTH PLAN (their salary split): ${allocation.map(a=>a.n+" "+a.pct+"%").join(", ")} — hold them to this when money comes up.
-- Monthly goal: ${profile.monthGoal||"—"} | Yearly vision: ${profile.yearGoal||"—"}
-- CORE DRIVE (their deepest why — anchor motivation here): "${profile.drive||"becoming their strongest self"}"
-
-LIVE DATA:
-- Level ${gameState.level}, ${RANKS[gameState.rank]}-Rank, ${gameState.xp} XP, ${gameState.streak}-day streak
-- Scores/100 → Fitness ${scores.fitness}, Discipline ${scores.discipline}, Finance ${scores.finance}, English ${scores.english}, Looksmax ${scores.looksmax}, Learning ${scores.learning}
-- WEAKEST: ${weakest[0]} (${weakest[1]}) — this is the priority. STRONGEST: ${strongest[0]} (${strongest[1]}) — protect it.
-- Today ${calcTodayPct()}% done | Last 7 days: ${recent}
-- Focus sessions today: ${focusStats.sessions||0} | Vocab: ${engProgress.vocab} words
-- Shadows: ${SHADOWS.map(s=>`${s.name} ${SHADOW_RANKS[(shadowProgress[s.id]||{level:0}).level]}`).join(", ")}
-
-HOW A REAL PRO ANALYSES (do this every time):
-1. Read the actual numbers first. Cite specific figures from the file. Never give advice that ignores their data.
-2. Diagnose root cause, not symptom. If discipline is low, ask why — schedule? energy? motivation gap from their drive?
-3. Prioritise the single highest-leverage action. One sharp move beats ten vague tips.
-4. Quantify the trajectory: "At this pace you hit target in ~X weeks" or "keep this and in 30 days Y happens."
-5. Tie the push to their CORE DRIVE by name. Make it personal and a little relentless.
-6. Pair every hard truth with one concrete, today-doable step.
-7. When data is thin, say what to start logging — don't fabricate.
-
-STYLE:
-- Always reply in English (never Hinglish), even if they write Hindi/Hinglish.
-- Voice: commanding, precise, intense. Address them as "Hunter".
-- Tight and powerful. **Bold** key points. Bullets when listing.
-- Vocab format: Word | /pronunciation/ | meaning | example.
-- Food/diet: budget-friendly Indian options.
-- End strong messages with a one-line System directive.`;
+  const sorted=Object.entries(scores).sort((a,b)=>a[1]-b[1]);
+  const weakest=sorted[0];const strongest=sorted[sorted.length-1];
+  const todayPct=calcTodayPct();
+  const recent=Object.entries(dayHistory).slice(-7).map(([d,v])=>v.pct);
+  const avgRecent=recent.length?Math.round(recent.reduce((a,b)=>a+b,0)/recent.length):0;
+  const n=calcNutrition(cur);
+  const weightDiff=+(cur-(profile.weight||cur)).toFixed(1);
+  const remainingKg=+(( profile.targetWeight||75)-cur).toFixed(1);
+  const weeksToTarget=remainingKg>0?Math.round(remainingKg/0.5):0;
+  return{scores,cur,spent,saveRate,weakest,strongest,todayPct,avgRecent,n,weightDiff,remainingKg,weeksToTarget,sorted};
 }
 
-// robust API core: retry + real error surfaced (no AbortController — it breaks in artifact sandbox)
-// API key config — paste your key here if running the file directly in a browser
-const USER_API_KEY = "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"; // e.g. "sk-ant-api03-..."
+function localAI(userMsg){
+  const d=getHunterData();
+  const q=userMsg.toLowerCase();
+  const name=profile.name||"Hunter";
+  const sal=profile.salary||0;
 
-async function apiCall(messages,maxTokens=1024){
-  let lastErr="";
-  for(let attempt=0;attempt<2;attempt++){
-    try{
-      const headers={"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"};
-      if(USER_API_KEY)headers["x-api-key"]=USER_API_KEY;
-      const r=await fetch("https://api.anthropic.com/v1/messages",{
-        method:"POST",headers,
-        body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:maxTokens,system:buildSystemPrompt(),messages})
-      });
-      const d=await r.json().catch(()=>null);
-      if(!r.ok){
-        if(r.status===401){lastErr="API key missing or invalid. Open the file, find USER_API_KEY near line 1126, and paste your Anthropic API key.";throw new Error(lastErr);}
-        lastErr=d?.error?.message||("HTTP "+r.status);
-        if(r.status===429||r.status>=500){await new Promise(s=>setTimeout(s,900));continue;}
-        throw new Error(lastErr);
-      }
-      const txt=(d?.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("").trim();
-      if(!txt){lastErr="Empty response";throw new Error(lastErr);}
-      return{ok:true,text:txt};
-    }catch(e){
-      lastErr=e.message||"Network error";
-      if(attempt===0&&/Failed to fetch|NetworkError|network/i.test(lastErr)){await new Promise(s=>setTimeout(s,700));continue;}
-    }
+  // ── GREETING / GENERAL ──
+  if(/^(hi|hello|hey|hii|helo|sup|yo|namaste|bhai|wassup|howdy)[\s!?.]*$/i.test(userMsg.trim())){
+    return `**HUNTER ${name.toUpperCase()} — STATUS ONLINE.**\n\nThe System has your full data loaded. Current standing:\n- **${RANKS[gameState.rank]}-Rank** | Level ${gameState.level} | ${gameState.xp} XP | ${gameState.streak}-day streak\n- Weakest stat: **${d.weakest[0]} (${d.weakest[1]}/100)** — this needs your attention today\n- Today's completion: **${d.todayPct}%**\n\nWhat do you need, Hunter? Ask about fitness, finance, English, tasks, or your overall progress.`;
   }
-  return{ok:false,error:lastErr};
+
+  // ── PROGRESS / STATUS ──
+  if(/progress|status|how am i|how.*doing|brutal truth|overall|report|analyse|analyze|evaluation|assess|review me|check me|tell me about|my stats|my data/.test(q)){
+    const grade=d.avgRecent>=80?"STRONG":d.avgRecent>=60?"BUILDING":d.avgRecent>=40?"INCONSISTENT":"WEAK";
+    return `**◆ SYSTEM ANALYSIS — HUNTER ${name.toUpperCase()}**\n\n**Scores (out of 100):**\n${Object.entries(d.scores).map(([k,v])=>`- ${k.charAt(0).toUpperCase()+k.slice(1)}: **${v}** ${'█'.repeat(Math.round(v/10))}${'░'.repeat(10-Math.round(v/10))}`).join('\n')}\n\n**7-day average completion: ${d.avgRecent}% — ${grade}**\n\nWeakest: **${d.weakest[0]} (${d.weakest[1]}/100)** — this is your bottleneck. Everything else stalls because of it.\nStrongest: **${d.strongest[0]} (${d.strongest[1]}/100)** — protect this momentum.\n\nWeight: ${d.cur}kg → target ${profile.targetWeight||75}kg. ${d.remainingKg>0?`${d.remainingKg}kg remaining (~${d.weeksToTarget} weeks at 0.5kg/week).`:'Target reached or surpassed.'}\n\n**System Directive:** Fix ${d.weakest[0]} first. One battle at a time.`;
+  }
+
+  // ── WEAKNESS ──
+  if(/weak|worst|lowest|biggest problem|lacking|behind|gap|improve|bad at|struggling|failing|issue/.test(q)){
+    const tips={fitness:"Log weight daily. Do any workout — even 20 min walk counts. Consistency > intensity.",discipline:"Set a fixed wake time. First task must be done before 10am. No exceptions.",finance:`Save ₹${Math.round(sal*0.2)} minimum this month. Track every expense.`,english:"Learn 3 words today using the vocab tool. Read one article in English.",looksmax:"Sleep 7-8 hours. Drink 3L water. Consistent routine beats everything.",learning:"30 min focused study daily. Use the dungeon timer."};
+    return `**◆ WEAKNESS IDENTIFIED**\n\nHunter ${name}, your weakest stat is **${d.weakest[0].toUpperCase()} at ${d.weakest[1]}/100**.\n\nThis is not a verdict. It's a target.\n\n**Why it matters:** Every other score is capped by your weakest link. Fix ${d.weakest[0]}, and the whole system levels up.\n\n**Immediate action:** ${tips[d.weakest[0]]||"Start logging data for this stat — the System can't help without data."}\n\n**System Directive:** Do one ${d.weakest[0]} action in the next 2 hours. Not tomorrow. Now.`;
+  }
+
+  // ── FINANCE ──
+  if(/finance|money|salary|budget|expense|save|saving|invest|₹|rupee|spend|financial|suggest|wealth|earning|income|profit|loss|bank|cash|fund/.test(q)){
+    const mexp=thisMonthExpenses();
+    const byBucket={};mexp.forEach(e=>{byBucket[e.category]=(byBucket[e.category]||0)+e.amount;});
+    const rows=allocation.map(a=>{const target=Math.round(sal*a.pct/100);const actual=byBucket[a.n]||0;const diff=target-actual;return `- **${a.n}** (${a.pct}%): Target ₹${target.toLocaleString()} | Spent ₹${actual.toLocaleString()} | ${diff>0?`₹${diff.toLocaleString()} remaining`:`⚠ OVER by ₹${Math.abs(diff).toLocaleString()}`}`;}).join('\n');
+    return `**◆ FINANCE REPORT — HUNTER ${name.toUpperCase()}**\n\nSalary: ₹${sal.toLocaleString()}/mo | Spent this month: ₹${d.spent.toLocaleString()} | Saved: ~${d.saveRate}%\n\n**Allocation vs Actual:**\n${rows}\n\n**Finance Score: ${d.scores.finance}/100**\n\n${d.saveRate>=20?"✅ Save rate is healthy. Stay consistent.":d.saveRate>=10?"⚠ Save rate is low. Cut discretionary spending this week.":"🔴 Danger zone. You are spending too much. Identify one expense to cut today."}\n\n**System Directive:** Log every expense. What isn't tracked, isn't controlled.`;
+  }
+
+  // ── FITNESS / WEIGHT ──
+  if(/fitness|weight|gym|workout|protein|calorie|diet|bulk|cut|body|fat|muscle|nutrition|exercise|training|cardio|run|walk|push|health/.test(q)){
+    return `**◆ FITNESS BRIEF — HUNTER ${name.toUpperCase()}**\n\nCurrent: **${d.cur}kg** → Target: **${profile.targetWeight||75}kg** (${profile.fitnessGoal||'bulk'})\n${d.remainingKg>0?`Gap: ${d.remainingKg}kg — ~${d.weeksToTarget} weeks at consistent 0.5kg/week pace.`:d.weightDiff===0?'No weight data logged yet. Log today.':'Target achieved or passed.'}\n\n**Daily Nutrition Targets:**\n- 🔥 Calories: **${d.n.calories} kcal**\n- 💪 Protein: **${d.n.protein}g** (most important — hit this first)\n- 🍚 Carbs: **${d.n.carbs}g**\n- 🫒 Fat: **${d.n.fat}g**\n\n**Budget-friendly protein sources:** Eggs, moong dal, soya chunks, paneer, curd, chicken (if non-veg).\n\n**Fitness Score: ${d.scores.fitness}/100**\n\n**System Directive:** Log today's weight and check off your workout mission. Data is power.`;
+  }
+
+  // ── ENGLISH ──
+  if(/english|vocab|grammar|word|language|speak|write|learn english/.test(q)){
+    const wordsToS=Math.max(0,1000-engProgress.vocab);
+    return `**◆ ENGLISH MODULE — HUNTER ${name.toUpperCase()}**\n\nVocab learned: **${engProgress.vocab} words** | Streak: **${engProgress.streak} days** | Score: **${engProgress.score}**\n\n**English Score: ${d.scores.english}/100**\n\n${engProgress.vocab<50?"You're at the beginning. 3 words/day = 90 words/month. Start the vocab drill now.":engProgress.vocab<200?"Good start. Push for 10 words/day to see real progress.":"Strong vocabulary base. Focus on writing practice now."}\n\n**Daily targets:**\n- Learn 3+ new words (use vocab tool)\n- Do 1 grammar drill\n- Write 3 sentences in English\n\n**System Directive:** Open the English tab. Do the vocab drill right now — 3 minutes, zero excuses.`;
+  }
+
+  // ── MORNING BRIEFING ──
+  if(/morning|briefing|today|plan.*today|today.*plan|start.*day|day.*start|daily plan|what.*do today|agenda/.test(q)){
+    const todayTasks=tasks.filter(t=>t.date===new Date().toDateString());
+    const doneTasks=todayTasks.filter(t=>t.done).length;
+    return `**◆ MORNING BRIEFING — ${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'})}**\n\nHunter ${name}. The System is watching.\n\n**Today's Status:** ${doneTasks}/${todayTasks.length} missions complete (${d.todayPct}%)\n\n**Top 3 Priorities:**\n1. **${d.weakest[0].toUpperCase()}** — your weakest stat. Give it first energy.\n2. Hit your nutrition targets (${d.n.protein}g protein, ${d.n.calories} kcal)\n3. Complete at least one focus session (dungeon timer)\n\n**Warning:** ${d.scores[d.weakest[0]]<30?`${d.weakest[0]} is critically low at ${d.weakest[1]}/100. One more day ignored = falling further behind.`:`${d.weakest[0]} is at ${d.weakest[1]}/100. Push it above 50 this week.`}\n\n${profile.drive?`**Your drive:** "${profile.drive}" — remember why you started.`:''}\n\n**System Directive:** Don't open social media before completing your first mission.`;
+  }
+
+  // ── RANK / LEVEL UP ──
+  if(/rank|level|xp|s-rank|levelup|level up|promote|promotion/.test(q)){
+    const nextRank=RANKS[Math.min(gameState.rank+1,RANKS.length-1)];
+    const xpForNext=(gameState.rank+1)*500;
+    const xpNeeded=Math.max(0,xpForNext-gameState.xp);
+    return `**◆ RANK ANALYSIS — ${RANKS[gameState.rank]}-RANK**\n\nLevel: **${gameState.level}** | XP: **${gameState.xp}** | Streak: **${gameState.streak} days**\n\nNext rank: **${nextRank}-Rank** | XP needed: **${xpNeeded} XP**\n\nAt current pace (${d.avgRecent}% daily completion):\n- Complete all tasks daily = +200-400 XP/day\n- ${xpNeeded>0?`Reach ${nextRank}-Rank in ~${Math.ceil(xpNeeded/250)} days of strong performance`:'You have the XP — focus on maintaining streak.'}\n\n**Rank Progress:**\n${RANKS.map((r,i)=>`${i<=gameState.rank?'◆':'◇'} ${r}-Rank ${i===gameState.rank?'← YOU':i<gameState.rank?'✓':''}`).join('\n')}\n\n**System Directive:** Complete today's missions. Every task is a step toward ${nextRank}-Rank.`;
+  }
+
+  // ── TASKS / MISSIONS ──
+  if(/task|mission|todo|assign|generate.*task|what.*do|what should|pending|work|jobs|activities/.test(q)){
+    const todayTasks=tasks.filter(t=>t.date===new Date().toDateString());
+    const pending=todayTasks.filter(t=>!t.done);
+    if(pending.length){
+      return `**◆ MISSION BRIEFING**\n\nHunter ${name}, **${pending.length} missions pending** today:\n\n${pending.slice(0,5).map((t,i)=>`${i+1}. **${t.name}** — ${t.cat} | +${t.xp}XP`).join('\n')}${pending.length>5?`\n...and ${pending.length-5} more.`:''}\n\nCompletion: **${d.todayPct}%** | Target: 80%\n\n${d.todayPct<80?`You need ${80-d.todayPct}% more to hit the daily 80% target and earn the +100XP bonus.`:'+100XP daily bonus unlocked! Keep going.'}\n\n**System Directive:** Clear the ${d.weakest[0]} mission first. Weakest stat = highest priority.`;
+    }
+    return `**◆ NO MISSIONS ACTIVE**\n\nNo tasks assigned for today. Go to the Missions tab and tap **"Generate AI Missions"** to get 8 personalised tasks based on your goals.\n\n**System Directive:** Assign missions now. An unplanned day is a wasted day.`;
+  }
+
+  // ── STREAK ──
+  if(/streak|consistent|daily|habit/.test(q)){
+    return `**◆ STREAK REPORT**\n\nCurrent streak: **${gameState.streak} days**\n7-day avg completion: **${d.avgRecent}%**\n\n${gameState.streak>=30?"Elite consistency. Most hunters quit before day 30. You didn't.":gameState.streak>=7?"One week strong. The habit is forming. Don't break it now.":gameState.streak>=3?"3+ days in. The hardest part is the first 21 days. Push through.":"Streak is new. Today matters more than any other day. Show up."}\n\n**System Directive:** Streaks are built one day at a time. Complete today's minimum — even one task.`;
+  }
+
+  // ── DIET PLAN ──
+  if(/diet.*plan|meal|food|eat|7.day|weekly.*food|indian.*food|nutrition plan|khana|khaana|diet suggest/.test(q)){
+    const g=profile.fitnessGoal||'bulk';
+    return `**◆ INDIAN DIET PLAN — ${g.toUpperCase()}**\n\nTarget: ${d.n.calories} kcal | ${d.n.protein}g protein | ${d.n.carbs}g carbs\n\n**Morning (7am):** 4 whole eggs + 2 roti + 1 glass milk — ~${g==='bulk'?'600':'450'} kcal\n**Mid-morning (10am):** 1 banana + handful of peanuts — ~200 kcal\n**Lunch (1pm):** Rice + dal + sabzi + curd — ~${g==='bulk'?'700':'550'} kcal\n**Pre-workout (4pm):** Soya chunks (50g dry) + 1 fruit — ~250 kcal\n**Dinner (7pm):** Roti + dal/paneer + salad — ~${g==='bulk'?'600':'450'} kcal\n**Before bed:** 1 glass milk or dahi — ~150 kcal\n\n**Budget tip:** Eggs + soya chunks + moong dal = cheapest high-protein combo in India.\n\n**System Directive:** Prep your meals the night before. Hunger has no strategy.`;
+  }
+
+  // ── BOSS ──
+  if(/boss|dungeon boss|challenge|weekly boss/.test(q)){
+    if(currentBoss){
+      const hpPct=Math.round(currentBoss.currentHp/currentBoss.hp*100);
+      return `**◆ BOSS STATUS — ${currentBoss.name.toUpperCase()}**\n\n${currentBoss.desc}\n\n**HP: ${currentBoss.currentHp}/${currentBoss.hp} (${hpPct}%)**\n${'█'.repeat(Math.round(hpPct/10))}${'░'.repeat(10-Math.round(hpPct/10))}\n\n**Requirements to damage the boss:**\n${currentBoss.reqs.map(r=>`◆ ${r}`).join('\n')}\n\nReward on defeat: **+${currentBoss.xp} XP + 50 Coins**\n\n**System Directive:** Submit evidence in the Boss tab. Every rep counts as damage.`;
+    }
+    return `**◆ NO ACTIVE BOSS**\n\nGo to the Boss tab to see your weekly challenge.\n\n**System Directive:** Face the boss. Avoiding the challenge is how hunters stay E-Rank forever.`;
+  }
+
+  // ── MOTIVATION / DRIVE ──
+  if(/motivat|inspire|push|tired|give up|cant|can't|hard|struggle|why|drive|demotivat|quit|lazy|bored|stuck|lost/.test(q)){
+    return `**◆ SYSTEM MESSAGE — HUNTER ${name.toUpperCase()}**\n\n${profile.drive?`You said your drive is: **"${profile.drive}"**\n\nThat reason hasn't changed. The situation is the same. What changed is your focus.\n\n`:''}"The System doesn't care about how you feel. It cares about what you do."\n\nYou're at ${RANKS[gameState.rank]}-Rank. ${gameState.streak}-day streak. ${d.scores.discipline}/100 discipline.\n\n**Every hunter who reached S-Rank felt exactly what you feel right now.** The difference: they moved anyway.\n\nYou don't need motivation. You need your next action.\n\n**System Directive:** Do one thing. Right now. Not the hardest thing — just one thing. That's how it starts.`;
+  }
+
+  // ── DEFAULT SMART FALLBACK ──
+  const topIssues=d.sorted.slice(0,2).map(([k,v])=>`${k} (${v}/100)`).join(', ');
+  return `**◆ SYSTEM RESPONSE**\n\nHunter ${name}, here's your current picture:\n\n- **Rank:** ${RANKS[gameState.rank]} | Level ${gameState.level} | ${gameState.xp} XP\n- **Today:** ${d.todayPct}% missions done\n- **Weight:** ${d.cur}kg → ${profile.targetWeight||75}kg target\n- **Biggest gaps:** ${topIssues}\n- **Finance:** ₹${d.spent.toLocaleString()} spent this month (${d.saveRate}% saved)\n\n**The System reads all your data.** Ask me about:\n- *"Give me a brutal truth"* — full analysis\n- *"What's my biggest weakness"* — targeted advice\n- *"Morning briefing"* — today's plan\n- *"Finance report"* — money breakdown\n- *"Diet plan"* — personalised nutrition\n- *"Rank status"* — XP & rank progress\n\n**System Directive:** The data is there. Use it.`;
+}
+
+// Fake typing delay for realism
+async function apiCall(messages,maxTokens=1024){
+  await new Promise(r=>setTimeout(r,600+Math.random()*800));
+  const lastMsg=messages[messages.length-1];
+  const userText=typeof lastMsg.content==="string"?lastMsg.content:"";
+  const reply=localAI(userText);
+  return{ok:true,text:reply};
 }
 
 async function sendMsg(){
@@ -1205,17 +1252,39 @@ function setBtnLoading(btn,on){
 }
 
 function getMorningBriefing(){
-  callAI("Give a powerful morning briefing using my real stats. Include: today's single most important focus, top 3 priorities, one motivational line tied to my drive, and one blunt warning about my weakest score. Under 150 words.",txt=>{document.getElementById("morningBriefing").innerHTML=fmt(txt);},{el:"morningBriefing",loadText:"Analysing hunter data"});
+  const el=document.getElementById("morningBriefing");
+  el.innerHTML='<span class="loading-row"><span class="spinner"></span>Analysing hunter data<span class="load-dots"></span></span>';
+  setTimeout(()=>{const res=localAI("morning briefing");el.innerHTML=fmt(res);},900);
 }
 async function generateAITasks(){
-  const btn=event?.target;
-  callAI(`Generate 8 personalized daily missions tailored to my goals, weakest scores, and drive. Return ONLY a JSON array, no other text: [{"name":"...","cat":"Fitness|Diet|English|Finance|Learning|Looksmax|Personal","xp":15-60,"coins":1-6}]`,txt=>{
-    try{
-      const arr=JSON.parse(txt.replace(/```json|```/g,"").trim());const today=new Date().toDateString();
-      tasks=tasks.filter(t=>t.date!==today).concat(arr.map((t,i)=>({id:Date.now()+i,name:t.name,cat:t.cat,xp:t.xp||30,coins:t.coins||3,done:false,date:today})));
-      recordToday();save();renderTasks();showNotif("MISSIONS ASSIGNED","8 new missions from the System.");
-    }catch(e){showNotif("ERROR","Could not parse missions. Try again.");}
-  },{btn,onErr:()=>{}});
+  const btn=event?.target;if(btn)setBtnLoading(btn,true);
+  const d=getHunterData();const today=new Date().toDateString();
+  const cats=["Fitness","Diet","English","Finance","Learning","Looksmax","Personal"];
+  const missionPool={
+    Fitness:[{name:"Complete 30-min workout",xp:50,coins:5},{name:"Log today's weight",xp:20,coins:2},{name:"Walk 5000+ steps",xp:30,coins:3},{name:"Do 50 pushups",xp:35,coins:4}],
+    Diet:[{name:`Eat ${d.n.protein}g protein today`,xp:40,coins:4},{name:"Drink 3L water",xp:25,coins:3},{name:"No junk food today",xp:30,coins:3},{name:"Cook a healthy meal",xp:35,coins:4}],
+    English:[{name:"Learn 3 new words",xp:25,coins:3},{name:"Complete grammar drill",xp:20,coins:2},{name:"Write 5 sentences in English",xp:30,coins:3},{name:"Read an article in English",xp:25,coins:3}],
+    Finance:[{name:"Log all expenses today",xp:20,coins:2},{name:"Review monthly budget",xp:25,coins:3},{name:"Save ₹"+Math.round((profile.salary||15000)*0.05)+" today",xp:40,coins:4},{name:"No unnecessary spending",xp:30,coins:3}],
+    Learning:[{name:"Study for 30 minutes",xp:40,coins:4},{name:"Read for 20 minutes",xp:25,coins:3},{name:"Watch one educational video",xp:20,coins:2},{name:"Practice a skill for 45 min",xp:50,coins:5}],
+    Looksmax:[{name:"Sleep 7+ hours tonight",xp:35,coins:4},{name:"Skincare routine AM+PM",xp:20,coins:2},{name:"Cold shower today",xp:25,coins:3},{name:"Dress well & groom properly",xp:20,coins:2}],
+    Personal:[{name:"Meditate for 10 minutes",xp:20,coins:2},{name:"Plan tomorrow tonight",xp:15,coins:2},{name:"No screen before sleep",xp:20,coins:2},{name:"Call family member",xp:15,coins:2}],
+  };
+  // Weight towards weakest stat
+  const picked=[];
+  const weak=d.weakest[0].charAt(0).toUpperCase()+d.weakest[0].slice(1);
+  const weakCat=cats.find(c=>c.toLowerCase()===d.weakest[0])||"Fitness";
+  // 3 from weakest, 1 from each other
+  const weakMissions=(missionPool[weakCat]||missionPool.Fitness).slice(0,3);
+  weakMissions.forEach(m=>picked.push({...m,cat:weakCat}));
+  cats.filter(c=>c.toLowerCase()!==d.weakest[0]).slice(0,5).forEach(cat=>{
+    const pool=missionPool[cat]||[];
+    if(pool.length)picked.push({...pool[Math.floor(Math.random()*pool.length)],cat});
+  });
+  await new Promise(r=>setTimeout(r,800));
+  tasks=tasks.filter(t=>t.date!==today).concat(picked.slice(0,8).map((t,i)=>({id:Date.now()+i,name:t.name,cat:t.cat,xp:t.xp||30,coins:t.coins||3,done:false,date:today})));
+  recordToday();save();renderTasks();
+  if(btn)setBtnLoading(btn,false);
+  showNotif("MISSIONS ASSIGNED","8 missions assigned. "+weak+" is your priority today.");
 }
 function addCustomTask(){
   const name=prompt("Mission name:");if(!name)return;
@@ -1224,29 +1293,107 @@ function addCustomTask(){
   recordToday();save();renderTasks();showNotif("MISSION ADDED",name);
 }
 function endDayReview(){
-  const btn=event?.target;
+  const btn=event?.target;if(btn)setBtnLoading(btn,true);
   const pct=calcTodayPct();recordToday();
-  callAI(`End of day review. Task completion today: ${pct}%. Give a Solo Leveling style review: blunt performance assessment, a reward OR penalty depending on whether completion beat 80%, and tomorrow's single focus. Tie it to my drive. Under 150 words.`,txt=>{
-    if(pct>=80){addXP(100);addCoins(20);showNotif("DAILY BONUS","80%+ completion! +100XP +20 Coins");}
-    showModal("◆ SYSTEM REVIEW",txt);
+  const d=getHunterData();
+  setTimeout(()=>{
+    const grade=pct>=80?"ELITE":pct>=60?"ACCEPTABLE":pct>=40?"WEAK":"FAILURE";
+    const reward=pct>=80?`\n\n🏆 **BONUS UNLOCKED:** +100 XP +20 Coins for 80%+ completion!`:`\n\n⚠️ **NO BONUS.** Didn't clear 80%. The System remembers.`;
+    const tomorrow=`\n\n**Tomorrow's single focus:** ${d.weakest[0].charAt(0).toUpperCase()+d.weakest[0].slice(1)} (${d.weakest[1]}/100) — this is your priority until it passes 50.`;
+    const drive=profile.drive?`\n\n*"${profile.drive}"* — that's why you started. Come back stronger.`:"";
+    const review=`**◆ SYSTEM REVIEW — ${grade}**\n\nCompletion: **${pct}%** today. ${pct>=80?"The System is satisfied. You showed up.":pct>=60?"Decent effort. But decent doesn't create legends.":pct>=40?"Below standard, Hunter. The gap between where you are and where you want to be didn't close today.":"Unacceptable. Every missed task is a debt you owe your future self."}${reward}${tomorrow}${drive}`;
+    if(pct>=80){addXP(100);addCoins(20);}
+    showModal("◆ SYSTEM REVIEW",review);
     gameState.streak++;save();renderAll();renderCharts();
-  },{btn});
+    if(btn)setBtnLoading(btn,false);
+  },900);
 }
+const VOCAB_BANK=[
+  ["Tenacious","/tɪˈneɪʃəs/","Persistent, not giving up easily","He was tenacious in his pursuit of fitness goals."],
+  ["Diligent","/ˈdɪlɪdʒənt/","Showing careful effort and hard work","A diligent hunter logs data every single day."],
+  ["Resilient","/rɪˈzɪliənt/","Recovering quickly from difficulties","Stay resilient — setbacks are part of the process."],
+  ["Discipline","/ˈdɪsɪplɪn/","Training yourself to follow rules consistently","Discipline beats motivation every single time."],
+  ["Persevere","/ˌpɜːrsɪˈvɪər/","Continue despite difficulty","You must persevere even when progress is slow."],
+  ["Calibrate","/ˈkælɪbreɪt/","Adjust carefully to achieve desired results","Calibrate your diet based on weekly weight data."],
+  ["Austere","/ɔːˈstɪər/","Simple, strict, without luxury","An austere lifestyle builds character and saves money."],
+  ["Fortitude","/ˈfɔːrtɪtuːd/","Mental strength during difficulty","It takes fortitude to wake up early every single day."],
+  ["Pragmatic","/præɡˈmætɪk/","Dealing with things practically","Be pragmatic — fix the biggest weakness first."],
+  ["Relentless","/rɪˈlentləs/","Unceasingly intense","Be relentless in your pursuit of your goals."],
+  ["Frugal","/ˈfruːɡəl/","Careful with money, not wasteful","A frugal mindset builds wealth over time."],
+  ["Meticulous","/məˈtɪkjʊləs/","Great attention to detail","Be meticulous about tracking your macros daily."],
+  ["Stoic","/ˈstoʊɪk/","Enduring pain without complaint","Stay stoic when progress feels slow."],
+  ["Conviction","/kənˈvɪkʃən/","A strong belief or opinion","Act with conviction — doubt kills progress."],
+  ["Momentum","/moʊˈmentəm/","Strength gained by consistent motion","Build momentum with small wins every day."],
+  ["Grit","/ɡrɪt/","Courage and determination","Grit is what separates hunters from quitters."],
+  ["Deliberate","/dɪˈlɪbərɪt/","Done consciously and intentionally","Every action should be deliberate, not random."],
+  ["Leverage","/ˈlevərɪdʒ/","Using something to maximum advantage","Find the highest leverage action and do it first."],
+  ["Compound","/ˈkɒmpaʊnd/","Increase; made of several elements","Compound habits create extraordinary results over time."],
+  ["Threshold","/ˈθreʃhoʊld/","A limit; a point of beginning","Push past your threshold — growth lives there."],
+  ["Consistency","/kənˈsɪstənsi/","Doing the same thing reliably over time","Consistency is the only strategy that works long-term."],
+  ["Austere","/ɔːˈstɪər/","Strict and simple without luxury","An austere routine eliminates distraction."],
+  ["Execute","/ˈeksɪkjuːt/","Put a plan into effect","A good plan executed now beats a perfect plan later."],
+  ["Sovereign","/ˈsɒvrɪn/","Possessing supreme power","Become sovereign over your habits and your time."],
+];
+let _vocabIdx=0;
 function getVocab(){
-  callAI("Give me 3 advanced but useful English words. For each: Word | /pronunciation/ | meaning | example sentence. Then one short usage tip.",txt=>{document.getElementById("vocabCard").innerHTML=fmt(txt);engProgress.vocab+=3;save();renderAll();addXP(25);showNotif("+3 VOCAB","Words added to your arsenal.");},{el:"vocabCard",loadText:"Searching vocabulary"});
+  const el=document.getElementById("vocabCard");
+  el.innerHTML='<span class="loading-row"><span class="spinner"></span>Loading vocab<span class="load-dots"></span></span>';
+  setTimeout(()=>{
+    const three=[VOCAB_BANK[_vocabIdx%VOCAB_BANK.length],VOCAB_BANK[(_vocabIdx+1)%VOCAB_BANK.length],VOCAB_BANK[(_vocabIdx+2)%VOCAB_BANK.length]];
+    _vocabIdx+=3;
+    const txt=three.map(w=>`**${w[0]}** | ${w[1]} | ${w[2]}\n*"${w[3]}"*`).join("\n\n")
+      +"\n\n**Tip:** Read each word aloud 3 times. Use it in a sentence you write — that cements it.";
+    el.innerHTML=fmt(txt);engProgress.vocab+=3;save();renderAll();addXP(25);showNotif("+3 VOCAB","Words added to your arsenal.");
+  },700);
 }
-function getWritingPrompt(){callAI("Give ONE short writing challenge (2-3 sentences to write) about self-improvement or daily life. Just the prompt.",txt=>{document.getElementById("writingPrompt").innerHTML="<strong>MISSION:</strong> "+fmt(txt);},{el:"writingPrompt",loadText:"Forging challenge"});}
+const WRITING_PROMPTS=["Write 2-3 sentences about a habit you are trying to build and why it matters to you.","Describe your biggest goal this year in 2-3 sentences. Be specific with numbers.","Write about a time you overcame a difficult challenge. What did it teach you?","Explain why discipline matters more than motivation in 2-3 sentences.","Describe your ideal morning routine and why each step is important.","Write about one thing you want to improve about yourself this month.","Explain the difference between a short-term goal and a long-term vision.","Write 2-3 sentences about how you plan to manage your money this month."];
+let _wpIdx=0;
+function getWritingPrompt(){
+  const el=document.getElementById("writingPrompt");
+  el.innerHTML='<span class="loading-row"><span class="spinner"></span>Forging challenge<span class="load-dots"></span></span>';
+  setTimeout(()=>{el.innerHTML="<strong>MISSION:</strong> "+WRITING_PROMPTS[_wpIdx++%WRITING_PROMPTS.length];},600);
+}
 function submitWriting(){
-  const btn=event?.target;
   const ans=document.getElementById("writingAnswer").value.trim();if(!ans){showNotif("EMPTY","Write something first.");return;}
-  callAI("Evaluate this English writing. Score /10, 2 mistakes with corrections, one tip. Writing: '"+ans+"'",txt=>{document.getElementById("writingPrompt").innerHTML+=`<br><br><strong style='color:var(--gold)'>FEEDBACK:</strong><br>${fmt(txt)}`;engProgress.score+=5;save();addXP(30);renderAll();showNotif("WRITING EVALUATED","System reviewed your work.");},{btn});
+  const words=ans.split(/\s+/).filter(Boolean);
+  const hasCapital=/^[A-Z]/.test(ans);
+  const hasPeriod=/[.!?]$/.test(ans.trim());
+  const longEnough=words.length>=10;
+  const score=Math.min(10,Math.round((words.length/20)*4+(hasCapital?2:0)+(hasPeriod?2:0)+(words.length>=20?2:0)));
+  const feedback=`**Score: ${score}/10**\n\n${!hasCapital?"⚠ Start sentences with a capital letter.":"✅ Good use of capital letters."}\n${!hasPeriod?"⚠ End your writing with a period or punctuation.":"✅ Proper punctuation."}\n${!longEnough?"⚠ Write more — aim for at least 20 words.":"✅ Good length."}\n\n**Tip:** ${score>=8?"Strong writing. Focus on using advanced vocabulary next time.":score>=6?"Good effort. Add more detail and specific examples.":"Keep practicing. Write one paragraph daily — improvement is guaranteed."}`;
+  document.getElementById("writingPrompt").innerHTML+=`<br><br><strong style='color:var(--gold)'>FEEDBACK:</strong><br>${fmt(feedback)}`;
+  engProgress.score+=5;save();addXP(30);renderAll();showNotif("WRITING EVALUATED","System reviewed your work.");
 }
-function getGrammarQ(){callAI("Give ONE intermediate English grammar question. Format exactly: Question: [q] Answer: [a]",txt=>{document.getElementById("grammarQ").innerHTML="<strong>DRILL:</strong> "+fmt(txt.split("Answer:")[0].replace("Question:",""));document.getElementById("grammarQ").dataset.answer=txt.split("Answer:")[1]?.trim()||"";document.getElementById("grammarFeedback").innerHTML="";},{el:"grammarQ",loadText:"Loading drill"});}
+const GRAMMAR_BANK=[
+  {q:"Choose the correct form: She ___ (go/goes) to the gym every morning.",a:"goes",e:"Third-person singular present tense uses 'goes'."},
+  {q:"Fill in the blank: I have ___ (already/yet) completed my workout.",a:"already",e:"'Already' is used in positive sentences; 'yet' in negatives/questions."},
+  {q:"Which is correct? 'He don't care' or 'He doesn't care'?",a:"He doesn't care",e:"Third-person singular uses 'doesn't', not 'don't'."},
+  {q:"Choose: I am ___ (more stronger / stronger) than before.",a:"stronger",e:"Never use 'more' with comparative adjectives ending in -er."},
+  {q:"Fill: She ___ (has been / have been) working hard all week.",a:"has been",e:"Third-person singular takes 'has been'."},
+  {q:"Correct the sentence: 'Yesterday I go to the market.'",a:"Yesterday I went to the market.",e:"Past tense of 'go' is 'went'."},
+  {q:"Choose: He is ___ (interested / interesting) in fitness.",a:"interested",e:"'Interested' describes a person's feeling; 'interesting' describes the thing."},
+  {q:"Fill: I will call you ___ (when / while) I arrive.",a:"when",e:"Use 'when' for a point in time; 'while' for ongoing actions."},
+  {q:"Which is correct? 'I have saw' or 'I have seen'?",a:"I have seen",e:"Past participle of 'see' is 'seen', not 'saw'."},
+  {q:"Choose: There ___ (is/are) many ways to improve your discipline.",a:"are",e:"'Ways' is plural, so use 'are'."},
+];
+let _gqIdx=0;
+function getGrammarQ(){
+  const el=document.getElementById("grammarQ");
+  el.innerHTML='<span class="loading-row"><span class="spinner"></span>Loading drill<span class="load-dots"></span></span>';
+  setTimeout(()=>{
+    const q=GRAMMAR_BANK[_gqIdx%GRAMMAR_BANK.length];_gqIdx++;
+    el.innerHTML="<strong>DRILL:</strong> "+q.q;
+    el.dataset.answer=q.a;el.dataset.explain=q.e;
+    document.getElementById("grammarFeedback").innerHTML="";
+  },600);
+}
 function checkGrammar(){
-  const btn=event?.target;
   const ans=document.getElementById("grammarAns").value.trim();if(!ans)return;
-  const expected=document.getElementById("grammarQ").dataset.answer;
-  callAI(`Grammar question. Expected: "${expected}". Student said: "${ans}". Correct? Brief 1-2 line feedback. Start with CORRECT or INCORRECT.`,txt=>{const ok=txt.toLowerCase().includes("correct")&&!txt.toLowerCase().includes("incorrect");document.getElementById("grammarFeedback").innerHTML=`<span style="color:${ok?"var(--jade)":"var(--rose)"}">${fmt(txt)}</span>`;if(ok){addXP(15);engProgress.score+=2;save();renderAll();}},{btn});
+  const expected=document.getElementById("grammarQ").dataset.answer||"";
+  const explain=document.getElementById("grammarQ").dataset.explain||"";
+  const ok=ans.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim()===expected.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim();
+  document.getElementById("grammarFeedback").innerHTML=`<span style="color:${ok?"var(--jade)":"var(--rose)"}">${ok?"✅ CORRECT!":"❌ INCORRECT. Answer: <strong>"+expected+"</strong>"}</span><br><span style="font-size:12px;color:var(--text-dim)">${explain}</span>`;
+  if(ok){addXP(15);engProgress.score+=2;save();renderAll();}
 }
 function getDietPlan(){switchTab("system");const cur=weights.length?weights[weights.length-1].weight:profile.weight||59;const n=calcNutrition(cur);setTimeout(()=>{document.getElementById("chatInput").value=`Give me a 7-day Indian diet plan for ${profile.fitnessGoal}. Current ${cur}kg, target ${profile.targetWeight}kg. Daily ~${n.calories} cal, ${n.protein}g protein. Budget-friendly. Breakfast, lunch, dinner, snacks.`;sendMsg();},300);}
 function getFinanceAdvice(){
@@ -1261,14 +1408,19 @@ function getFinanceAdvice(){
   },300);
 }
 async function submitBossEvidence(){
-  const btn=event?.target;
-  const ev=document.getElementById("bossEvidence").value.trim();if(!ev)return;
-  callAI(`Hunter submits evidence for boss "${currentBoss.name}": "${ev}". Evaluate as the System. Format: STATUS: (Verified/Partial/Insufficient) | SCORE: (0-100) | DAMAGE: (0-${Math.round(currentBoss.currentHp*.4)}) | ANALYSIS:`,txt=>{
-    const damage=parseInt(txt.match(/DAMAGE:\s*(\d+)/)?.[1])||10;
-    currentBoss.currentHp=Math.max(0,currentBoss.currentHp-damage);
-    if(currentBoss.currentHp<=0){addXP(currentBoss.xp);addCoins(50);showNotif("BOSS DEFEATED!","Defeated "+currentBoss.name+"! +"+currentBoss.xp+"XP");}
-    save();renderBoss();renderAll();showModal("◆ SYSTEM ANALYSIS",txt);
-  },{btn});
+  const btn=event?.target;if(btn)setBtnLoading(btn,true);
+  const ev=document.getElementById("bossEvidence").value.trim();if(!ev){if(btn)setBtnLoading(btn,false);return;}
+  await new Promise(r=>setTimeout(r,900));
+  const words=ev.split(/\s+/).filter(Boolean).length;
+  const maxDmg=Math.round(currentBoss.currentHp*.4);
+  const status=words>=20?"Verified":words>=8?"Partial":"Insufficient";
+  const score=Math.min(100,words*4+10);
+  const damage=status==="Verified"?maxDmg:status==="Partial"?Math.round(maxDmg*.5):5;
+  const analysis=`STATUS: ${status} | SCORE: ${score} | DAMAGE: ${damage}\n\nANALYSIS: ${status==="Verified"?"Strong evidence submitted. The System acknowledges your effort. Keep this standard.":status==="Partial"?"Evidence accepted but thin. Provide more detail next time for full damage.":"Evidence insufficient. Submit at least 2-3 sentences describing what you actually did."}\n\nDamage dealt: **${damage} HP**`;
+  currentBoss.currentHp=Math.max(0,currentBoss.currentHp-damage);
+  if(currentBoss.currentHp<=0){addXP(currentBoss.xp);addCoins(50);showNotif("BOSS DEFEATED!","Defeated "+currentBoss.name+"! +"+currentBoss.xp+"XP");}
+  save();renderBoss();renderAll();showModal("◆ SYSTEM ANALYSIS",analysis);
+  if(btn)setBtnLoading(btn,false);
 }
 function getMonarchAnalysis(){switchTab("system");setTimeout(()=>{document.getElementById("chatInput").value="Give me a complete Monarch Evaluation — assess every score, name my single biggest weakness, predict when I reach S-Rank at this pace, and the 3 highest-leverage changes for this week.";sendMsg();},300);}
 
