@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>DEsciplina - Samleveling</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Desciplina - SamLeveling</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -17,7 +17,8 @@
   --good:#34d39e;--warn:#f5b14c;--bad:#ff5d6c;--gold:#e8c46b;
   --r:18px;--r-sm:12px;--shadow:0 18px 50px -20px rgba(0,0,0,.7);--blur:saturate(140%) blur(16px);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{touch-action:manipulation}
 html,body{height:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--txt);font-weight:400;
   background-image:radial-gradient(900px 500px at 80% -10%,rgba(124,131,255,.10),transparent 60%),
@@ -1294,6 +1295,11 @@ function hideLock(){document.getElementById('lock').classList.remove('on');pinBu
     if(S.pin)showLockEnter();
   });
 })();
+</script>
+<script>
+let __lt=0;
+document.addEventListener('touchend',function(e){const n=Date.now();if(n-__lt<=300)e.preventDefault();__lt=n;},{passive:false});
+document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:false});
 </script>
 </body>
 </html>
