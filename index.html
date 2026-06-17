@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>SamLeveling - LifeOS</title>
+<title>Desciplina - Samleveling</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -602,14 +602,20 @@ function syncToDrive(silent){
     .then(()=>{setSyncState("Synced ✓");if(!silent)toast("Synced to Google Drive ✓");})
     .catch(()=>{setSyncState("Sync Failed");if(!silent)toast("Sync failed — check URL / deployment.");});
 }
-function loadFromDrive(){
-  if(!S.gasUrl){toast("Add your Drive URL first.");return;}
-  const cb="lifeos_cb_"+Date.now();const sc=document.createElement("script");
-  window[cb]=function(res){try{if(res&&res.ok&&res.data){var keepPin=S.pin;S=applyMigrations(res.data);S.pin=keepPin;persist();render();toast("Restored from Drive ✓");setSyncState("Synced ✓");}else toast("No data found on Drive.");}finally{delete window[cb];sc.remove();}};
-  sc.src=S.gasUrl+(S.gasUrl.indexOf("?")>-1?"&":"?")+"token="+encodeURIComponent(TOKEN)+"&callback="+cb;
-  sc.onerror=function(){toast("Could not reach Drive. Check URL / deployment.");setSyncState("Sync Failed");delete window[cb];};
+function pullFromDrive(silent,cb){
+  if(!S.gasUrl){if(!silent)toast("Add your Drive URL first.");if(cb)cb(false);return;}
+  let done=false;const name="lifeos_cb_"+Date.now();const sc=document.createElement("script");
+  const finish=function(ok){if(done)return;done=true;try{sc.remove();}catch(e){}delete window[name];if(cb)cb(ok);};
+  window[name]=function(res){
+    if(res&&res.ok&&res.data){var keepPin=S.pin;S=applyMigrations(res.data);S.pin=keepPin;persist();render();setSyncState("Synced ✓");if(!silent)toast("Restored from Drive ✓");finish(true);}
+    else{if(!silent)toast("No data found on Drive.");finish(false);}
+  };
+  sc.onerror=function(){if(!silent)toast("Could not reach Drive. Check URL / deployment.");setSyncState("Sync Failed");finish(false);};
+  sc.src=S.gasUrl+(S.gasUrl.indexOf("?")>-1?"&":"?")+"token="+encodeURIComponent(TOKEN)+"&callback="+name;
   document.body.appendChild(sc);
+  setTimeout(function(){finish(false);},4500);
 }
+function loadFromDrive(){pullFromDrive(false);}
 function setSyncState(txt){const el=document.getElementById("syncState");if(el)el.textContent=txt;}
 
 /* render */
@@ -807,10 +813,12 @@ function hideLock(){document.getElementById('lock').classList.remove('on');pinBu
 
 (function init(){
   D();persist();updateGreet();tick();go('dashboard');
-  setTimeout(function(){
+  // pull latest from Drive on every open so all devices stay in sync
+  pullFromDrive(true,function(){
+    render();updateGreet();
     document.getElementById('loader').classList.add('hide');
     if(S.pin)showLockEnter();
-  },900);
+  });
 })();
 </script>
 </body>
