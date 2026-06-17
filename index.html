@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>LIFE OS — SAM'S DISCIPLINE SYSTEM</title>
+<title>SamLeveling - LifeOS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -35,7 +35,7 @@ input,select,textarea{font-family:inherit}
 .logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;box-shadow:0 0 24px var(--accent-glow)}
 .brand h1{font-size:16px;font-weight:700;line-height:1.1;letter-spacing:1px}.brand small{color:var(--faint);font-size:11px;letter-spacing:1.5px;font-weight:600}
 .nav{display:flex;flex-direction:column;gap:3px}
-.nav button{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r-sm);color:var(--muted);font-size:13.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:.18s;text-align:left;width:100%}
+.nav button{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r-sm);color:var(--muted);font-size:13.5px;font-weight:600;letter-spacing:.4px;text-transform:capitalize;transition:.18s;text-align:left;width:100%}
 .nav button .ic{font-size:16px;width:20px;text-align:center}
 .nav button:hover{background:var(--glass-2);color:var(--txt)}
 .nav button.on{background:linear-gradient(90deg,rgba(124,131,255,.18),transparent);color:#fff;box-shadow:inset 2px 0 0 var(--accent)}
@@ -52,13 +52,13 @@ input,select,textarea{font-family:inherit}
 .view{display:none;animation:fadeUp .5s cubic-bezier(.2,.8,.2,1)}
 .view.on{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:none}}
-.sec-title{font-size:21px;font-weight:700;margin:4px 0 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-transform:uppercase;letter-spacing:.3px}
+.sec-title{font-size:21px;font-weight:700;margin:4px 0 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-transform:capitalize;letter-spacing:.3px}
 .sec-title small{font-size:12px;color:var(--faint);font-weight:500;text-transform:none}
 .grid{display:grid;gap:16px}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
 @media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
 .card{background:var(--glass);border:1px solid var(--stroke);border-radius:var(--r);padding:18px;backdrop-filter:var(--blur);box-shadow:var(--shadow);transition:transform .22s,border-color .22s}
 .card:hover{transform:translateY(-3px);border-color:var(--stroke-2)}
-.card h3{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.7px;margin-bottom:12px;text-transform:uppercase}
+.card h3{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.7px;margin-bottom:12px;text-transform:capitalize}
 .kv{font-size:30px;font-weight:700}.kv small{font-size:13px;color:var(--faint);font-weight:500}
 .core-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
 .core{position:relative;width:188px;height:188px;flex:0 0 188px}.core svg{transform:rotate(-90deg);width:100%;height:100%;display:block}
@@ -67,7 +67,7 @@ input,select,textarea{font-family:inherit}
 .core .num{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
 .core .num b{font-size:46px;font-weight:700;line-height:1}.core .num span{font-size:11px;color:var(--muted);letter-spacing:2px;font-weight:600}
 .core-info{flex:1;min-width:200px}
-.tier{display:inline-block;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.8px;margin-bottom:10px;text-transform:uppercase}
+.tier{display:inline-block;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.8px;margin-bottom:10px;text-transform:capitalize}
 .breaklist{display:flex;flex-direction:column;gap:9px;margin-top:6px}
 .brow{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600}
 .brow .lbl{width:92px;color:var(--muted)}
@@ -83,7 +83,7 @@ input,select,textarea{font-family:inherit}
 .row .meta{font-size:11px;color:var(--faint);font-weight:600}
 .row .x{color:var(--faint);font-size:18px;padding:2px 6px;border-radius:6px;transition:.15s}
 .row .x:hover{color:var(--bad);background:rgba(255,93,108,.1)}
-.chip{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap}
+.chip{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;letter-spacing:.4px;text-transform:capitalize;white-space:nowrap}
 .chip.done{background:rgba(52,211,158,.18);color:var(--good)}
 .chip.up{background:var(--glass-2);color:var(--muted)}
 .chip.miss{background:rgba(255,93,108,.16);color:var(--bad)}
@@ -91,7 +91,7 @@ input,select,textarea{font-family:inherit}
 .field{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
 input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{background:var(--bg2);border:1px solid var(--stroke);color:var(--txt);padding:11px 13px;border-radius:var(--r-sm);font-size:16px;flex:1 1 130px;min-width:0;transition:.18s;font-weight:500;max-width:100%}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0b0d16}
-.btn{padding:11px 17px;border-radius:var(--r-sm);font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;transition:.18s;background:linear-gradient(135deg,var(--accent),#4c52d6);color:#fff;box-shadow:0 8px 24px -10px var(--accent-glow)}
+.btn{padding:11px 17px;border-radius:var(--r-sm);font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:capitalize;transition:.18s;background:linear-gradient(135deg,var(--accent),#4c52d6);color:#fff;box-shadow:0 8px 24px -10px var(--accent-glow)}
 .btn:hover{transform:translateY(-2px);filter:brightness(1.08)}.btn:active{transform:translateY(0)}
 .btn.ghost{background:var(--glass-2);border:1px solid var(--stroke);box-shadow:none;color:var(--txt)}
 .btn.ghost:hover{border-color:var(--stroke-2)}
@@ -100,13 +100,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 .btn.bad{background:linear-gradient(135deg,var(--bad),#d83b4a)}
 .btn.gold{background:linear-gradient(135deg,var(--gold),#c9a23f);color:#1a1405}
 .coach-msg{background:linear-gradient(135deg,rgba(124,131,255,.12),rgba(124,131,255,.03));border:1px solid rgba(124,131,255,.25);border-radius:var(--r);padding:18px 20px;font-size:15px;line-height:1.6;font-weight:500}
-.coach-msg .who{font-size:12px;color:var(--accent-2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:700}
+.coach-msg .who{font-size:12px;color:var(--accent-2);letter-spacing:1px;text-transform:capitalize;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:700}
 .coach-msg .who .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 1.6s infinite}
 @keyframes pulse{50%{opacity:.4}}
 .tip{background:var(--glass-2);border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 10px 10px 0;font-size:14px;margin-bottom:10px;color:#dfe3ef;font-weight:500}
 .shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 .item{background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);padding:16px;text-align:center}
-.item .ico{font-size:26px;margin-bottom:8px}.item .nm{font-size:14px;font-weight:600;margin-bottom:4px;text-transform:uppercase}
+.item .ico{font-size:26px;margin-bottom:8px}.item .nm{font-size:14px;font-weight:600;margin-bottom:4px;text-transform:capitalize}
 .item .price{color:var(--gold);font-weight:700;font-size:14px;margin-bottom:10px}
 .pen-card{border-color:rgba(255,93,108,.3)!important}
 .pen-card.active-pen{box-shadow:0 0 0 1px var(--bad),0 0 30px -8px rgba(255,93,108,.4)}
@@ -119,7 +119,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 .bnav{display:none}
 @media(max-width:860px){
   .bnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:40;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(10,11,16,.82);border-top:1px solid var(--stroke);backdrop-filter:var(--blur)}
-  .bnav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--faint);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:5px 8px;flex:1;transition:.15s}
+  .bnav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--faint);font-size:9.5px;font-weight:700;text-transform:capitalize;letter-spacing:.4px;padding:5px 8px;flex:1;transition:.15s}
   .bnav button .ic{font-size:18px}.bnav button.on{color:var(--accent-2)}
 }
 .sheet{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
@@ -127,7 +127,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 .sheet .panel{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--stroke);border-radius:22px 22px 0 0;padding:14px 14px calc(20px + env(safe-area-inset-bottom));animation:slideUp .25s}
 .sheet .grip{width:40px;height:4px;background:#333;border-radius:4px;margin:2px auto 12px}
 .sheet .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sheet .sgrid button{padding:14px 8px;border-radius:12px;background:var(--glass-2);border:1px solid var(--stroke);display:flex;flex-direction:column;gap:6px;align-items:center;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase}
+.sheet .sgrid button{padding:14px 8px;border-radius:12px;background:var(--glass-2);border:1px solid var(--stroke);display:flex;flex-direction:column;gap:6px;align-items:center;font-size:11px;color:var(--muted);font-weight:600;text-transform:capitalize}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 #fx{position:fixed;inset:0;z-index:90;pointer-events:none;display:grid;place-items:center}
@@ -143,31 +143,31 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 @media(max-width:860px){.toast{bottom:96px}}
 .muted{color:var(--muted);font-size:13px;line-height:1.6;font-weight:500}
 .split{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.tag{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--glass-2);border:1px solid var(--stroke);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.tag{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--glass-2);border:1px solid var(--stroke);color:var(--muted);font-weight:700;text-transform:capitalize;letter-spacing:.4px}
 .restrict-banner{display:none;background:linear-gradient(90deg,rgba(255,93,108,.16),transparent);border:1px solid rgba(255,93,108,.3);border-radius:var(--r-sm);padding:12px 16px;margin-bottom:16px;font-size:13.5px;font-weight:600}
 .restrict-banner.on{display:block;animation:fadeUp .4s}
 .alloc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media(max-width:760px){.alloc-grid{grid-template-columns:repeat(2,1fr)}}
 .alloc{background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);padding:14px;position:relative;overflow:hidden}
-.alloc .ico{font-size:20px}.alloc .lab{font-size:12px;color:var(--muted);margin:6px 0 2px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.alloc .ico{font-size:20px}.alloc .lab{font-size:12px;color:var(--muted);margin:6px 0 2px;font-weight:700;text-transform:capitalize;letter-spacing:.4px}
 .alloc .amt{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}.alloc .pc{font-size:11px;color:var(--faint);font-weight:600}
 .alloc .strip{position:absolute;left:0;top:0;bottom:0;width:4px}
 .plan-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.plan-head .dname{font-size:18px;font-weight:700;text-transform:uppercase}
+.plan-head .dname{font-size:18px;font-weight:700;text-transform:capitalize}
 .daypill{display:inline-flex;gap:5px}
 .daypill b{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:12px;background:var(--glass-2);border:1px solid var(--stroke);color:var(--muted);font-weight:700}
 .daypill b.on{background:linear-gradient(135deg,var(--accent),#4c52d6);color:#fff;border-color:transparent}
 .exs{margin-left:auto;color:var(--accent-2);font-weight:700;font-size:13px;white-space:nowrap}
 .why{font-size:12.5px;color:var(--muted);background:rgba(124,131,255,.06);border-radius:10px;padding:10px 12px;margin-top:8px;line-height:1.5;font-weight:500}
-.meal-t{font-size:11px;color:var(--accent-2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex:0 0 96px}
-.eng-word{font-size:24px;font-weight:700;text-transform:uppercase}.eng-type{font-size:12px;color:var(--accent-2);font-style:italic;font-weight:600}
+.meal-t{font-size:11px;color:var(--accent-2);font-weight:700;text-transform:capitalize;letter-spacing:.5px;flex:0 0 96px}
+.eng-word{font-size:24px;font-weight:700;text-transform:capitalize}.eng-type{font-size:12px;color:var(--accent-2);font-style:italic;font-weight:600}
 /* full-app uppercase pass (content rows, labels, values, plans) — long-form blocks stay readable */
-.row .tx,.weekrow,.brow .lbl,.kv small,.alloc .pc,.tip,#greet,.exs,.meal-t,.item .price,.brand small,.side-foot,.wpill{text-transform:uppercase}
+.row .tx,.weekrow,.brow .lbl,.kv small,.alloc .pc,.tip,#greet,.exs,.meal-t,.item .price,.brand small,.side-foot,.wpill{text-transform:capitalize}
 .chip.up,.chip.miss{cursor:pointer}
 .eng-mean{font-size:14px;margin:8px 0;color:#dfe3ef;font-weight:500}.eng-use{font-size:13.5px;color:var(--muted);border-left:3px solid var(--accent);padding-left:10px;line-height:1.5;font-weight:500}
 .weekgrid{display:flex;flex-direction:column;gap:7px}
 .weekrow{display:flex;gap:12px;padding:10px 12px;border-radius:10px;background:var(--glass-2);font-size:13px;align-items:center;font-weight:500}
-.weekrow .wd{width:42px;color:var(--accent-2);font-weight:700;text-transform:uppercase}.weekrow.today{box-shadow:inset 2px 0 0 var(--accent)}
+.weekrow .wd{width:42px;color:var(--accent-2);font-weight:700;text-transform:capitalize}.weekrow.today{box-shadow:inset 2px 0 0 var(--accent)}
 
 /* ---- small phones ---- */
 @media(max-width:560px){
@@ -216,9 +216,43 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
   .sec-title{font-size:17px}
   .daypill b{width:24px;height:24px;font-size:10px}
 }
+/* ---- center every section (lists & long text stay readable) ---- */
+.view{text-align:center}
+.sec-title,.plan-head,.field,.split{justify-content:center}
+.card h3{text-align:center}
+.row,.report,.coach-msg,.tip,.breaklist,.weekrow,.muted{text-align:left}
+
+/* ---- boot loader ---- */
+#loader{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);transition:opacity .5s ease}
+#loader.hide{opacity:0;visibility:hidden;pointer-events:none}
+#loader .ld-logo{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;font-size:26px;box-shadow:0 0 30px var(--accent-glow)}
+#loader .ld-ring{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:var(--accent);animation:spin .8s linear infinite}
+#loader .ld-txt{font-weight:700;letter-spacing:3px;color:var(--muted);font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---- PIN lock ---- */
+#lock{position:fixed;inset:0;z-index:190;display:none;align-items:center;justify-content:center;background:rgba(8,9,14,.96);backdrop-filter:blur(8px)}
+#lock.on{display:flex}
+.lock-card{width:300px;max-width:88vw;text-align:center}
+.lock-card .lg{width:48px;height:48px;border-radius:14px;margin:0 auto 14px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;font-size:22px;box-shadow:0 0 24px var(--accent-glow)}
+#lockTitle{font-weight:700;font-size:16px;margin-bottom:16px;letter-spacing:.5px}
+.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:22px}
+.pin-dots .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--faint);transition:.15s}
+.pin-dots .dot.f{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.keypad button{height:58px;border-radius:14px;background:var(--glass-2);border:1px solid var(--stroke);font-size:21px;font-weight:600;color:var(--txt);transition:.12s}
+.keypad button:active{background:var(--accent);border-color:var(--accent)}
+.keypad .empty{background:none;border:none;pointer-events:none}
 </style>
 </head>
 <body>
+<div id="loader"><div class="ld-logo">S</div><div class="ld-ring"></div><div class="ld-txt">LIFE OS</div></div>
+<div id="lock"><div class="lock-card"><div class="lg">S</div><div id="lockTitle">Enter Pin</div><div class="pin-dots" id="pinDots"></div><div class="keypad" id="keypad">
+  <button data-act="pinKey" data-key="1">1</button><button data-act="pinKey" data-key="2">2</button><button data-act="pinKey" data-key="3">3</button>
+  <button data-act="pinKey" data-key="4">4</button><button data-act="pinKey" data-key="5">5</button><button data-act="pinKey" data-key="6">6</button>
+  <button data-act="pinKey" data-key="7">7</button><button data-act="pinKey" data-key="8">8</button><button data-act="pinKey" data-key="9">9</button>
+  <button class="empty"></button><button data-act="pinKey" data-key="0">0</button><button data-act="pinDel">⌫</button>
+</div></div></div>
 <div class="app">
   <aside class="side">
     <div class="brand"><div class="logo">S</div><div><h1>LIFE&nbsp;OS</h1><small>SAM&nbsp;·&nbsp;DISCIPLINE</small></div></div>
@@ -232,7 +266,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
         <div class="hi"><span class="live"></span><span id="greet">Welcome, Sam</span></div>
         <div class="date"><span id="clock">--:--:--</span> · <span id="dateTxt"></span></div>
       </div>
-      <div class="wpill">💰 <span id="wbal" class="co">0</span> <span style="color:var(--faint);font-weight:500;text-transform:uppercase;font-size:11px">Credits</span></div>
+      <div class="wpill">💰 <span id="wbal" class="co">0</span> <span style="color:var(--faint);font-weight:500;text-transform:capitalize;font-size:11px">Credits</span></div>
     </div>
     <div class="restrict-banner" id="restrictBanner">🔒 <b>RESTRICTION MODE ACTIVE.</b> Score below 40%. Clear today's penalty to lift it.</div>
 
@@ -381,6 +415,22 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
       </div>
     </section>
 
+    <!-- BRAHMACHARYA -->
+    <section class="view" id="v-brahmacharya">
+      <div class="sec-title">Brahmacharya <small>self-control · shame-free · reset & rise</small></div>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Clean Streak</h3>
+          <div class="kv" style="font-size:46px;color:var(--good)"><span id="bcStreak">0</span> <small>Days</small></div>
+          <p class="muted" id="bcBest" style="text-align:center"></p>
+          <div class="split" style="margin-top:14px"><button class="btn good" data-act="bcClean">Mark Today Clean ✓</button><button class="btn ghost" data-act="bcRelapse">Reset</button></div>
+          <p class="muted" style="margin-top:12px;text-align:center">Relapse isn't failure — it's data. Reset, learn the trigger, rise again. Consistency beats perfection.</p>
+        </div>
+        <div class="card"><h3>Urge SOS</h3><div id="bcSos"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px"><h3>Sattvic Meal Rules</h3><div id="bcMeal"></div></div>
+    </section>
+
     <!-- SETTINGS -->
     <section class="view" id="v-settings">
       <div class="sec-title">Settings</div>
@@ -388,6 +438,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
         <p class="muted" style="margin-bottom:12px">Paste your Apps Script Web App URL (ends in <b>/exec</b>). Then sync — all data saves to a Drive file. Auto-syncs after every change.</p>
         <div class="field"><input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/..../exec" /><button class="btn sm" data-act="saveGasUrl">Save URL</button></div>
         <div class="split"><button class="btn sm" data-act="syncNow">⬆ Sync To Drive</button><button class="btn ghost sm" data-act="restoreDrive">⬇ Restore From Drive</button><span class="tag" id="syncState">Not Connected</span></div>
+      </div>
+      <div class="card" style="margin-bottom:16px"><h3>Security — Pin Lock</h3>
+        <p class="muted" style="margin-bottom:12px">Lock the app with a PIN (4–6 digits). Asked on every open. Basic device protection — your PIN stays on this device, it is not synced to Drive.</p>
+        <div class="field"><input type="password" id="pinSet" inputmode="numeric" maxlength="6" placeholder="Set / Change Pin" /><button class="btn sm" data-act="setPin">Save Pin</button></div>
+        <div class="split"><button class="btn ghost sm" data-act="lockNow">🔒 Lock Now</button><button class="btn bad sm" data-act="removePin">Remove Pin</button><span class="tag" id="pinState">No Pin</span></div>
       </div>
       <div class="card" style="margin-bottom:16px"><h3>Identity & Targets</h3>
         <div class="field"><input type="text" id="setName" placeholder="Your Name" /></div>
@@ -425,7 +480,8 @@ const DEFAULT={
   wallet:{bal:0,earned:0,spent:0,tx:[]},
   weights:[],photos:[],
   penalty:{pushups:0,baithak:0,sapate:0,screenCut:0,restrict:false},
-  streak:0,lastScored:null,day:{},engIdx:null
+  streak:0,lastScored:null,day:{},engIdx:null,
+  pin:"",bc:{streak:0,best:0,lastClean:null,log:[]}
 };
 function applyMigrations(s){
   if(!s.name||s.name==="Operator")s.name="Sam";
@@ -437,6 +493,8 @@ function applyMigrations(s){
   if(!s.wallet)s.wallet={bal:0,earned:0,spent:0,tx:[]};
   if(!s.weights)s.weights=[];if(!s.photos)s.photos=[];
   if(s.engIdx===undefined)s.engIdx=null;if(s.streak===undefined)s.streak=0;
+  if(s.pin===undefined)s.pin="";
+  if(!s.bc)s.bc={streak:0,best:0,lastClean:null,log:[]};
   if(s.screenLimit===undefined)s.screenLimit=120;if(s.rewardPc===undefined)s.rewardPc=80;
   s.habits=(s.habits||[]).map(h=>typeof h==="string"?{n:h,t:""}:(h.t===undefined?(h.t="",h):h));
   s.tasks=(s.tasks||[]).map(t=>typeof t==="string"?{n:t,p:"normal",t:""}:(t.t===undefined?(t.t="",t):t));
@@ -486,10 +544,12 @@ const ENGLISH=[
 ];
 const CAREER=["Pick one skill from your stack and write a 1-line proof you can do it.","Send one LinkedIn message today. One. No overthinking.","Say your next idea out loud before you doubt it. Confidence is a rep, not a mood.","Document one thing you built this week — future-you needs the portfolio.","Ask for feedback on one piece of work. Direct feedback beats silent guessing.","Speak 2 English sentences out loud about your day. Fluency comes from reps."];
 const dayIdx=()=>new Date().getDay();
+const BCSOS=["Urge hits → stand up and leave the room right now. 90 seconds of movement breaks the loop.","Do 20 Dand or a brisk walk — channel the energy into your body instead.","Drink a glass of water, take 10 slow breaths, step outside for fresh air.","Call or message someone, or open your work/study — redirect the focus.","Keep your phone out of bed and the bedroom — most relapses start there.","Sleep and wake on time. Boredom, loneliness and late nights are the biggest triggers."];
+const BCMEAL=["Less oil & fried food — bake, steam, or lightly sauté.","No junk, processed or packaged food, and no sugary drinks.","Light dinner, early (before 8 PM); avoid heavy late-night meals.","More fruits, vegetables, milk, soaked nuts and whole grains.","Cut excess spice, caffeine and stimulants.","Plenty of water; eat till about 80% full, don't overeat."];
 const pickDaily=arr=>arr[Math.floor(Date.now()/864e5)%arr.length];
 const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-const NAV=[["dashboard","◎","home"],["habits","✓","habits"],["tasks","▤","tasks"],["fitness","🏋","fitness"],["diet","🍎","diet"],["weight","⚖","weight"],["wallet","💰","money"],["penalties","💀","penalty"],["coach","🧠","coach"],["career","🎯","english"],["settings","⚙","settings"]];
+const NAV=[["dashboard","◎","home"],["habits","✓","habits"],["tasks","▤","tasks"],["fitness","🏋","fitness"],["diet","🍎","diet"],["weight","⚖","weight"],["wallet","💰","money"],["penalties","💀","penalty"],["coach","🧠","coach"],["career","🎯","english"],["brahmacharya","🧘","sanyam"],["settings","⚙","settings"]];
 const PRIMARY=["dashboard","fitness","diet","wallet"];
 
 /* score */
@@ -537,14 +597,15 @@ function countUp(el,to,dur){dur=dur||700;const from=parseFloat(el.textContent)||
 /* Google Drive sync */
 function syncToDrive(silent){
   if(!S.gasUrl){if(!silent)toast("Add your Drive URL first.");return;}
-  fetch(S.gasUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:TOKEN,action:"save",data:S})})
+  var data=Object.assign({},S);delete data.pin; // PIN stays on device, never synced
+  fetch(S.gasUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:TOKEN,action:"save",data:data})})
     .then(()=>{setSyncState("Synced ✓");if(!silent)toast("Synced to Google Drive ✓");})
     .catch(()=>{setSyncState("Sync Failed");if(!silent)toast("Sync failed — check URL / deployment.");});
 }
 function loadFromDrive(){
   if(!S.gasUrl){toast("Add your Drive URL first.");return;}
   const cb="lifeos_cb_"+Date.now();const sc=document.createElement("script");
-  window[cb]=function(res){try{if(res&&res.ok&&res.data){S=applyMigrations(res.data);persist();render();toast("Restored from Drive ✓");setSyncState("Synced ✓");}else toast("No data found on Drive.");}finally{delete window[cb];sc.remove();}};
+  window[cb]=function(res){try{if(res&&res.ok&&res.data){var keepPin=S.pin;S=applyMigrations(res.data);S.pin=keepPin;persist();render();toast("Restored from Drive ✓");setSyncState("Synced ✓");}else toast("No data found on Drive.");}finally{delete window[cb];sc.remove();}};
   sc.src=S.gasUrl+(S.gasUrl.indexOf("?")>-1?"&":"?")+"token="+encodeURIComponent(TOKEN)+"&callback="+cb;
   sc.onerror=function(){toast("Could not reach Drive. Check URL / deployment.");setSyncState("Sync Failed");delete window[cb];};
   document.body.appendChild(sc);
@@ -640,6 +701,13 @@ function render(){
 
   renderEnglish();
   document.getElementById('careerTips').innerHTML='<div class="tip">'+esc(pickDaily(CAREER))+'</div><div class="tip">'+esc(CAREER[(Math.floor(Date.now()/864e5)+2)%CAREER.length])+'</div>';
+  // brahmacharya
+  document.getElementById('bcStreak').textContent=S.bc.streak;
+  document.getElementById('bcBest').textContent="Best: "+S.bc.best+" days"+(S.bc.lastClean?(" · Last clean: "+S.bc.lastClean):"");
+  document.getElementById('bcSos').innerHTML=BCSOS.map(t=>'<div class="tip">'+esc(t)+'</div>').join("");
+  document.getElementById('bcMeal').innerHTML=BCMEAL.map(t=>'<div class="tip">'+esc(t)+'</div>').join("");
+  // pin state
+  const ps=document.getElementById('pinState');if(ps){ps.textContent=S.pin?"Pin On":"No Pin";ps.style.color=S.pin?"var(--good)":"var(--muted)";}
   lastSig=timedSig();
 }
 function renderAlloc(){const ALLOC=[["Invest",40,"#7c83ff","📈"],["Home",20,"#34d39e","🏠"],["Emergency",20,"#f5b14c","🛟"],["Pocket Money",20,"#e8c46b","🎒"]];const sal=S.salary||0;document.getElementById('allocGrid').innerHTML=ALLOC.map(a=>'<div class="alloc"><div class="strip" style="background:'+a[2]+'"></div><div class="ico">'+a[3]+'</div><div class="lab">'+a[0]+'</div><div class="amt">₹'+Math.round(sal*a[1]/100).toLocaleString('en-IN')+'</div><div class="pc">'+a[1]+'%</div></div>').join("");}
@@ -693,6 +761,13 @@ const ACT={
   whyUpcoming(i,el){const t=el.dataset.time||"";infoPopup("⏰ NOT OPEN YET","The DONE button for this opens at "+t+" and stays live for 15 minutes. Be in the app during that window to mark it done — otherwise it counts as Missed for today.");},
   whyMissed(){infoPopup("❌ MISSED","The 15-minute window for this already passed, so it can't be marked done today. It resets tomorrow. Tip: set times you can realistically hit.");},
   closeFx(){document.getElementById('fx').innerHTML='';},
+  bcClean(){const t=todayKey();if(S.bc.lastClean===t){toast("Already marked clean today.");return;}const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.bc.streak=(S.bc.lastClean===y)?S.bc.streak+1:1;S.bc.lastClean=t;if(S.bc.streak>S.bc.best)S.bc.best=S.bc.streak;save("Clean day logged. Strong. 💪");if(S.bc.streak%7===0)celebratePopup("🧘","SANYAM STREAK","+"+S.bc.streak+" days clean. Discipline is becoming who you are.");},
+  bcRelapse(){if(!confirm("Reset your clean streak to 0?"))return;S.bc.log.unshift(todayKey());S.bc.streak=0;save("Reset done. Fresh start now — be kind to yourself.");},
+  setPin(){const v=val('pinSet');if(!/^\d{4,6}$/.test(v)){toast("Enter 4–6 digits.");return;}S.pin=v;set('pinSet','');save("PIN set 🔒");},
+  removePin(){if(!S.pin){toast("No PIN set.");return;}if(!confirm("Remove the PIN lock?"))return;S.pin="";save("PIN removed.");},
+  lockNow(){if(!S.pin){toast("Set a PIN first.");return;}showLockEnter();},
+  pinKey(i,el){if(!S.pin)return;pinBuf+=el.dataset.key;renderDots();if(pinBuf.length>=S.pin.length){if(pinBuf===S.pin){hideLock();}else{const c=document.querySelector('.lock-card');c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),550);pinBuf="";renderDots();toast("Wrong PIN");}}},
+  pinDel(){pinBuf=pinBuf.slice(0,-1);renderDots();},
   clearPhysical(){S.penalty.pushups=0;S.penalty.baithak=0;S.penalty.sapate=0;if(!S.penalty.screenCut)S.penalty.restrict=false;toast("Penalty Cleared. Respect.");save();},
   genReport(){const {txt,score}=buildReport();applyOutcome(score);const box=document.getElementById('v-dashboard');let rep=document.getElementById('reportOut');if(!rep){rep=document.createElement('div');rep.id='reportOut';rep.style.marginTop='16px';box.appendChild(rep);}rep.innerHTML='<div class="card"><h3>Daily Report — '+score+'/100</h3><div class="report">'+esc(txt)+'</div><div class="split" style="margin-top:12px"><button class="btn ghost sm" data-act="copyReport">Copy Report</button><span class="muted">Auto-email at 11:55 PM needs the Code.gs trigger.</span></div></div>';window._lastReport=txt;save();go('dashboard');setTimeout(()=>rep.scrollIntoView({behavior:'smooth'}),100);},
   copyReport(){if(navigator.clipboard)navigator.clipboard.writeText(window._lastReport||'').then(()=>toast("Report Copied"));},
@@ -724,7 +799,19 @@ function updateGreet(){const h=new Date().getHours();const g=h<12?'Good morning'
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString();refreshTimed();}
 setInterval(tick,1000);
 
-(function init(){D();persist();updateGreet();tick();go('dashboard');})();
+/* PIN lock */
+var pinBuf="";
+function renderDots(){const d=document.getElementById('pinDots');if(!d||!S.pin)return;const n=S.pin.length;let h="";for(let i=0;i<n;i++)h+='<span class="dot'+(i<pinBuf.length?' f':'')+'"></span>';d.innerHTML=h;}
+function showLockEnter(){if(!S.pin)return;pinBuf="";document.getElementById('lockTitle').textContent="Enter Pin";renderDots();document.getElementById('lock').classList.add('on');}
+function hideLock(){document.getElementById('lock').classList.remove('on');pinBuf="";}
+
+(function init(){
+  D();persist();updateGreet();tick();go('dashboard');
+  setTimeout(function(){
+    document.getElementById('loader').classList.add('hide');
+    if(S.pin)showLockEnter();
+  },900);
+})();
 </script>
 </body>
 </html>
