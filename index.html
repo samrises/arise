@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Desciplina - Samleveling</title>
+<title>DEsciplina - Samleveling</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"></script>
 <style>
 :root{
   --bg:#0a0b10;--bg2:#0d0f17;--glass:rgba(22,25,38,.55);--glass-2:rgba(30,34,52,.45);
@@ -29,25 +30,39 @@ input,select,textarea{font-family:inherit}
 ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:#222637;border-radius:9px}
 
 .app{display:flex;min-height:100vh}
-.side{width:230px;flex:0 0 230px;padding:22px 14px;position:sticky;top:0;height:100vh;
-  background:linear-gradient(180deg,rgba(16,18,28,.9),rgba(10,11,16,.9));border-right:1px solid var(--stroke);backdrop-filter:var(--blur)}
-.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 20px}
-.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;box-shadow:0 0 24px var(--accent-glow)}
-.brand h1{font-size:16px;font-weight:700;line-height:1.1;letter-spacing:1px}.brand small{color:var(--faint);font-size:11px;letter-spacing:1.5px;font-weight:600}
-.nav{display:flex;flex-direction:column;gap:3px}
-.nav button{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r-sm);color:var(--muted);font-size:13.5px;font-weight:600;letter-spacing:.4px;text-transform:capitalize;transition:.18s;text-align:left;width:100%}
-.nav button .ic{font-size:16px;width:20px;text-align:center}
-.nav button:hover{background:var(--glass-2);color:var(--txt)}
-.nav button.on{background:linear-gradient(90deg,rgba(124,131,255,.18),transparent);color:#fff;box-shadow:inset 2px 0 0 var(--accent)}
-.side-foot{position:absolute;bottom:16px;left:14px;right:14px;color:var(--faint);font-size:11px;text-align:center;line-height:1.6;font-weight:600}
+.side{width:240px;flex:0 0 240px;padding:20px 12px;position:sticky;top:0;height:100vh;
+  background:linear-gradient(180deg,rgba(13,15,26,.98) 0%,rgba(8,9,16,.98) 100%);
+  border-right:1px solid rgba(255,255,255,.06);backdrop-filter:var(--blur);
+  display:flex;flex-direction:column;gap:0}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 10px 24px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;font-size:18px;
+  box-shadow:0 0 0 1px rgba(124,131,255,.3),0 0 28px var(--accent-glow)}
+.brand h1{font-size:15px;font-weight:700;line-height:1.1;letter-spacing:1.5px}.brand small{color:var(--faint);font-size:10px;letter-spacing:2px;font-weight:700;text-transform:uppercase}
+.nav-section{margin-bottom:4px}
+.nav-label{font-size:9.5px;font-weight:800;color:var(--faint);letter-spacing:2px;text-transform:uppercase;padding:12px 14px 6px;opacity:.6}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:14px;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.3px;transition:all .2s cubic-bezier(.2,.8,.2,1);text-align:left;width:100%;position:relative;overflow:hidden}
+.nav button .ic{font-size:17px;width:22px;text-align:center;flex:0 0 22px;transition:.2s}
+.nav button .nav-txt{flex:1}
+.nav button::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(124,131,255,.08),transparent);opacity:0;transition:.2s;border-radius:14px}
+.nav button:hover::before{opacity:1}
+.nav button:hover{color:var(--txt);transform:translateX(2px)}
+.nav button.on{background:linear-gradient(90deg,rgba(124,131,255,.2),rgba(124,131,255,.05));color:#fff;box-shadow:inset 3px 0 0 var(--accent),0 0 20px -8px var(--accent-glow)}
+.nav button.on .ic{filter:drop-shadow(0 0 6px var(--accent))}
+.nav button.on::after{content:'';position:absolute;right:10px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.nav-divider{height:1px;background:var(--stroke);margin:8px 10px}
+.side-foot{margin-top:auto;padding:14px 10px 0;color:var(--faint);font-size:10.5px;text-align:center;line-height:1.7;font-weight:600;border-top:1px solid var(--stroke)}
 .main{flex:1;min-width:0;padding:26px 30px 120px}
 @media(max-width:860px){.side{display:none}.main{padding:18px 16px 96px}}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:14px;flex-wrap:wrap}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:14px;flex-wrap:wrap;
+  background:rgba(13,15,26,.6);border:1px solid var(--stroke);border-radius:20px;padding:12px 20px;backdrop-filter:var(--blur)}
 .topbar .hi{font-size:15px;color:var(--txt);font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:.3px}
-.topbar .hi .live{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 10px var(--good);animation:pulse 1.6s infinite}
-.topbar .date{font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600}
+.topbar .hi .live{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 10px var(--good);animation:pulse 1.6s infinite}
+.topbar .date{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600;margin-top:3px}
 .topbar .date #clock{color:var(--accent-2);font-weight:700}
-.wpill{display:flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--stroke);padding:8px 14px;border-radius:30px;font-weight:700;font-size:14px;backdrop-filter:var(--blur)}
+.wpill{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(232,196,107,.1),rgba(232,196,107,.03));
+  border:1px solid rgba(232,196,107,.22);padding:8px 16px;border-radius:30px;font-weight:700;font-size:14px;
+  box-shadow:0 0 18px -8px rgba(232,196,107,.3)}
 .wpill .co{color:var(--gold)}
 .view{display:none;animation:fadeUp .5s cubic-bezier(.2,.8,.2,1)}
 .view.on{display:block}
@@ -58,7 +73,7 @@ input,select,textarea{font-family:inherit}
 @media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
 .card{background:var(--glass);border:1px solid var(--stroke);border-radius:var(--r);padding:18px;backdrop-filter:var(--blur);box-shadow:var(--shadow);transition:transform .22s,border-color .22s}
 .card:hover{transform:translateY(-3px);border-color:var(--stroke-2)}
-.card h3{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.7px;margin-bottom:12px;text-transform:capitalize}
+.card h3{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.2px;margin-bottom:12px;text-transform:capitalize}
 .kv{font-size:30px;font-weight:700}.kv small{font-size:13px;color:var(--faint);font-weight:500}
 .core-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
 .core{position:relative;width:188px;height:188px;flex:0 0 188px}.core svg{transform:rotate(-90deg);width:100%;height:100%;display:block}
@@ -222,7 +237,40 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 .card h3{text-align:center}
 .row,.report,.coach-msg,.tip,.breaklist,.weekrow,.muted{text-align:left}
 
+/* ---- Analytics Page ---- */
+.atabs{display:flex;gap:6px;margin-bottom:20px;background:var(--glass);border:1px solid var(--stroke);border-radius:14px;padding:5px;width:fit-content;margin-left:auto;margin-right:auto}
+.atab{padding:8px 20px;border-radius:10px;font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.3px;transition:.18s;cursor:pointer;background:none;border:none;text-transform:capitalize}
+.atab:hover{color:var(--txt)}
+.atab.on{background:linear-gradient(135deg,var(--accent),#4c52d6);color:#fff;box-shadow:0 4px 16px -6px var(--accent-glow)}
+.atab-view{display:none;animation:fadeUp .4s cubic-bezier(.2,.8,.2,1)}
+.atab-view.on{display:block}
+.chart-row-2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px;text-align:left}
+.chart-row-1{display:grid;grid-template-columns:1fr;margin-bottom:0;text-align:left}
+@media(max-width:760px){.chart-row-2{grid-template-columns:1fr}}
+.chart-card-lg,.chart-card-sm,.chart-card-full{
+  background:var(--glass);border:1px solid var(--stroke);border-radius:var(--r);
+  padding:20px 18px 14px;backdrop-filter:var(--blur);box-shadow:var(--shadow);text-align:left}
+.chart-row-1 .chart-card-full{width:100%}
+.chart-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap;text-align:left}
+.chart-ttl{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.5px;text-transform:capitalize}
+.chart-sub{font-size:12px;font-weight:700;color:var(--accent-2)}
+.chart-kpi{background:var(--glass);border:1px solid var(--stroke);border-radius:var(--r);padding:18px;backdrop-filter:var(--blur);text-align:left;transition:transform .2s,border-color .2s}
+.chart-kpi:hover{transform:translateY(-2px);border-color:var(--stroke-2)}
+.chart-kpi .k-ico{font-size:22px;margin-bottom:8px}
+.chart-kpi .k-val{font-size:28px;font-weight:700;line-height:1;margin-bottom:5px}
+.chart-kpi .k-lbl{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px;text-transform:capitalize}
 /* ---- boot loader ---- */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:14px;flex-wrap:wrap;
+  background:rgba(13,15,26,.6);border:1px solid var(--stroke);border-radius:20px;padding:12px 18px;
+  backdrop-filter:var(--blur)}
+.topbar .hi{font-size:15px;color:var(--txt);font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:.3px}
+.topbar .hi .live{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 10px var(--good);animation:pulse 1.6s infinite}
+.topbar .date{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600;margin-top:3px}
+.topbar .date #clock{color:var(--accent-2);font-weight:700}
+.wpill{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(232,196,107,.12),rgba(232,196,107,.04));
+  border:1px solid rgba(232,196,107,.25);padding:8px 16px;border-radius:30px;font-weight:700;font-size:14px;
+  box-shadow:0 0 20px -10px rgba(232,196,107,.3)}
+.wpill .co{color:var(--gold)}
 #loader{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);transition:opacity .5s ease}
 #loader.hide{opacity:0;visibility:hidden;pointer-events:none}
 #loader .ld-logo{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;font-size:26px;box-shadow:0 0 30px var(--accent-glow)}
@@ -257,7 +305,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
   <aside class="side">
     <div class="brand"><div class="logo">S</div><div><h1>LIFE&nbsp;OS</h1><small>SAM&nbsp;·&nbsp;DISCIPLINE</small></div></div>
     <nav class="nav" id="nav"></nav>
-    <div class="side-foot">BUILT BY <b style="color:var(--muted)">SOMNATH&nbsp;KARMAKAR</b><br>v3.0 · Drive Synced</div>
+    <div class="side-foot">BUILT BY <b style="color:var(--accent-2)">SOMNATH&nbsp;KARMAKAR</b><br>v3.0 · Drive Synced</div>
   </aside>
 
   <main class="main">
@@ -280,11 +328,31 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
             <div class="core-info"><div class="tier" id="tier">—</div><div class="breaklist" id="breakdown"></div></div>
           </div>
         </div>
-        <div class="card">
-          <h3>Streak</h3><div class="kv"><span id="streak">0</span> <small>Days ≥80%</small></div>
-          <h3 style="margin-top:18px">Screen Time</h3>
-          <div class="split"><span class="kv" style="font-size:22px"><span id="stUsed">0</span><small>/<span id="stLimit">120</span>m</small></span><span class="tag" id="stTag">Within</span></div>
-          <div class="field" style="margin-top:10px"><input type="number" id="stInput" placeholder="Log Minutes" /><button class="btn sm" data-act="logScreen">Set</button></div>
+        <div class="card" style="display:flex;flex-direction:column;gap:0">
+          <!-- Streak -->
+          <div style="padding-bottom:16px;border-bottom:1px solid var(--stroke)">
+            <h3 style="margin-bottom:8px">🔥 Streak</h3>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span class="kv" style="font-size:42px;line-height:1;color:var(--accent-2)"><span id="streak">0</span></span>
+              <span style="font-size:13px;color:var(--faint);font-weight:600">Days ≥80%</span>
+            </div>
+            <div style="margin-top:8px;height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+              <div id="streakBar" style="height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width 1s cubic-bezier(.2,.8,.2,1);width:0%"></div>
+            </div>
+            <div style="font-size:11px;color:var(--faint);margin-top:5px;font-weight:600"><span id="streakNext">0</span> days to next reward</div>
+          </div>
+          <!-- Screen -->
+          <div style="padding-top:16px">
+            <h3 style="margin-bottom:8px">📱 Screen Time</h3>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+              <span style="font-size:26px;font-weight:700;font-variant-numeric:tabular-nums"><span id="stUsed">0</span><span style="font-size:13px;color:var(--faint);font-weight:500"> / <span id="stLimit">120</span>m</span></span>
+              <span class="tag" id="stTag">Within</span>
+            </div>
+            <div style="margin-top:8px;height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+              <div id="screenBar" style="height:100%;border-radius:4px;background:var(--good);transition:width .8s,background .4s;width:0%"></div>
+            </div>
+            <div class="field" style="margin-top:10px"><input type="number" id="stInput" placeholder="Log Minutes" /><button class="btn sm" data-act="logScreen">Set</button></div>
+          </div>
         </div>
       </div>
       <div class="card" style="margin-bottom:16px">
@@ -298,6 +366,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
       <div style="margin-top:16px" class="split">
         <button class="btn" data-act="genReport">📋 Generate Daily Report</button>
         <button class="btn ghost" data-nav="coach">🧠 Coach</button>
+        <button class="btn ghost" data-nav="analytics">📊 Analytics</button>
       </div>
     </section>
 
@@ -453,6 +522,117 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
       <div class="card"><h3>Data</h3><p class="muted" style="margin-bottom:12px">Saved on this device + Drive. Export a backup or reset.</p>
         <div class="split"><button class="btn ghost sm" data-act="export">⬇ Export Backup</button><button class="btn bad sm" data-act="reset">Reset Everything</button></div></div>
     </section>
+    <!-- ANALYTICS -->
+    <section class="view" id="v-analytics">
+      <div class="sec-title" style="justify-content:center">Analytics <small>performance over time</small></div>
+
+      <!-- KPI strip -->
+      <div class="grid g3" style="margin-bottom:24px;text-align:left" id="analyticsKpi"></div>
+
+      <!-- Tab switcher -->
+      <div style="display:flex;justify-content:center;margin-bottom:20px">
+        <div class="atabs" id="atabs" style="margin:0">
+          <button class="atab on" data-atab="overview">Overview</button>
+          <button class="atab" data-atab="habits">Habits</button>
+          <button class="atab" data-atab="body">Body</button>
+          <button class="atab" data-atab="time">Time</button>
+        </div>
+      </div>
+
+      <!-- Overview tab -->
+      <div class="atab-view on" id="at-overview">
+        <!-- Row 1: Radial Bar (big) + Rose (small) -->
+        <div class="chart-row-2" style="margin-bottom:16px">
+          <div class="chart-card-lg">
+            <div class="chart-hdr"><span class="chart-ttl">⭐ Radial Performance — Today</span><span class="chart-sub" id="avgScore14">avg —</span></div>
+            <div id="chartRadialBar"></div>
+          </div>
+          <div class="chart-card-sm">
+            <div class="chart-hdr"><span class="chart-ttl">🌸 Nightingale Rose</span><span class="chart-sub" id="roseTodayScore"></span></div>
+            <div id="chartRadar"></div>
+          </div>
+        </div>
+        <!-- Row 2: Score line (big) + Circular Donut Infographic (small) -->
+        <div class="chart-row-2" style="margin-bottom:16px">
+          <div class="chart-card-lg">
+            <div class="chart-hdr"><span class="chart-ttl">📈 Discipline Score — 14 Days</span></div>
+            <div id="chartScore"></div>
+          </div>
+          <div class="chart-card-sm">
+            <div class="chart-hdr"><span class="chart-ttl">🎯 Today's Rings</span></div>
+            <div id="chartCircular" style="display:flex;align-items:center;justify-content:center;padding:8px 0"></div>
+          </div>
+        </div>
+        <!-- Row 3: Tasks bar + Credits -->
+        <div class="chart-row-2">
+          <div class="chart-card-lg">
+            <div class="chart-hdr"><span class="chart-ttl">✅ Tasks vs Habits — 7 Days</span></div>
+            <div id="chartTasks"></div>
+          </div>
+          <div class="chart-card-sm">
+            <div class="chart-hdr"><span class="chart-ttl">💰 Credits Trend</span></div>
+            <div id="chartCredits"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Habits tab -->
+      <div class="atab-view" id="at-habits">
+        <div class="chart-row-1" style="margin-bottom:16px">
+          <div class="chart-card-full">
+            <div class="chart-hdr"><span class="chart-ttl">✓ Habits — 7-Day Completion Rate</span></div>
+            <div id="chartHabits"></div>
+          </div>
+        </div>
+        <div class="chart-row-2">
+          <div class="chart-card-lg">
+            <div class="chart-hdr"><span class="chart-ttl">🍽 Meal Adherence — 7 Days</span></div>
+            <div id="chartDiet"></div>
+          </div>
+          <div class="chart-card-sm">
+            <div class="chart-hdr"><span class="chart-ttl">🏋 Workout Completion</span></div>
+            <div id="chartWorkout"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body tab -->
+      <div class="atab-view" id="at-body">
+        <div class="chart-row-1" style="margin-bottom:16px">
+          <div class="chart-card-full">
+            <div class="chart-hdr"><span class="chart-ttl">⚖ Weight Trend</span><span class="chart-sub" id="wDeltaTxt"></span></div>
+            <div id="chartWeight"></div>
+          </div>
+        </div>
+        <div class="grid g2">
+          <div class="chart-card-full">
+            <div class="chart-hdr"><span class="chart-ttl">🧘 Brahmacharya — Clean Streak</span></div>
+            <div id="chartBc"></div>
+          </div>
+          <div class="chart-card-full" style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;gap:10px">
+            <div style="font-size:60px;font-weight:700;color:var(--good);line-height:1" id="bcStreakBig">0</div>
+            <div style="font-size:13px;color:var(--muted);font-weight:600">Days Clean</div>
+            <div style="font-size:12px;color:var(--faint)" id="bcBestBig"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time tab -->
+      <div class="atab-view" id="at-time">
+        <div class="chart-row-1" style="margin-bottom:16px">
+          <div class="chart-card-full">
+            <div class="chart-hdr"><span class="chart-ttl">📱 Screen Time — 7 Days</span><span class="chart-sub" id="screenAvgTxt"></span></div>
+            <div id="chartScreen"></div>
+          </div>
+        </div>
+        <div class="chart-row-1">
+          <div class="chart-card-full">
+            <div class="chart-hdr"><span class="chart-ttl">🔥 Streak History</span></div>
+            <div id="chartStreak"></div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -549,8 +729,8 @@ const BCMEAL=["Less oil & fried food — bake, steam, or lightly sauté.","No ju
 const pickDaily=arr=>arr[Math.floor(Date.now()/864e5)%arr.length];
 const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-const NAV=[["dashboard","◎","home"],["habits","✓","habits"],["tasks","▤","tasks"],["fitness","🏋","fitness"],["diet","🍎","diet"],["weight","⚖","weight"],["wallet","💰","money"],["penalties","💀","penalty"],["coach","🧠","coach"],["career","🎯","english"],["brahmacharya","🧘","sanyam"],["settings","⚙","settings"]];
-const PRIMARY=["dashboard","fitness","diet","wallet"];
+const NAV=[["dashboard","◎","home"],["analytics","📊","analytics"],["habits","✓","habits"],["tasks","▤","tasks"],["fitness","🏋","fitness"],["diet","🍎","diet"],["weight","⚖","weight"],["wallet","💰","money"],["penalties","💀","penalty"],["coach","🧠","coach"],["career","🎯","english"],["brahmacharya","🧘","sanyam"],["settings","⚙","settings"]];
+const PRIMARY=["dashboard","analytics","fitness","diet"];
 
 /* score */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -620,7 +800,7 @@ function setSyncState(txt){const el=document.getElementById("syncState");if(el)e
 
 /* render */
 let CUR="dashboard",lastSig="";
-function go(v){CUR=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav===v));document.querySelectorAll('#bnav button[data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===v));document.getElementById('sheet').classList.remove('on');render();window.scrollTo({top:0,behavior:'smooth'});}
+function go(v){CUR=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav===v));document.querySelectorAll('#bnav button[data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===v));document.getElementById('sheet').classList.remove('on');render();window.scrollTo({top:0,behavior:'smooth'});if(v==='analytics')setTimeout(()=>renderAnalytics(),150);}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function dayPillHTML(){const di=dayIdx();return DAYS.map((d,i)=>'<b class="'+(i===di?'on':'')+'">'+d+'</b>').join("");}
 
@@ -662,8 +842,14 @@ function render(){
   document.getElementById('breakdown').innerHTML=parts.map(p=>'<div class="brow"><span class="lbl">'+p[0]+'</span><div class="bar"><i data-w="'+Math.round(p[1]*100)+'"></i></div><span class="pc">'+Math.round(p[1]*100)+'%</span></div>').join("");
   requestAnimationFrame(()=>document.querySelectorAll('#breakdown i').forEach(i=>i.style.width=i.dataset.w+'%'));
   document.getElementById('streak').textContent=S.streak;
+  const streakBarPc=Math.min(100,Math.round(S.streak/7*100));
+  document.getElementById('streakBar').style.width=streakBarPc+'%';
+  const sNext=S.streak<7?7-S.streak:S.streak<14?14-S.streak:21-S.streak%7;
+  document.getElementById('streakNext').textContent=sNext;
   document.getElementById('stUsed').textContent=d.screen;document.getElementById('stLimit').textContent=S.screenLimit;
   const over=d.screen>S.screenLimit;const stt=document.getElementById('stTag');stt.textContent=over?'Over Limit':'Within';stt.style.color=over?'var(--bad)':'var(--good)';
+  const scrPc=S.screenLimit?Math.min(100,Math.round(d.screen/S.screenLimit*100)):0;
+  const scrBar=document.getElementById('screenBar');if(scrBar){scrBar.style.width=scrPc+'%';scrBar.style.background=over?'var(--bad)':'var(--good)';}
   document.getElementById('restrictBanner').classList.toggle('on',S.penalty.restrict);
 
   const wp=WORKOUT[di];
@@ -693,6 +879,7 @@ function render(){
   document.getElementById('dietPc').textContent=Math.round(d.mealDone.length/dp.length*100)+'%';
 
   renderSpark();
+  renderAnalytics();
   document.getElementById('photoGrid').innerHTML=S.photos.length?S.photos.map(p=>'<img src="'+p+'" alt="progress"/>').join(""):'<div class="photo-empty">No Photos</div>';
   renderShop();
   document.getElementById('txList').innerHTML=S.wallet.tx.length?S.wallet.tx.slice(0,20).map(t=>'<div class="row"><div class="tx">'+esc(t.r)+'<span class="meta"> · '+t.d+'</span></div><b style="color:'+(t.t[0]==='+'?'var(--good)':'var(--bad)')+'">'+t.t+'</b></div>').join(""):'<div class="empty">No transactions yet.</div>';
@@ -743,6 +930,293 @@ function renderShop(){
       +'</div>';
   }).join("");
 }
+/* ======= APEX CHARTS — ANALYTICS PAGE ======= */
+const _charts={};
+const AD={
+  chart:{background:'transparent',fontFamily:'Jost,sans-serif',toolbar:{show:false},animations:{enabled:true,easing:'easeinout',speed:700}},
+  theme:{mode:'dark'},
+  grid:{borderColor:'rgba(255,255,255,.05)',strokeDashArray:4,padding:{left:4,right:4,top:2,bottom:2}},
+  tooltip:{theme:'dark',style:{fontSize:'12px',fontFamily:'Jost,sans-serif'}},
+  dataLabels:{enabled:false},
+  legend:{labels:{colors:'#8b91a7'},fontSize:'12px'},
+  noData:{text:'No data yet',style:{color:'#5b6177',fontSize:'13px'}}
+};
+function getNDayKeys(n){const k=[];for(let i=n-1;i>=0;i--){const d=new Date(Date.now()-i*864e5);k.push(d.toISOString().slice(0,10));}return k;}
+function getNDayLabels(n){const DL=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const k=[];for(let i=n-1;i>=0;i--){const d=new Date(Date.now()-i*864e5);k.push(i===0?'Today':DL[d.getDay()]);}return k;}
+function calcScore(dd,di){
+  if(!dd)return null;
+  const hT=S.habits.length||1,hD=dd.habitsDone.length;
+  const tT=S.tasks.length||1,tD=dd.tasksDone.length;
+  const wk=WORKOUT[di%7];const exT=wk?wk.items.length:1,exD=dd.exDone.length;
+  const mT=DIET[di%7].length||1,mD=dd.mealDone.length;
+  const scrOk=dd.screen<=S.screenLimit?1:0;
+  const s=(hD/hT)*30+(tD/tT)*20+(exD/exT)*15+(mD/mT)*10+scrOk*15+clamp(S.streak/7,0,1)*10;
+  return Math.min(100,Math.round(s));
+}
+function mkChart(id,opts){
+  if(_charts[id]){try{_charts[id].destroy();}catch(e){}_charts[id]=null;}
+  const el=document.getElementById(id);if(!el)return;
+  _charts[id]=new ApexCharts(el,{...AD,...opts,chart:{...AD.chart,...(opts.chart||{})}});
+  _charts[id].render();
+}
+function renderAnalytics(){
+  if(!window.ApexCharts||!document.getElementById('v-analytics').classList.contains('on'))return;
+  const keys14=getNDayKeys(14),lbl14=getNDayLabels(14);
+  const keys7=getNDayKeys(7),lbl7=getNDayLabels(7);
+  const today=todayKey();
+  const todayDi=dayIdx();
+
+  /* KPI strip */
+  const scores7=keys7.map((k,i)=>calcScore(S.day[k],todayDi-6+i));
+  const validScores=scores7.filter(v=>v!==null);
+  const avg7=validScores.length?Math.round(validScores.reduce((a,b)=>a+b,0)/validScores.length):0;
+  const bestDay=validScores.length?Math.max(...validScores):0;
+  const kpis=[
+    {ico:'📊',val:avg7+'%',lbl:'7-Day Avg Score',c:'var(--accent-2)'},
+    {ico:'🔥',val:S.streak,lbl:'Current Streak',c:'var(--warn)'},
+    {ico:'🏆',val:bestDay+'%',lbl:'Best This Week',c:'var(--good)'},
+    {ico:'💰',val:S.wallet.bal+' cr',lbl:'Credits Balance',c:'var(--gold)'},
+    {ico:'⚖',val:S.weights.length?S.weights[S.weights.length-1].v+'kg':'—',lbl:'Last Weight',c:'var(--txt)'},
+    {ico:'🧘',val:S.bc.streak+' d',lbl:'Clean Streak',c:'var(--good)'}
+  ];
+  document.getElementById('analyticsKpi').innerHTML=kpis.map(k=>`<div class="card chart-kpi"><div class="k-ico">${k.ico}</div><div class="k-val" style="color:${k.c}">${k.val}</div><div class="k-lbl">${k.lbl}</div></div>`).join('');
+
+  /* avg label */
+  const avgEl=document.getElementById('avgScore14');if(avgEl){const s14=getNDayKeys(14).map((k,i)=>calcScore(S.day[k],todayDi-13+i)).filter(v=>v!==null);avgEl.textContent=s14.length?'avg '+Math.round(s14.reduce((a,b)=>a+b,0)/s14.length)+'%':'';}
+
+  /* 1. Score line — 14 days */
+  const scoreVals14=keys14.map((k,i)=>{const sc=calcScore(S.day[k],todayDi-13+i);return sc;});
+  const s14valid=scoreVals14.filter(v=>v!==null);
+  const avg14=s14valid.length?Math.round(s14valid.reduce((a,b)=>a+b,0)/s14valid.length):0;
+  const avgEl2=document.getElementById('avgScore14');if(avgEl2)avgEl2.textContent=avg14?'avg '+avg14+'%':'';
+
+  /* ⭐ 1. RADIAL BAR — multi-ring, one per metric */
+  const {parts,score:todayScore}=computeScore();
+  const RCOLORS=['#7c83ff','#34d39e','#f5b14c','#e8446e','#a0a6ff','#e8c46b'];
+  mkChart('chartRadialBar',{
+    chart:{type:'radialBar',height:280,
+      dropShadow:{enabled:true,top:3,left:0,blur:12,opacity:.2}},
+    series:parts.map(p=>Math.round(p[1]*100)),
+    labels:parts.map(p=>p[0]),
+    colors:RCOLORS.slice(0,parts.length),
+    plotOptions:{radialBar:{
+      hollow:{margin:4,size:'20%',background:'transparent'},
+      track:{background:'rgba(255,255,255,.05)',strokeWidth:'97%',margin:4,
+        dropShadow:{enabled:false}},
+      dataLabels:{show:true,name:{fontSize:'11px',color:'#8b91a7',offsetY:-4},
+        value:{fontSize:'13px',fontWeight:'700',color:'#eef1f8',offsetY:4,
+          formatter:v=>v+'%'},
+        total:{show:true,label:'Score',fontSize:'12px',color:'#8b91a7',
+          formatter:()=>todayScore+'%'}},
+      offsetY:0,startAngle:0,endAngle:360
+    }},
+    stroke:{lineCap:'round'},
+    legend:{show:true,floating:false,fontSize:'11px',position:'bottom',
+      offsetY:4,labels:{colors:'#8b91a7'},
+      markers:{size:6},itemMargin:{horizontal:8,vertical:2}}
+  });
+
+  /* 🌸 2. NIGHTINGALE ROSE — polarArea */
+  const roseEl=document.getElementById('roseTodayScore');if(roseEl)roseEl.textContent=todayScore+'%';
+  const ROSE_C=['#e8446e','#e8a830','#d4c46b','#b8a8cc','#cc7eb0','#7c83ff'];
+  mkChart('chartRadar',{
+    chart:{type:'polarArea',height:260,
+      dropShadow:{enabled:true,blur:8,opacity:.12}},
+    series:parts.map(p=>Math.max(3,Math.round(p[1]*100))),
+    labels:parts.map(p=>p[0]),
+    colors:ROSE_C.slice(0,parts.length),
+    stroke:{colors:['rgba(8,9,14,.7)'],width:2},
+    fill:{opacity:.85},
+    legend:{show:true,position:'bottom',fontSize:'11px',
+      labels:{colors:'#8b91a7'},markers:{width:8,height:8,radius:3},
+      itemMargin:{horizontal:5,vertical:2}},
+    plotOptions:{polarArea:{
+      rings:{strokeWidth:1,strokeColor:'rgba(255,255,255,.04)'},
+      spokes:{strokeWidth:1,connectorColors:'rgba(255,255,255,.04)'}}},
+    yaxis:{show:false},
+    tooltip:{theme:'dark',y:{formatter:v=>v+'%'}},
+    dataLabels:{enabled:false}
+  });
+
+  /* 📈 3. SCORE AREA — 14 days */
+  mkChart('chartScore',{
+    chart:{type:'area',height:220},
+    series:[{name:'Score',data:scoreVals14}],
+    xaxis:{categories:lbl14,labels:{style:{colors:'#5b6177',fontSize:'10px'},rotate:-35},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{min:0,max:100,labels:{style:{colors:'#5b6177',fontSize:'11px'},formatter:v=>v+''}},
+    stroke:{curve:'smooth',width:2.5},
+    fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.5,opacityTo:.03,stops:[0,95]}},
+    colors:['#7c83ff'],
+    markers:{size:3,colors:['#7c83ff'],strokeColors:'#0a0b10',strokeWidth:2,hover:{size:5}},
+    annotations:{yaxis:[{y:80,borderColor:'rgba(52,211,158,.5)',strokeDashArray:5,label:{text:'80%',style:{color:'#34d39e',background:'transparent',fontSize:'10px',fontWeight:'700'}}}]}
+  });
+
+  /* 🎯 4. CIRCULAR INFOGRAPHIC — custom SVG multi-ring */
+  (function renderCircular(){
+    const el=document.getElementById('chartCircular');if(!el)return;
+    const rings=[
+      {label:'Habits',pct:parts[0]?Math.round(parts[0][1]*100):0,color:'#7c83ff',r:72},
+      {label:'Tasks', pct:parts[1]?Math.round(parts[1][1]*100):0,color:'#34d39e',r:56},
+      {label:'Workout',pct:parts[2]?Math.round(parts[2][1]*100):0,color:'#f5b14c',r:40},
+      {label:'Diet',  pct:parts[4]?Math.round(parts[4][1]*100):0,color:'#e8446e',r:24}
+    ];
+    const cx=90,cy=90,sw=10;
+    const arc=(r,pct)=>{const circ=2*Math.PI*r,off=circ*(1-pct/100);return{circ,off};};
+    const paths=rings.map(rg=>{const {circ,off}=arc(rg.r,rg.pct);
+      return `<circle cx="${cx}" cy="${cy}" r="${rg.r}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="${sw}"/>
+<circle cx="${cx}" cy="${cy}" r="${rg.r}" fill="none" stroke="${rg.color}" stroke-width="${sw}"
+  stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+  stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"
+  style="filter:drop-shadow(0 0 4px ${rg.color}88);transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"/>`;
+    }).join('');
+    const labels=rings.map((rg,i)=>`
+<text x="${cx+rg.r+14}" y="${cy-32+i*22}" fill="${rg.color}" font-size="9" font-weight="700" font-family="Jost,sans-serif">${rg.pct}%</text>
+<text x="${cx+rg.r+14}" y="${cy-22+i*22}" fill="#5b6177" font-size="8" font-family="Jost,sans-serif">${rg.label}</text>`).join('');
+    el.innerHTML=`<svg viewBox="0 0 200 180" width="200" height="180" xmlns="http://www.w3.org/2000/svg">
+      ${paths}
+      <text x="${cx}" y="${cy-6}" text-anchor="middle" fill="#eef1f8" font-size="18" font-weight="700" font-family="Jost,sans-serif">${todayScore}</text>
+      <text x="${cx}" y="${cy+10}" text-anchor="middle" fill="#5b6177" font-size="8" font-family="Jost,sans-serif">SCORE</text>
+      ${labels}
+    </svg>`;
+  })();
+  const habitsDone=keys7.map(k=>S.day[k]?S.day[k].habitsDone.length:0);
+  const tasksDone=keys7.map(k=>S.day[k]?S.day[k].tasksDone.length:0);
+  mkChart('chartTasks',{
+    chart:{type:'bar',height:200},
+    series:[{name:'Habits',data:habitsDone},{name:'Tasks',data:tasksDone}],
+    xaxis:{categories:lbl7,labels:{style:{colors:'#5b6177',fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{style:{colors:'#5b6177',fontSize:'11px'}}},
+    colors:['#7c83ff','#34d39e'],
+    plotOptions:{bar:{borderRadius:6,columnWidth:'55%',borderRadiusApplication:'end'}},
+    stroke:{show:false},
+    legend:{show:true,position:'top',horizontalAlign:'right'}
+  });
+
+  /* 4. Credits trend (last 10 tx) */
+  const txData=S.wallet.tx.slice(0,10).reverse().map((t,i)=>({x:'T'+(i+1),y:Math.abs(parseInt(t.t))}));
+  mkChart('chartCredits',{
+    chart:{type:'bar',height:200},
+    series:[{name:'Credits',data:txData}],
+    xaxis:{categories:txData.map(t=>t.x),labels:{style:{colors:'#5b6177',fontSize:'10px'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{style:{colors:'#5b6177',fontSize:'11px'}}},
+    colors:['#e8c46b'],
+    plotOptions:{bar:{borderRadius:6,columnWidth:'60%',borderRadiusApplication:'end'}},
+  });
+
+  /* 5. Habits completion bar — 7 days */
+  const habitPc=keys7.map(k=>{const d=S.day[k];if(!d||!S.habits.length)return 0;return Math.round(d.habitsDone.length/S.habits.length*100);});
+  mkChart('chartHabits',{
+    chart:{type:'bar',height:240},
+    series:[{name:'Completion %',data:habitPc}],
+    xaxis:{categories:lbl7,labels:{style:{colors:'#5b6177',fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{min:0,max:100,labels:{style:{colors:'#5b6177',fontSize:'11px'},formatter:v=>v+'%'}},
+    colors:['#7c83ff'],
+    plotOptions:{bar:{borderRadius:8,columnWidth:'50%',borderRadiusApplication:'end',
+      dataLabels:{position:'top'}}},
+    dataLabels:{enabled:true,formatter:v=>v+'%',style:{fontSize:'11px',colors:['#8b91a7']},offsetY:-18},
+    annotations:{yaxis:[{y:80,borderColor:'rgba(52,211,158,.5)',strokeDashArray:5}]}
+  });
+
+  /* 6. Diet adherence */
+  const dietPc=keys7.map((k,i)=>{const d=S.day[k];const di2=(todayDi-6+i+7)%7;if(!d)return 0;return Math.round(d.mealDone.length/DIET[di2].length*100);});
+  mkChart('chartDiet',{
+    chart:{type:'area',height:200},
+    series:[{name:'Meal %',data:dietPc}],
+    xaxis:{categories:lbl7,labels:{style:{colors:'#5b6177',fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{min:0,max:100,labels:{style:{colors:'#5b6177',fontSize:'11px'},formatter:v=>v+'%'}},
+    stroke:{curve:'smooth',width:2.5},
+    fill:{type:'gradient',gradient:{opacityFrom:.4,opacityTo:.02}},
+    colors:['#f5b14c'],markers:{size:3}
+  });
+
+  /* 7. Workout donut — premium 3D donut */
+  const todayD=D();const wkToday=WORKOUT[todayDi];
+  const exDone=todayD.exDone.length,exTotal=wkToday?wkToday.items.length:1,exLeft=Math.max(0,exTotal-exDone);
+  mkChart('chartWorkout',{
+    chart:{type:'donut',height:220,
+      dropShadow:{enabled:true,top:0,left:0,blur:14,color:['#34d39e'],opacity:.25}},
+    series:[exDone,exLeft],
+    labels:['Done','Remaining'],
+    colors:['#34d39e','rgba(255,255,255,.06)'],
+    stroke:{show:true,width:3,colors:['rgba(10,11,16,.8)']},
+    fill:{type:'gradient',gradient:{shade:'dark',type:'horizontal',gradientToColors:['#a0ffd6'],opacityFrom:.95,opacityTo:.85,stops:[0,100]}},
+    legend:{show:true,position:'bottom',labels:{colors:'#8b91a7'},markers:{width:8,height:8,radius:3}},
+    plotOptions:{pie:{donut:{size:'74%',
+      labels:{show:true,
+        name:{show:true,fontSize:'11px',color:'#8b91a7',offsetY:-6},
+        value:{show:true,fontSize:'26px',fontWeight:'700',color:'#eef1f8',offsetY:6,formatter:v=>v},
+        total:{show:true,showAlways:true,label:'of '+exTotal,fontSize:'11px',color:'#5b6177',
+          formatter:()=>exDone+'/'+exTotal}}}}}
+  });
+
+  /* 8. Weight area */
+  const wData=S.weights.slice(-12).map(w=>({x:w.d||'?',y:w.v}));
+  if(wData.length>=2){const delta=(wData[wData.length-1].y-wData[0].y).toFixed(1);const dEl=document.getElementById('wDeltaTxt');if(dEl)dEl.textContent=(delta>0?'▲ +':delta<0?'▼ ':'')+delta+' kg';}
+  mkChart('chartWeight',{
+    chart:{type:'area',height:240},
+    series:[{name:'kg',data:wData.length>=2?wData:[]}],
+    xaxis:{type:'category',labels:{style:{colors:'#5b6177',fontSize:'10px'},rotate:-35},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{style:{colors:'#5b6177',fontSize:'11px'},formatter:v=>v+'kg'},floating:false},
+    stroke:{curve:'smooth',width:2.5},
+    fill:{type:'gradient',gradient:{opacityFrom:.45,opacityTo:.03}},
+    colors:['#e8c46b'],markers:{size:4,colors:['#e8c46b'],strokeColors:'#0a0b10',strokeWidth:2}
+  });
+
+  /* 9. BC streak bar */
+  const bcLog=S.bc.log.slice(0,7).reverse();
+  mkChart('chartBc',{
+    chart:{type:'bar',height:180},
+    series:[{name:'Relapse Days',data:bcLog.map((_,i)=>1)}],
+    xaxis:{categories:bcLog.map(d=>d),labels:{style:{colors:'#5b6177',fontSize:'10px'}},axisBorder:{show:false}},
+    yaxis:{show:false},
+    colors:['var(--bad)'],
+    plotOptions:{bar:{borderRadius:6,columnWidth:'50%'}},
+  });
+  document.getElementById('bcStreakBig').textContent=S.bc.streak;
+  document.getElementById('bcBestBig').textContent='Best: '+S.bc.best+' days';
+
+  /* 10. Screen time — 7 days */
+  const screenVals=keys7.map(k=>S.day[k]?S.day[k].screen||0:0);
+  const scrAvg=Math.round(screenVals.reduce((a,b)=>a+b,0)/7);
+  const scrEl=document.getElementById('screenAvgTxt');if(scrEl)scrEl.textContent='avg '+scrAvg+'m / day';
+  mkChart('chartScreen',{
+    chart:{type:'bar',height:230},
+    series:[{name:'Screen (min)',data:screenVals},{name:'Limit',data:keys7.map(()=>S.screenLimit)}],
+    xaxis:{categories:lbl7,labels:{style:{colors:'#5b6177',fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{style:{colors:'#5b6177',fontSize:'11px'},formatter:v=>v+'m'}},
+    colors:['#7c83ff','rgba(255,93,108,.5)'],
+    plotOptions:{bar:{borderRadius:6,columnWidth:'55%',borderRadiusApplication:'end'}},
+    stroke:{show:true,width:[0,2],colors:['transparent','var(--bad)'],dashArray:[0,5]},
+    legend:{show:true,position:'top',horizontalAlign:'right'}
+  });
+
+  /* 11. Streak history */
+  const streakKeys=getNDayKeys(14),streakLbls=getNDayLabels(14);
+  const streakVals=streakKeys.map(k=>S.day[k]?1:0); // placeholder — real streak needs day-by-day scoring
+  mkChart('chartStreak',{
+    chart:{type:'line',height:180},
+    series:[{name:'Active Day',data:streakVals}],
+    xaxis:{categories:streakLbls,labels:{style:{colors:'#5b6177',fontSize:'10px'},rotate:-35},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{show:false},
+    stroke:{curve:'smooth',width:3},
+    fill:{type:'solid',opacity:.1},
+    colors:['#f5b14c'],markers:{size:4}
+  });
+}
+/* ======= END CHARTS ======= */
+
+/* Analytics tab switching */
+document.addEventListener('click',e=>{
+  const tb=e.target.closest('.atab');
+  if(!tb)return;
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.atab-view').forEach(t=>t.classList.remove('on'));
+  tb.classList.add('on');
+  const id='at-'+tb.dataset.atab;
+  document.getElementById(id).classList.add('on');
+  setTimeout(()=>renderAnalytics(),80);
+});
+
 function renderSpark(){const sv=document.getElementById('spark');[...sv.querySelectorAll('path')].forEach(p=>p.remove());const w=S.weights;if(w.length<2){document.getElementById('wTrend').textContent=w.length?'Latest: '+w[w.length-1].v+' kg. Log again next week for a trend.':'No data yet. Log weekly to see your trend.';return;}const vals=w.map(x=>x.v),min=Math.min(...vals),max=Math.max(...vals),rng=(max-min)||1;const pts=vals.map((v,i)=>[(i/(vals.length-1))*300,80-((v-min)/rng)*70+5]);const dPath=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');const a=document.createElementNS('http://www.w3.org/2000/svg','path');a.setAttribute('d','M0 90 '+dPath.replace('M','L')+' L300 90 Z');a.setAttribute('class','area');const l=document.createElementNS('http://www.w3.org/2000/svg','path');l.setAttribute('d',dPath);sv.appendChild(a);sv.appendChild(l);const delta=(vals[vals.length-1]-vals[0]).toFixed(1);document.getElementById('wTrend').textContent=vals[0]+' → '+vals[vals.length-1]+' kg ('+(delta>0?'+':'')+delta+' kg over '+w.length+' entries). Trend only — your worth isn\'t a number.';}
 
 /* live refresh of time-gated lists */
@@ -795,7 +1269,7 @@ document.getElementById('photoIn').addEventListener('change',e=>{const f=e.targe
 
 document.addEventListener('click',e=>{const nb=e.target.closest('[data-nav]');if(nb){go(nb.dataset.nav);return;}const ae=e.target.closest('[data-act]');if(ae){const fn=ACT[ae.dataset.act];if(fn){const i=ae.dataset.i!==undefined?+ae.dataset.i:undefined;e.stopPropagation();fn(i,ae);}}});
 
-document.getElementById('nav').innerHTML=NAV.map(n=>'<button data-nav="'+n[0]+'"><span class="ic">'+n[1]+'</span>'+n[2]+'</button>').join("");
+document.getElementById('nav').innerHTML=NAV.map(n=>'<button data-nav="'+n[0]+'"><span class="ic">'+n[1]+'</span><span class="nav-txt">'+n[2]+'</span></button>').join("");
 document.getElementById('bnav').innerHTML=PRIMARY.map(id=>{const n=NAV.find(x=>x[0]===id);return'<button data-nav="'+n[0]+'"><span class="ic">'+n[1]+'</span>'+n[2]+'</button>';}).join("")+'<button id="moreBtn"><span class="ic">⋯</span>More</button>';
 document.getElementById('sheetGrid').innerHTML=NAV.filter(n=>!PRIMARY.includes(n[0])).map(n=>'<button data-nav="'+n[0]+'"><span style="font-size:20px">'+n[1]+'</span>'+n[2]+'</button>').join("");
 document.getElementById('moreBtn').addEventListener('click',()=>document.getElementById('sheet').classList.toggle('on'));
