@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Desciplina - SamLeveling</title>
+<title>Desciplina — Samleveling</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -292,10 +292,24 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 .keypad button{height:58px;border-radius:14px;background:var(--glass-2);border:1px solid var(--stroke);font-size:21px;font-weight:600;color:var(--txt);transition:.12s}
 .keypad button:active{background:var(--accent);border-color:var(--accent)}
 .keypad .empty{background:none;border:none;pointer-events:none}
+/* Learning tab */
+.learn-card{margin-bottom:14px}
+.learn-sec{margin-top:8px;font-size:13px;line-height:1.55;color:var(--muted)}
+.learn-lbl{color:var(--accent-2);font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+.learn-img{width:100%;max-height:260px;object-fit:cover;border-radius:12px;margin-top:12px;border:1px solid var(--stroke)}
+.learn-pend{margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--bad);font-weight:600;font-size:13px}
+.learn-prev{margin-top:10px}.learn-prev img{width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--stroke)}
+.switch{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:13px;color:var(--muted);margin:4px 0 12px}
+.switch input{width:42px;height:24px;-webkit-appearance:none;appearance:none;background:var(--glass-2);border:1px solid var(--stroke);border-radius:20px;position:relative;transition:.2s;flex:0 0 42px}
+.switch input:checked{background:var(--accent);border-color:var(--accent)}
+.switch input::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.switch input:checked::after{left:21px}
+textarea.fin{width:100%;min-height:70px;resize:vertical;background:var(--glass-2);border:1px solid var(--stroke);border-radius:12px;padding:12px 14px;color:var(--txt);font-size:14px;font-family:inherit;line-height:1.5;margin-bottom:10px}
+textarea.fin:focus{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
-<div id="loader"><div class="ld-logo">S</div><div class="ld-ring"></div><div class="ld-txt">LIFE OS</div></div>
+<div id="loader"><div class="ld-logo"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l7-7 7 7"/><path d="M5 19l7-7 7 7"/></svg></div><div class="ld-ring"></div><div class="ld-txt">LifeOS</div></div>
 <div id="lock"><div class="lock-card"><div class="lg">S</div><div id="lockTitle">Enter Pin</div><div class="pin-dots" id="pinDots"></div><div class="keypad" id="keypad">
   <button data-act="pinKey" data-key="1">1</button><button data-act="pinKey" data-key="2">2</button><button data-act="pinKey" data-key="3">3</button>
   <button data-act="pinKey" data-key="4">4</button><button data-act="pinKey" data-key="5">5</button><button data-act="pinKey" data-key="6">6</button>
@@ -304,9 +318,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 </div></div></div>
 <div class="app">
   <aside class="side">
-    <div class="brand"><div class="logo">S</div><div><h1>LIFE&nbsp;OS</h1><small>SAM&nbsp;·&nbsp;DISCIPLINE</small></div></div>
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l7-7 7 7"/><path d="M5 19l7-7 7 7"/></svg></div><div><h1>LifeOS</h1><small>samleveling</small></div></div>
     <nav class="nav" id="nav"></nav>
-    <div class="side-foot">BUILT BY <b style="color:var(--accent-2)">SOMNATH&nbsp;KARMAKAR</b><br>v3.0 · Drive Synced</div>
+    <div class="side-foot" style="text-transform:none">Built by <b style="color:var(--accent-2)">Sam</b> · LifeOS<br>v3.0 · Drive Synced</div>
   </aside>
 
   <main class="main">
@@ -485,6 +499,27 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
       </div>
     </section>
 
+    <!-- LEARNING -->
+    <section class="view" id="v-learning">
+      <div class="sec-title">Learning Log <small>jo sikha · dobara kaise banaoge · proof</small></div>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Add Learning</h3>
+        <div class="field"><input type="text" id="learnTitle" placeholder="Title (eg: BMP Class — Apps Script Router)" /></div>
+        <div class="field"><input type="text" id="learnCat" placeholder="Category (BMP Class / Trading / Skill…)" /></div>
+        <label class="learn-lbl">What did you learn?</label>
+        <textarea class="fin" id="learnWhat" placeholder="Kya sikha — short notes…"></textarea>
+        <label class="learn-lbl">How will you rebuild it next time?</label>
+        <textarea class="fin" id="learnHow" placeholder="Step-by-step: koi prompt? manual steps? aur kya chahiye…"></textarea>
+        <label class="switch"><input type="checkbox" id="learnProof" /> Proof needed (upload an image)</label>
+        <div class="split">
+          <label class="btn ghost sm" style="display:inline-block">📎 Attach Image<input type="file" id="learnImgIn" accept="image/*" style="display:none" /></label>
+          <button class="btn sm" data-act="addLearning">Save Learning</button>
+        </div>
+        <div class="learn-prev" id="learnImgPrev"></div>
+      </div>
+      <div id="learnList"></div>
+    </section>
+
     <!-- BRAHMACHARYA -->
     <section class="view" id="v-brahmacharya">
       <div class="sec-title">Brahmacharya <small>self-control · shame-free · reset & rise</small></div>
@@ -575,6 +610,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
             <div id="chartCredits"></div>
           </div>
         </div>
+        <!-- Row 4: Daily Report Archive (auto-filled at each day-end) -->
+        <div class="chart-row-1" style="margin-top:16px">
+          <div class="chart-card-full">
+            <div class="chart-hdr"><span class="chart-ttl">📋 Daily Report Archive</span><span class="chart-sub" id="repCount"></span></div>
+            <div id="reportArchive"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Habits tab -->
@@ -647,7 +689,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 /* LIFE OS v3 — Sam's Discipline System. Built by Somnath Karmakar.
    localStorage + Google Drive (via Apps Script) sync. */
 const TOKEN="SamLifeOS_2026_ChangeThisSecret"; // must match Code.gs TOKEN
-const GAS_URL="https://script.google.com/macros/s/AKfycbyrzjbRjsReB5nmHSPmY_SIQ6FQch2KPMXjKPMv4KMbUlq_vC0FwDp9dQpatZP4-nvq9w/exec"; // your Drive backend
+const GAS_URL="https://script.google.com/macros/s/AKfycbyqJc0qvyxWxM8iL5WT2xv8vvgOqfuxKW6akoxfLDA_gpcgikCstwz3ICDh3IIg-OVR1A/exec"; // your Drive backend
 const KEY="lifeos_v2";let MEM=null;
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return MEM;}}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){MEM=JSON.parse(JSON.stringify(S));}}
@@ -661,7 +703,7 @@ const DEFAULT={
   wallet:{bal:0,earned:0,spent:0,tx:[]},
   weights:[],photos:[],
   penalty:{pushups:0,baithak:0,sapate:0,screenCut:0,restrict:false},
-  streak:0,lastScored:null,day:{},engIdx:null,
+  streak:0,lastScored:null,lastRollover:null,reports:[],learnings:[],lastProofNotify:null,day:{},engIdx:null,
   pin:"",bc:{streak:0,best:0,lastClean:null,log:[]}
 };
 function applyMigrations(s){
@@ -677,6 +719,10 @@ function applyMigrations(s){
   if(s.pin===undefined)s.pin="";
   if(!s.bc)s.bc={streak:0,best:0,lastClean:null,log:[]};
   if(s.screenLimit===undefined)s.screenLimit=120;if(s.rewardPc===undefined)s.rewardPc=80;
+  if(!s.reports)s.reports=[];                       // archived daily reports → Analytics
+  if(s.lastRollover===undefined)s.lastRollover=null;// last date rollover ran
+  if(!s.learnings)s.learnings=[];                   // Learning Log entries
+  if(s.lastProofNotify===undefined)s.lastProofNotify=null;
   s.habits=(s.habits||[]).map(h=>typeof h==="string"?{n:h,t:""}:(h.t===undefined?(h.t="",h):h));
   s.tasks=(s.tasks||[]).map(t=>typeof t==="string"?{n:t,p:"normal",t:""}:(t.t===undefined?(t.t="",t):t));
   Object.keys(s.day).forEach(k=>{const d=s.day[k];if(!d.habitsDone)d.habitsDone=[];if(!d.tasksDone)d.tasksDone=[];if(!d.exDone)d.exDone=[];if(!d.mealDone)d.mealDone=[];if(d.screen===undefined)d.screen=0;});
@@ -730,21 +776,26 @@ const BCMEAL=["Less oil & fried food — bake, steam, or lightly sauté.","No ju
 const pickDaily=arr=>arr[Math.floor(Date.now()/864e5)%arr.length];
 const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-const NAV=[["dashboard","◎","home"],["analytics","📊","analytics"],["habits","✓","habits"],["tasks","▤","tasks"],["fitness","🏋","fitness"],["diet","🍎","diet"],["weight","⚖","weight"],["wallet","💰","money"],["penalties","💀","penalty"],["coach","🧠","coach"],["career","🎯","english"],["brahmacharya","🧘","sanyam"],["settings","⚙","settings"]];
+const NAV=[["dashboard","◎","Home"],["analytics","📊","Analytics"],["habits","✓","Habits"],["tasks","▤","Tasks"],["fitness","🏋","Fitness"],["diet","🍎","Diet"],["learning","📚","Learning"],["weight","⚖","Weight"],["wallet","💰","Money"],["penalties","💀","Penalty"],["coach","🧠","Coach"],["career","🎯","English"],["brahmacharya","🧘","Sanyam"],["settings","⚙","Settings"]];
 const PRIMARY=["dashboard","analytics","fitness","diet"];
 
-/* score */
+/* score — single source of truth. scoreDay() scores ANY day, computeScore() = today (live ring). */
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function computeScore(){
-  const d=D(),di=dayIdx();
-  const hT=S.habits.length,hD=d.habitsDone.length,tT=S.tasks.length,tD=d.tasksDone.length;
+function scoreDay(dd,di,streakVal){
+  di=((di%7)+7)%7;                                  // normalize negative day-index
+  if(streakVal===undefined)streakVal=S.streak;
+  const hT=S.habits.length,hD=dd.habitsDone.length,tT=S.tasks.length,tD=dd.tasksDone.length;
   const habitPc=hT?hD/hT:(hD?1:0), taskPc=tT?tD/tT:1;
-  const exTot=WORKOUT[di].items.length, workoutPc=exTot?d.exDone.length/exTot:0;
-  const mealTot=DIET[di].length, dietPc=mealTot?d.mealDone.length/mealTot:0;
-  const screenPc=clamp(1-Math.max(0,d.screen-S.screenLimit)/Math.max(60,S.screenLimit),0,1), streakPc=clamp(S.streak/7,0,1);
+  const exTot=WORKOUT[di].items.length, workoutPc=exTot?dd.exDone.length/exTot:0;
+  const mealTot=DIET[di].length, dietPc=mealTot?dd.mealDone.length/mealTot:0;
+  const screenPc=clamp(1-Math.max(0,dd.screen-S.screenLimit)/Math.max(60,S.screenLimit),0,1), streakPc=clamp(streakVal/7,0,1);
   const parts=[["Habits",habitPc,30],["Tasks",taskPc,20],["Workout",workoutPc,15],["Screen",screenPc,15],["Diet",dietPc,10],["Streak",streakPc,10]];
-  let s=0;parts.forEach(p=>s+=p[1]*p[2]);return{score:Math.round(s),parts};
+  let s=0;parts.forEach(p=>s+=p[1]*p[2]);
+  // raw miss counts (for direct category penalties at rollover)
+  const miss={habits:Math.max(0,hT-hD),tasks:Math.max(0,tT-tD),ex:Math.max(0,exTot-dd.exDone.length),meals:Math.max(0,mealTot-dd.mealDone.length),screenOver:Math.max(0,dd.screen-S.screenLimit)};
+  return{score:Math.round(s),parts,miss};
 }
+function computeScore(){return scoreDay(D(),dayIdx());}
 function tierOf(s){if(s>=90)return{t:"PEAK FORM",c:"var(--good)",bg:"rgba(52,211,158,.15)"};if(s>=80)return{t:"STRONG",c:"var(--accent-2)",bg:"rgba(124,131,255,.15)"};if(s>=55)return{t:"HOLDING",c:"var(--warn)",bg:"rgba(245,177,76,.15)"};if(s>=40)return{t:"SLIPPING",c:"var(--warn)",bg:"rgba(245,177,76,.18)"};return{t:"CRITICAL",c:"var(--bad)",bg:"rgba(255,93,108,.18)"};}
 function coachLine(s,parts){const weak=parts.filter(p=>p[1]<0.6).map(p=>p[0]),strong=parts.filter(p=>p[1]>=0.9).map(p=>p[0]);let h;if(s>=90)h="Peak day, Sam. This is the standard now — don't treat it like a one-off.";else if(s>=80)h="Solid. You showed up. Lock it in and stop negotiating with yourself.";else if(s>=55)h="Middle of the road. Not bad, not enough. The gap is the part you avoided.";else if(s>=40)h="You slipped today. No spin — the plan was clear and you came up short.";else h="Today fell apart. That's a readout on the day, not a verdict on you. Reset tomorrow.";let b="";if(weak.length)b+=" Weakest: "+weak.join(", ")+". Fix the first one first tomorrow.";if(strong.length)b+=" Strong on "+strong.join(", ")+" — keep that.";return h+b;}
 function focusList(parts){const map={Habits:"Tick every habit in its window.",Tasks:"Hit your high-priority task on time.",Workout:"Finish today's training — tick each move.",Screen:"Stay under your screen limit.",Diet:"Tick every meal on plan.",Streak:"Hit 80%+ to rebuild the streak."};return parts.slice().sort((a,b)=>a[1]-b[1]).slice(0,3).map(p=>map[p[0]]||p[0]);}
@@ -756,6 +807,58 @@ function applyOutcome(score){
   S.streak=score>=S.rewardPc?S.streak+1:0;S.lastScored=todayKey();persist();
 }
 
+/* ===== DAILY ROLLOVER ENGINE — runs at day-flip / on open =====
+   Har beeta din (jo app me khula tha par abhi tak score nahi hua) ko score karta hai,
+   penalty/reward lagata hai, archive karke Analytics report bana deta hai.
+   "Din ka kaam din me" — agar kal ka task/workout/habit/diet miss hua, ab penalty lagegi. */
+function dayMissPenalty(p,miss,score){
+  // DIRECT penalties — har miss bites, chahe overall score high ho (diet bhi ab count hota hai)
+  p.pushups += miss.habits*5 + miss.tasks*5;        // har missed habit/task = 5 Dand
+  p.baithak += miss.ex*5;                            // har missed workout move = 5 Baithak
+  p.sapate  += miss.meals*3;                         // har missed meal = 3 Sapate (DIET PENALTY)
+  p.screenCut = Math.min(180, p.screenCut + Math.min(60, miss.screenOver)); // screen over → cut, capped
+  if(score<40)p.restrict=true;
+  if(score>=S.rewardPc)p.restrict=false;
+}
+function maybeRollover(){
+  const todayK=todayKey();
+  // sirf woh din jinme app khula tha (S.day entry hai) + abhi tak archive nahi hue + aaj se purane
+  const pending=Object.keys(S.day).filter(k=>k<todayK && !S.day[k].archived).sort();
+  let done=0;
+  pending.forEach(k=>{
+    const dd=S.day[k];
+    const di=new Date(k+"T00:00:00").getDay();
+    const r=scoreDay(dd,di,S.streak);               // streak = us din me enter karte waqt ki value
+    // reward (silent — purane din ke liye popup nahi)
+    let reward=0;if(r.score>=90)reward=60;else if(r.score>=S.rewardPc)reward=30;
+    if(reward){S.wallet.bal+=reward;S.wallet.earned+=reward;S.wallet.tx.unshift({t:"+"+reward,r:"Reward · "+r.score+"% · "+k,d:k});}
+    // direct penalties for every miss
+    const penBefore={pushups:S.penalty.pushups,baithak:S.penalty.baithak,sapate:S.penalty.sapate,screenCut:S.penalty.screenCut};
+    dayMissPenalty(S.penalty,r.miss,r.score);
+    const penAdded={dand:S.penalty.pushups-penBefore.pushups,baithak:S.penalty.baithak-penBefore.baithak,sapate:S.penalty.sapate-penBefore.sapate,screenCut:S.penalty.screenCut-penBefore.screenCut};
+    // streak update (us din ke score pe)
+    S.streak = r.score>=S.rewardPc ? S.streak+1 : 0;
+    // archive day so it never re-processes
+    dd.score=r.score;dd.archived=true;
+    // build report snapshot for Analytics
+    S.reports.unshift({
+      date:k,score:r.score,tier:tierOf(r.score).t,
+      habits:dd.habitsDone.length+"/"+S.habits.length,
+      tasks:dd.tasksDone.length+"/"+S.tasks.length,
+      workout:dd.exDone.length+"/"+WORKOUT[((di%7)+7)%7].items.length,
+      diet:dd.mealDone.length+"/"+DIET[((di%7)+7)%7].length,
+      screen:dd.screen+"/"+S.screenLimit+"m",
+      line:coachLine(r.score,r.parts),
+      pen:penAdded
+    });
+    done++;
+  });
+  if(S.reports.length>120)S.reports=S.reports.slice(0,120);
+  S.lastRollover=todayK;
+  if(done)persist();
+  return done;
+}
+
 /* report */
 function buildReport(){const {score,parts}=computeScore();const d=D(),di=dayIdx(),now=new Date();
   const line=parts.map(p=>"  "+p[0].padEnd(9)+" "+String(Math.round(p[1]*100)).padStart(3)+"%").join("\n");
@@ -763,11 +866,38 @@ function buildReport(){const {score,parts}=computeScore();const d=D(),di=dayIdx(
   t+="SUMMARY\n  Habits: "+d.habitsDone.length+"/"+S.habits.length+" · Tasks: "+d.tasksDone.length+"/"+S.tasks.length+"\n  Training: "+d.exDone.length+"/"+WORKOUT[di].items.length+" ("+WORKOUT[di].name+") · Screen: "+d.screen+"/"+S.screenLimit+"m · Meals: "+d.mealDone.length+"/"+DIET[di].length+"\n\n";
   t+="HARSH TRUTH\n  "+coachLine(score,parts)+"\n\nNEXT-DAY INSTRUCTIONS\n"+focusList(parts).map((f,i)=>"  "+(i+1)+". "+f).join("\n")+"\n\n";
   const p=S.penalty;if(p.pushups||p.baithak||p.sapate||p.restrict)t+="OUTSTANDING PENALTY\n  "+p.pushups+" Dand · "+p.baithak+" Baithak · "+p.sapate+" Sapate"+(p.screenCut?" · screen -"+p.screenCut+"m":"")+(p.restrict?" · RESTRICTION ON":"")+"\n\n";
-  t+="----------------------------\nGenerated by LIFE OS · Built by Somnath Karmakar";return{txt:t,score};
+  t+="----------------------------\nGenerated by LifeOS · Built by Sam";return{txt:t,score};
 }
 
 /* fx */
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove("on"),2400);}
+
+/* ===== Browser notification + email reminder for pending proofs ===== */
+const PROOF_EMAIL="Box.somenath@gmail.com";
+function notify(title,body){
+  try{
+    if(!("Notification"in window))return;
+    if(Notification.permission==="granted"){new Notification(title,{body});}
+    else if(Notification.permission!=="denied"){Notification.requestPermission().then(p=>{if(p==="granted")new Notification(title,{body});});}
+  }catch(e){}
+}
+function sendMail(to,subject,body){
+  if(!S.gasUrl)return; // needs the Code.gs "mail" handler (snippet shared separately)
+  fetch(S.gasUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({token:TOKEN,action:"mail",to:to,subject:subject,body:body})}).catch(()=>{});
+}
+function checkProofPending(){
+  const pend=(S.learnings||[]).filter(l=>l.proof&&!l.img);
+  if(!pend.length)return;
+  const today=todayKey();
+  if(S.lastProofNotify===today)return;      // remind once per day, no spam
+  S.lastProofNotify=today;persist();
+  const names=pend.slice(0,5).map(l=>l.title).join(", ");
+  const msg=pend.length+" learning"+(pend.length>1?"s":"")+" ka proof pending: "+names+(pend.length>5?" …":"");
+  notify("⚠ Proof pending — LifeOS",msg);
+  toast(msg);
+  sendMail(PROOF_EMAIL,"LifeOS — Proof pending ("+pend.length+")",msg+"\n\nUpload the proof image in the Learning tab.\n\n— LifeOS by Sam");
+}
 function confettiBurst(){const fx=document.getElementById("fx");for(let i=0;i<40;i++){const c=document.createElement("div");c.className="confetti";c.style.left=Math.random()*100+"%";c.style.background=["#7c83ff","#34d39e","#e8c46b","#ff5d6c"][i%4];c.style.animationDuration=(1.6+Math.random()*1.4)+"s";c.style.animationDelay=(Math.random()*.3)+"s";fx.appendChild(c);}setTimeout(function(){fx.querySelectorAll('.confetti').forEach(function(e){e.remove();});},3200);}
 function celebratePopup(emoji,title,msg){document.getElementById("fx").innerHTML='<div class="pop"><div class="big">'+emoji+'</div><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p><button class="btn gold" data-act="closeFx">Claim</button></div>';confettiBurst();}
 function infoPopup(title,msg){document.getElementById("fx").innerHTML='<div class="pop"><div class="big">🔒</div><h2>'+esc(title)+'</h2><p style="text-align:left;line-height:1.55">'+esc(msg)+'</p><button class="btn" data-act="closeFx">Got It</button></div>';}
@@ -894,6 +1024,7 @@ function render(){
   document.getElementById('coachFocus').innerHTML=focusList(parts).map(f=>'<div class="tip">'+esc(f)+'</div>').join("");
 
   renderEnglish();
+  renderLearning();
   document.getElementById('careerTips').innerHTML='<div class="tip">'+esc(pickDaily(CAREER))+'</div><div class="tip">'+esc(CAREER[(Math.floor(Date.now()/864e5)+2)%CAREER.length])+'</div>';
   // brahmacharya
   document.getElementById('bcStreak').textContent=S.bc.streak;
@@ -906,6 +1037,21 @@ function render(){
 }
 function renderAlloc(){const ALLOC=[["Invest",40,"#7c83ff","📈"],["Home",20,"#34d39e","🏠"],["Emergency",20,"#f5b14c","🛟"],["Pocket Money",20,"#e8c46b","🎒"]];const sal=S.salary||0;document.getElementById('allocGrid').innerHTML=ALLOC.map(a=>'<div class="alloc"><div class="strip" style="background:'+a[2]+'"></div><div class="ico">'+a[3]+'</div><div class="lab">'+a[0]+'</div><div class="amt">₹'+Math.round(sal*a[1]/100).toLocaleString('en-IN')+'</div><div class="pc">'+a[1]+'%</div></div>').join("");}
 function renderEnglish(){const i=(S.engIdx==null)?Math.floor(Date.now()/864e5)%ENGLISH.length:S.engIdx;const e=ENGLISH[i%ENGLISH.length];document.getElementById('engBox').innerHTML='<div class="eng-word">'+esc(e.w)+' <span class="eng-type">('+e.t+')</span></div><div class="eng-mean">'+esc(e.m)+'</div><div class="eng-use">"'+esc(e.u)+'"</div>';}
+function renderLearning(){
+  const el=document.getElementById('learnList');if(!el)return;
+  const nl=s=>esc(s).replace(/\n/g,'<br>');
+  if(!S.learnings.length){el.innerHTML='<div class="empty">Abhi koi learning nahi. Upar add karo — kya sikha, dobara kaise banaoge, proof.</div>';return;}
+  el.innerHTML=S.learnings.map((e,i)=>{
+    const proofHTML = e.img
+      ? '<img src="'+e.img+'" class="learn-img" alt="proof"/>'
+      : (e.proof ? '<div class="learn-pend">⚠ Proof pending<button class="btn bad sm" data-act="learnProofAdd" data-i="'+i+'">📎 Add Proof</button></div>' : '');
+    return '<div class="card learn-card"><div class="row" style="align-items:flex-start"><div class="tx"><b>'+esc(e.title)+'</b> '
+      +(e.cat?'<span class="tag">'+esc(e.cat)+'</span>':'')+'<span class="meta"> · '+e.date+'</span>'
+      +(e.what?'<div class="learn-sec"><span class="learn-lbl">Sikha</span><br>'+nl(e.what)+'</div>':'')
+      +(e.how?'<div class="learn-sec"><span class="learn-lbl">Dobara kaise</span><br>'+nl(e.how)+'</div>':'')
+      +'</div><button class="x" data-act="delLearning" data-i="'+i+'">×</button></div>'+proofHTML+'</div>';
+  }).join("");
+}
 function renderPenTasks(){const p=S.penalty,el=document.getElementById('penTasks');if(!p.pushups&&!p.baithak&&!p.sapate){el.innerHTML='<div class="empty">Clean. No penalty owed. 💪</div>';return;}el.innerHTML='<div class="row"><div class="tx">'+p.pushups+' Dand</div></div><div class="row"><div class="tx">'+p.baithak+' Baithak</div></div><div class="row"><div class="tx">'+p.sapate+' Sapate</div></div><button class="btn bad sm" data-act="clearPhysical" style="margin-top:8px">Mark All Completed ✓</button>';}
 function buildRewards(){const pocket=Math.round((S.salary||0)*0.20);const pc=p=>Math.round(pocket*p/100);return [
   {ico:"🍫",nm:"Small Treat",rs:pc(10),cost:30,cond:"Hit 80%+ in a day"},
@@ -946,13 +1092,8 @@ function getNDayKeys(n){const k=[];for(let i=n-1;i>=0;i--){const d=new Date(Date
 function getNDayLabels(n){const DL=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const k=[];for(let i=n-1;i>=0;i--){const d=new Date(Date.now()-i*864e5);k.push(i===0?'Today':DL[d.getDay()]);}return k;}
 function calcScore(dd,di){
   if(!dd)return null;
-  const hT=S.habits.length||1,hD=dd.habitsDone.length;
-  const tT=S.tasks.length||1,tD=dd.tasksDone.length;
-  const wk=WORKOUT[di%7];const exT=wk?wk.items.length:1,exD=dd.exDone.length;
-  const mT=DIET[di%7].length||1,mD=dd.mealDone.length;
-  const scrOk=dd.screen<=S.screenLimit?1:0;
-  const s=(hD/hT)*30+(tD/tT)*20+(exD/exT)*15+(mD/mT)*10+scrOk*15+clamp(S.streak/7,0,1)*10;
-  return Math.min(100,Math.round(s));
+  if(dd.archived&&typeof dd.score==='number')return dd.score; // frozen score for past days
+  return scoreDay(dd,di).score;
 }
 function mkChart(id,opts){
   if(_charts[id]){try{_charts[id].destroy();}catch(e){}_charts[id]=null;}
@@ -1191,18 +1332,32 @@ function renderAnalytics(){
     legend:{show:true,position:'top',horizontalAlign:'right'}
   });
 
-  /* 11. Streak history */
+  /* 11. Streak history — 1 if that day hit reward threshold (real, from archived/computed score) */
   const streakKeys=getNDayKeys(14),streakLbls=getNDayLabels(14);
-  const streakVals=streakKeys.map(k=>S.day[k]?1:0); // placeholder — real streak needs day-by-day scoring
+  const streakVals=streakKeys.map((k,i)=>{const sc=calcScore(S.day[k],todayDi-13+i);return sc!==null&&sc>=S.rewardPc?1:0;});
   mkChart('chartStreak',{
     chart:{type:'line',height:180},
-    series:[{name:'Active Day',data:streakVals}],
+    series:[{name:'Reward Day (≥'+S.rewardPc+'%)',data:streakVals}],
     xaxis:{categories:streakLbls,labels:{style:{colors:'#5b6177',fontSize:'10px'},rotate:-35},axisBorder:{show:false},axisTicks:{show:false}},
-    yaxis:{show:false},
-    stroke:{curve:'smooth',width:3},
+    yaxis:{show:false,min:0,max:1},
+    stroke:{curve:'stepline',width:3},
     fill:{type:'solid',opacity:.1},
     colors:['#f5b14c'],markers:{size:4}
   });
+
+  /* Daily Report Archive list */
+  (function renderArchive(){
+    const el=document.getElementById('reportArchive');if(!el)return;
+    const cnt=document.getElementById('repCount');if(cnt)cnt.textContent=S.reports.length?S.reports.length+' day'+(S.reports.length>1?'s':'')+' logged':'';
+    if(!S.reports.length){el.innerHTML='<div class="empty">No archived reports yet. Har din ka report yahan apne-aap aa jayega (midnight rollover pe).</div>';return;}
+    el.innerHTML=S.reports.slice(0,30).map(r=>{
+      const c=r.score>=80?'var(--good)':r.score>=55?'var(--warn)':'var(--bad)';
+      const p=r.pen||{};const penBits=[];
+      if(p.dand)penBits.push(p.dand+' Dand');if(p.baithak)penBits.push(p.baithak+' Baithak');if(p.sapate)penBits.push(p.sapate+' Sapate');if(p.screenCut)penBits.push('-'+p.screenCut+'m screen');
+      const penTxt=penBits.length?'<span style="color:var(--bad);font-weight:600">⚠ '+penBits.join(' · ')+'</span>':'<span style="color:var(--good)">No penalty</span>';
+      return '<div class="row" style="flex-wrap:wrap;gap:8px"><div style="flex:1;min-width:140px"><b style="color:'+c+'">'+r.score+'/100</b> <span class="meta">· '+r.tier+' · '+r.date+'</span><div class="meta" style="margin-top:4px">H '+r.habits+' · T '+r.tasks+' · W '+r.workout+' · D '+r.diet+' · 📱 '+r.screen+'</div></div><div style="font-size:11px;text-align:right;min-width:120px">'+penTxt+'</div></div>';
+    }).join("");
+  })();
 }
 /* ======= END CHARTS ======= */
 
@@ -1250,10 +1405,26 @@ const ACT={
   pinKey(i,el){if(!S.pin)return;pinBuf+=el.dataset.key;renderDots();if(pinBuf.length>=S.pin.length){if(pinBuf===S.pin){hideLock();}else{const c=document.querySelector('.lock-card');c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),550);pinBuf="";renderDots();toast("Wrong PIN");}}},
   pinDel(){pinBuf=pinBuf.slice(0,-1);renderDots();},
   clearPhysical(){S.penalty.pushups=0;S.penalty.baithak=0;S.penalty.sapate=0;if(!S.penalty.screenCut)S.penalty.restrict=false;toast("Penalty Cleared. Respect.");save();},
-  genReport(){const {txt,score}=buildReport();applyOutcome(score);const box=document.getElementById('v-dashboard');let rep=document.getElementById('reportOut');if(!rep){rep=document.createElement('div');rep.id='reportOut';rep.style.marginTop='16px';box.appendChild(rep);}rep.innerHTML='<div class="card"><h3>Daily Report — '+score+'/100</h3><div class="report">'+esc(txt)+'</div><div class="split" style="margin-top:12px"><button class="btn ghost sm" data-act="copyReport">Copy Report</button><span class="muted">Auto-email at 11:55 PM needs the Code.gs trigger.</span></div></div>';window._lastReport=txt;save();go('dashboard');setTimeout(()=>rep.scrollIntoView({behavior:'smooth'}),100);},
+  genReport(){const {txt,score}=buildReport();const box=document.getElementById('v-dashboard');let rep=document.getElementById('reportOut');if(!rep){rep=document.createElement('div');rep.id='reportOut';rep.style.marginTop='16px';box.appendChild(rep);}rep.innerHTML='<div class="card"><h3>Daily Report (Preview) — '+score+'/100</h3><div class="report">'+esc(txt)+'</div><div class="split" style="margin-top:12px"><button class="btn ghost sm" data-act="copyReport">Copy Report</button><span class="muted">Preview only. Score &amp; penalty auto-apply at day-end (midnight) and archive into Analytics.</span></div></div>';window._lastReport=txt;go('dashboard');setTimeout(()=>rep.scrollIntoView({behavior:'smooth'}),100);},
   copyReport(){if(navigator.clipboard)navigator.clipboard.writeText(window._lastReport||'').then(()=>toast("Report Copied"));},
   submitEng(){const a=val('engAns');if(!a){toast("Write something first.");return;}set('engAns','');toast("Logged. One rep done. 🎯");},
   nextEng(){S.engIdx=((S.engIdx==null?Math.floor(Date.now()/864e5):S.engIdx)+1)%ENGLISH.length;save();},
+  addLearning(){
+    const t=val('learnTitle');if(!t){toast("Title likho pehle.");return;}
+    S.learnings.unshift({id:Date.now(),title:t,cat:val('learnCat'),
+      what:document.getElementById('learnWhat').value.trim(),
+      how:document.getElementById('learnHow').value.trim(),
+      proof:document.getElementById('learnProof').checked,
+      img:pendingLearnImg||null,date:todayKey()});
+    pendingLearnImg=null;
+    set('learnTitle','');set('learnCat','');
+    document.getElementById('learnWhat').value='';document.getElementById('learnHow').value='';
+    document.getElementById('learnProof').checked=false;
+    const pv=document.getElementById('learnImgPrev');if(pv)pv.innerHTML='';
+    save("Learning saved 📚");
+  },
+  delLearning(i){if(!confirm("Delete this learning?"))return;S.learnings.splice(i,1);save();},
+  learnProofAdd(i){proofTargetIdx=i;document.getElementById('learnImgIn').click();},
   saveSettings(){S.name=val('setName')||'Sam';const sc=parseInt(val('setScreen'));if(!isNaN(sc))S.screenLimit=sc;const ms=parseInt(val('setMinScore'));if(!isNaN(ms))S.rewardPc=clamp(ms,50,100);toast("Settings Saved");save();updateGreet();},
   saveGasUrl(){S.gasUrl=val('gasUrl').trim();persist();setSyncState(S.gasUrl?"Connected":"Not Connected");toast(S.gasUrl?"Drive URL Saved.":"URL Cleared.");},
   syncNow(){syncToDrive(false);},
@@ -1268,6 +1439,14 @@ function save(msg){persist();render();if(msg)toast(msg);if(S.gasUrl){clearTimeou
 
 document.getElementById('photoIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');const max=420;let w=img.width,h=img.height;const sc=Math.min(1,max/Math.max(w,h));c.width=w*sc;c.height=h*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);S.photos.unshift(c.toDataURL('image/jpeg',.7));S.photos=S.photos.slice(0,8);save("Photo Added");};img.src=r.result;};r.readAsDataURL(f);e.target.value='';});
 
+/* Learning image attach — new entry (preview) OR proof for an existing entry */
+var pendingLearnImg=null, proofTargetIdx=null;
+function compressImg(file,max,cb){const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;const sc=Math.min(1,max/Math.max(w,h));c.width=w*sc;c.height=h*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.7));};img.src=r.result;};r.readAsDataURL(file);}
+document.getElementById('learnImgIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f){proofTargetIdx=null;return;}compressImg(f,640,data=>{
+  if(proofTargetIdx!=null && S.learnings[proofTargetIdx]){S.learnings[proofTargetIdx].img=data;proofTargetIdx=null;save("Proof added ✓");}
+  else{pendingLearnImg=data;const pv=document.getElementById('learnImgPrev');if(pv)pv.innerHTML='<img src="'+data+'" alt="preview"/>';}
+});e.target.value='';});
+
 document.addEventListener('click',e=>{const nb=e.target.closest('[data-nav]');if(nb){go(nb.dataset.nav);return;}const ae=e.target.closest('[data-act]');if(ae){const fn=ACT[ae.dataset.act];if(fn){const i=ae.dataset.i!==undefined?+ae.dataset.i:undefined;e.stopPropagation();fn(i,ae);}}});
 
 document.getElementById('nav').innerHTML=NAV.map(n=>'<button data-nav="'+n[0]+'"><span class="ic">'+n[1]+'</span><span class="nav-txt">'+n[2]+'</span></button>').join("");
@@ -1277,7 +1456,19 @@ document.getElementById('moreBtn').addEventListener('click',()=>document.getElem
 document.getElementById('sheet').addEventListener('click',e=>{if(e.target.id==='sheet')e.target.classList.remove('on');});
 
 function updateGreet(){const h=new Date().getHours();const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';document.getElementById('greet').textContent=g+', '+S.name;}
-function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString();refreshTimed();}
+var _lastTickDay=todayKey();
+function tick(){
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString();
+  const tk=todayKey();
+  if(tk!==_lastTickDay){            // midnight cross while app open
+    _lastTickDay=tk;
+    const n=maybeRollover();
+    D();                            // ensure fresh day exists
+    render();
+    if(n){const y=S.reports[0];if(y)toast("Naya din. Kal: "+y.score+"% logged → Analytics.");}
+  }
+  refreshTimed();
+}
 setInterval(tick,1000);
 
 /* PIN lock */
@@ -1287,10 +1478,14 @@ function showLockEnter(){if(!S.pin)return;pinBuf="";document.getElementById('loc
 function hideLock(){document.getElementById('lock').classList.remove('on');pinBuf="";}
 
 (function init(){
+  maybeRollover();                 // score/penalize/archive any past open days BEFORE first paint
   D();persist();updateGreet();tick();go('dashboard');
+  checkProofPending();
   // pull latest from Drive on every open so all devices stay in sync
   pullFromDrive(true,function(){
-    render();updateGreet();
+    maybeRollover();               // restore replaced S → roll over again on the synced data
+    _lastTickDay=todayKey();
+    render();updateGreet();checkProofPending();
     document.getElementById('loader').classList.add('hide');
     if(S.pin)showLockEnter();
   });
