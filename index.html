@@ -276,7 +276,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 #loader.hide{opacity:0;visibility:hidden;pointer-events:none}
 #loader .ld-logo{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--accent),#4c52d6);display:grid;place-items:center;font-weight:700;font-size:26px;box-shadow:0 0 30px var(--accent-glow)}
 #loader .ld-ring{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:var(--accent);animation:spin .8s linear infinite}
-#loader .ld-txt{font-weight:700;letter-spacing:3px;color:var(--muted);font-size:13px}
+#loader .ld-txt{font-family:'Jost',sans-serif;font-weight:800;font-size:30px;letter-spacing:6px;text-transform:uppercase;background:linear-gradient(90deg,rgba(255,255,255,.26) 0%,#fff 50%,rgba(255,255,255,.26) 100%);background-size:200% auto;color:transparent;-webkit-background-clip:text;background-clip:text;animation:shimmer 1.8s linear infinite}
+#loader .ld-sub{font-size:11px;letter-spacing:3px;color:var(--faint);text-transform:uppercase;margin-top:-6px}
+@keyframes shimmer{to{background-position:200% center}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---- PIN lock ---- */
@@ -306,10 +308,49 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0
 .switch input:checked::after{left:21px}
 textarea.fin{width:100%;min-height:70px;resize:vertical;background:var(--glass-2);border:1px solid var(--stroke);border-radius:12px;padding:12px 14px;color:var(--txt);font-size:14px;font-family:inherit;line-height:1.5;margin-bottom:10px}
 textarea.fin:focus{outline:none;border-color:var(--accent)}
+/* Trading challenge */
+.ch-hero{background:linear-gradient(135deg,rgba(124,108,255,.16),rgba(76,140,245,.10));border:1px solid var(--stroke);border-radius:18px;padding:20px;margin-bottom:16px}
+.ch-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.ch-title{font-size:17px;font-weight:800;letter-spacing:.3px}
+.ch-big{font-size:42px;font-weight:800;line-height:1;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ch-big small{font-size:18px;color:var(--faint);-webkit-text-fill-color:var(--faint)}
+.ch-bar{height:14px;border-radius:10px;background:var(--glass-2);overflow:hidden;margin:14px 0 6px;border:1px solid var(--stroke)}
+.ch-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.ch-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.ch-st{background:var(--glass);border:1px solid var(--stroke);border-radius:12px;padding:12px;text-align:center}
+.ch-st b{display:block;font-size:22px;font-weight:800}.ch-st span{font-size:10px;color:var(--faint);letter-spacing:.5px;text-transform:uppercase}
+.danger b{color:var(--bad)}
+.life{display:inline-flex;gap:5px;margin-top:4px}
+.life i{width:13px;height:13px;border-radius:50%;background:var(--bad);display:inline-block}
+.life i.safe{background:var(--glass-2);border:1px solid var(--stroke)}
+.goal-card{border:1px dashed var(--stroke);border-radius:14px;padding:16px;margin-bottom:16px;background:var(--glass)}
+.goal-card .g-amt{font-size:24px;font-weight:800;color:var(--accent-2)}
+.res-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.res-btns button{padding:14px;border-radius:12px;font-weight:700;font-size:14px;border:1px solid var(--stroke);background:var(--glass-2);color:var(--txt);transition:.12s}
+.res-btns button[data-res="win"]:active,.res-btns button.win{background:var(--good);border-color:var(--good);color:#04140a}
+.res-btns button[data-res="loss"]:active,.res-btns button.loss{background:var(--bad);border-color:var(--bad)}
+.res-btns button[data-res="be"]:active,.res-btns button.be{background:var(--warn);border-color:var(--warn);color:#1a1300}
+.tr-card{margin-bottom:12px;border-left:3px solid var(--stroke)}
+.tr-card.win{border-left-color:var(--good)}.tr-card.loss{border-left-color:var(--bad)}.tr-card.be{border-left-color:var(--warn)}
+.tr-badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+.tr-badge.win{background:rgba(46,204,113,.18);color:var(--good)}.tr-badge.loss{background:rgba(231,76,60,.18);color:var(--bad)}.tr-badge.be{background:rgba(241,177,76,.18);color:var(--warn)}
+.tr-img{width:100%;max-height:240px;object-fit:cover;border-radius:10px;margin-top:10px;border:1px solid var(--stroke)}
+.daily-pill{font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;background:var(--glass-2);border:1px solid var(--stroke)}
+/* Solo-Leveling quote bar */
+.quote-bar{position:relative;background:linear-gradient(135deg,rgba(124,108,255,.14),rgba(76,140,245,.07));border:1px solid var(--stroke);border-radius:16px;padding:18px 20px;margin-bottom:16px;overflow:hidden;cursor:pointer;transition:.2s}
+.quote-bar:hover{border-color:var(--accent)}
+.quote-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--accent),var(--accent-2))}
+.quote-bar .qmark{position:absolute;right:16px;top:-6px;font-size:64px;line-height:1;color:rgba(255,255,255,.05);font-weight:800;pointer-events:none}
+.quote-txt{font-size:16px;font-weight:600;line-height:1.5;color:var(--txt);position:relative;padding-right:30px}
+.quote-meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;position:relative}
+.quote-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-2);font-weight:800}
+.quote-hint{font-size:10px;color:var(--faint)}
+.qfade{animation:qf .5s ease}
+@keyframes qf{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
-<div id="loader"><div class="ld-logo"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l7-7 7 7"/><path d="M5 19l7-7 7 7"/></svg></div><div class="ld-ring"></div><div class="ld-txt">LifeOS</div></div>
+<div id="loader"><div class="ld-logo"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l7-7 7 7"/><path d="M5 19l7-7 7 7"/></svg></div><div class="ld-ring"></div><div class="ld-txt">Disciplina</div><div class="ld-sub">arise. level up. repeat.</div></div>
 <div id="lock"><div class="lock-card"><div class="lg">S</div><div id="lockTitle">Enter Pin</div><div class="pin-dots" id="pinDots"></div><div class="keypad" id="keypad">
   <button data-act="pinKey" data-key="1">1</button><button data-act="pinKey" data-key="2">2</button><button data-act="pinKey" data-key="3">3</button>
   <button data-act="pinKey" data-key="4">4</button><button data-act="pinKey" data-key="5">5</button><button data-act="pinKey" data-key="6">6</button>
@@ -335,6 +376,11 @@ textarea.fin:focus{outline:none;border-color:var(--accent)}
 
     <!-- DASHBOARD -->
     <section class="view on" id="v-dashboard">
+      <div class="quote-bar" data-act="shuffleQuote" id="quoteBar">
+        <div class="qmark">&ldquo;</div>
+        <div class="quote-txt" id="quoteTxt">Arise. The grind doesn't start without you.</div>
+        <div class="quote-meta"><span class="quote-tag" id="quoteTag">ARISE</span><span class="quote-hint">tap to shuffle · auto every 10 min</span></div>
+      </div>
       <div class="grid g3" style="margin-bottom:16px">
         <div class="card" style="grid-column:span 2">
           <h3>Discipline Core — Today</h3>
@@ -520,6 +566,29 @@ textarea.fin:focus{outline:none;border-color:var(--accent)}
       <div id="learnList"></div>
     </section>
 
+    <!-- TRADING -->
+    <section class="view" id="v-trading">
+      <div class="sec-title">50 Success Challenge <small>1 trade min · 2 max daily · 3 losses in a row = reset</small></div>
+      <div id="chHero"></div>
+      <div id="goalCard"></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="split"><h3 style="margin:0">Log a Trade</h3><span class="daily-pill" id="tradeDaily">Today: 0/2</span></div>
+        <div class="field" style="margin-top:12px"><input type="text" id="trPair" placeholder="Pair / Instrument (eg: BTCUSD, NIFTY)" /></div>
+        <div class="field"><input type="text" id="trPL" placeholder="P/L (eg: +1.5R  /  +₹1200  /  -₹800)" /></div>
+        <label class="learn-lbl">Why did you take this trade? (required)</label>
+        <textarea class="fin" id="trReason" placeholder="Setup / reason — kyu li ye trade…"></textarea>
+        <label class="btn ghost sm" style="display:inline-block">📎 Chart Image (required)<input type="file" id="trImgIn" accept="image/*" style="display:none" /></label>
+        <div class="learn-prev" id="trImgPrev"></div>
+        <div class="res-btns">
+          <button data-act="logTrade" data-res="win">✓ Win</button>
+          <button data-act="logTrade" data-res="loss">✕ Loss</button>
+          <button data-act="logTrade" data-res="be">– BE</button>
+        </div>
+      </div>
+      <div class="split" style="margin-bottom:10px"><h3 style="margin:0">Journal</h3><button class="btn ghost sm" data-act="resetChallenge">↺ Reset Challenge</button></div>
+      <div id="tradeList"></div>
+    </section>
+
     <!-- BRAHMACHARYA -->
     <section class="view" id="v-brahmacharya">
       <div class="sec-title">Brahmacharya <small>self-control · shame-free · reset & rise</small></div>
@@ -703,7 +772,9 @@ const DEFAULT={
   wallet:{bal:0,earned:0,spent:0,tx:[]},
   weights:[],photos:[],
   penalty:{pushups:0,baithak:0,sapate:0,screenCut:0,restrict:false},
-  streak:0,lastScored:null,lastRollover:null,reports:[],learnings:[],lastProofNotify:null,day:{},engIdx:null,
+  streak:0,lastScored:null,lastRollover:null,reports:[],learnings:[],lastProofNotify:null,
+  challenge:{success:0,conLoss:0,attempt:1,won:false,wonEver:false,best:0,log:[]},tradeStart:null,lastTradeNotify:null,
+  day:{},engIdx:null,
   pin:"",bc:{streak:0,best:0,lastClean:null,log:[]}
 };
 function applyMigrations(s){
@@ -722,6 +793,10 @@ function applyMigrations(s){
   if(!s.reports)s.reports=[];                       // archived daily reports → Analytics
   if(s.lastRollover===undefined)s.lastRollover=null;// last date rollover ran
   if(!s.learnings)s.learnings=[];                   // Learning Log entries
+  if(!s.challenge){s.challenge={success:0,conLoss:0,attempt:1,won:false,wonEver:false,best:0,log:[]};}
+  else{const c=s.challenge;if(c.success===undefined)c.success=0;if(c.conLoss===undefined)c.conLoss=0;if(c.attempt===undefined)c.attempt=1;if(c.won===undefined)c.won=false;if(c.wonEver===undefined)c.wonEver=false;if(c.best===undefined)c.best=0;if(!c.log)c.log=[];}
+  if(s.tradeStart===undefined)s.tradeStart=null;    // 50L goal start (set on 1st trade)
+  if(s.lastTradeNotify===undefined)s.lastTradeNotify=null;
   if(s.lastProofNotify===undefined)s.lastProofNotify=null;
   s.habits=(s.habits||[]).map(h=>typeof h==="string"?{n:h,t:""}:(h.t===undefined?(h.t="",h):h));
   s.tasks=(s.tasks||[]).map(t=>typeof t==="string"?{n:t,p:"normal",t:""}:(t.t===undefined?(t.t="",t):t));
@@ -776,7 +851,7 @@ const BCMEAL=["Less oil & fried food — bake, steam, or lightly sauté.","No ju
 const pickDaily=arr=>arr[Math.floor(Date.now()/864e5)%arr.length];
 const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-const NAV=[["dashboard","◎","Home"],["analytics","📊","Analytics"],["habits","✓","Habits"],["tasks","▤","Tasks"],["fitness","🏋","Fitness"],["diet","🍎","Diet"],["learning","📚","Learning"],["weight","⚖","Weight"],["wallet","💰","Money"],["penalties","💀","Penalty"],["coach","🧠","Coach"],["career","🎯","English"],["brahmacharya","🧘","Sanyam"],["settings","⚙","Settings"]];
+const NAV=[["dashboard","◎","Home"],["analytics","📊","Analytics"],["habits","✓","Habits"],["tasks","▤","Tasks"],["fitness","🏋","Fitness"],["diet","🍎","Diet"],["learning","📚","Learning"],["weight","⚖","Weight"],["wallet","💰","Money"],["trading","📈","Trading"],["penalties","💀","Penalty"],["coach","🧠","Coach"],["career","🎯","English"],["brahmacharya","🧘","Sanyam"],["settings","⚙","Settings"]];
 const PRIMARY=["dashboard","analytics","fitness","diet"];
 
 /* score — single source of truth. scoreDay() scores ANY day, computeScore() = today (live ring). */
@@ -1025,6 +1100,7 @@ function render(){
 
   renderEnglish();
   renderLearning();
+  renderTrading();
   document.getElementById('careerTips').innerHTML='<div class="tip">'+esc(pickDaily(CAREER))+'</div><div class="tip">'+esc(CAREER[(Math.floor(Date.now()/864e5)+2)%CAREER.length])+'</div>';
   // brahmacharya
   document.getElementById('bcStreak').textContent=S.bc.streak;
@@ -1425,6 +1501,31 @@ const ACT={
   },
   delLearning(i){if(!confirm("Delete this learning?"))return;S.learnings.splice(i,1);save();},
   learnProofAdd(i){proofTargetIdx=i;document.getElementById('learnImgIn').click();},
+  logTrade(i,ae){
+    const res=ae.dataset.res;
+    const reason=document.getElementById('trReason').value.trim();
+    if(!reason){toast("Reason likho — kyu li ye trade.");return;}
+    if(!pendingTradeImg){toast("Chart image lagao (proof zaroori).");return;}
+    const c=S.challenge,today=todayKey();
+    if(c.log.filter(t=>t.date===today).length>=2){toast("Max 2 trades aaj. Kal aana.");return;}
+    if(!S.tradeStart)S.tradeStart=today;
+    const before={attempt:c.attempt,wonEver:c.wonEver};
+    c.log.unshift({id:Date.now(),date:today,res:res,pair:val('trPair'),pl:val('trPL'),reason:reason,img:pendingTradeImg});
+    recomputeChallenge();
+    if(res==='win'){
+      if(c.wonEver&&!before.wonEver)rewardChallenge();
+      else toast("Win logged ✓ "+c.success+"/50");
+    } else if(res==='loss'){
+      if(c.attempt>before.attempt)toast("💀 3 losses in a row — streak reset to 0. Attempt #"+c.attempt+". Wapis 50 karni hai.");
+      else toast("Loss logged. ⚠ "+c.conLoss+"/3 consecutive.");
+    } else toast("BE logged · neutral.");
+    pendingTradeImg=null;set('trPair','');set('trPL','');document.getElementById('trReason').value='';
+    const pv=document.getElementById('trImgPrev');if(pv)pv.innerHTML='';
+    save();
+  },
+  delTrade(i){if(!confirm("Delete this trade from journal?"))return;S.challenge.log.splice(i,1);recomputeChallenge();save();},
+  resetChallenge(){if(!confirm("HARD reset: poora journal + streak wipe ho jayega. Sure?"))return;S.challenge={success:0,conLoss:0,attempt:1,won:false,wonEver:false,best:0,log:[]};S.tradeStart=null;save("Challenge reset 🔄");},
+  shuffleQuote(){showQuote(true);},
   saveSettings(){S.name=val('setName')||'Sam';const sc=parseInt(val('setScreen'));if(!isNaN(sc))S.screenLimit=sc;const ms=parseInt(val('setMinScore'));if(!isNaN(ms))S.rewardPc=clamp(ms,50,100);toast("Settings Saved");save();updateGreet();},
   saveGasUrl(){S.gasUrl=val('gasUrl').trim();persist();setSyncState(S.gasUrl?"Connected":"Not Connected");toast(S.gasUrl?"Drive URL Saved.":"URL Cleared.");},
   syncNow(){syncToDrive(false);},
@@ -1446,6 +1547,146 @@ document.getElementById('learnImgIn').addEventListener('change',e=>{const f=e.ta
   if(proofTargetIdx!=null && S.learnings[proofTargetIdx]){S.learnings[proofTargetIdx].img=data;proofTargetIdx=null;save("Proof added ✓");}
   else{pendingLearnImg=data;const pv=document.getElementById('learnImgPrev');if(pv)pv.innerHTML='<img src="'+data+'" alt="preview"/>';}
 });e.target.value='';});
+
+/* ===== Trading challenge ===== */
+var pendingTradeImg=null;
+document.getElementById('trImgIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;compressImg(f,720,data=>{pendingTradeImg=data;const pv=document.getElementById('trImgPrev');if(pv)pv.innerHTML='<img src="'+data+'" alt="chart"/>';});e.target.value='';});
+function recomputeChallenge(){
+  // single source of truth — replay whole journal oldest→newest
+  const c=S.challenge;
+  const ordered=c.log.slice().sort((a,b)=>a.id-b.id);
+  let success=0,conLoss=0,attempt=1,best=0,wonEver=false;
+  for(const t of ordered){
+    if(wonEver)break;                 // challenge cleared — rest is just history
+    if(t.res==='win'){success++;conLoss=0;if(success>best)best=success;if(success>=50)wonEver=true;}
+    else if(t.res==='loss'){conLoss++;if(conLoss>=3){attempt++;success=0;conLoss=0;}}
+    // 'be' = neutral
+  }
+  c.success=success;c.conLoss=conLoss;c.attempt=attempt;c.best=best;c.wonEver=wonEver;c.won=wonEver;
+}
+function rewardChallenge(){
+  S.wallet.bal+=2500;S.wallet.earned+=2500;
+  S.wallet.tx.unshift({t:"+2500",r:"🏆 50 Success Challenge CLEARED — 25k funded account!",d:todayKey()});
+  notify("🏆 CHALLENGE CLEARED — LifeOS","50 success trades done. 25k funded account unlocked. Next: ₹50,00,000.");
+  setTimeout(()=>alert("🏆 50 SUCCESS TRADES — DONE!\n\nYou earned your 25k funded account.\nStep 1 of your ₹50,00,000 / 2-year goal is complete.\n\nGhar. Car. Sab aayega — keep compounding.\n— LifeOS by Sam"),250);
+}
+function checkTradeDaily(){
+  const c=S.challenge;if(!c||c.won)return;
+  const today=todayKey();
+  if((c.log||[]).some(t=>t.date===today))return;   // already traded today
+  if(S.lastTradeNotify===today)return;
+  S.lastTradeNotify=today;persist();
+  notify("📈 1 trade required today — LifeOS","Min 1 trade din me. Streak "+c.success+"/50. Skip = momentum loss.");
+  toast("📈 Aaj 1 trade required ("+c.success+"/50)");
+}
+
+/* ===== Solo-Leveling style motivation (original lines) — shuffles every 10 min ===== */
+const QUOTES=[
+ {q:"Arise. The grind doesn't start without you.",t:"ARISE"},
+ {q:"Every rep is XP. Skip it and the level stays locked.",t:"GRIND"},
+ {q:"The weakest hunter today becomes the strongest by refusing to quit.",t:"HUNTER"},
+ {q:"Discipline is the only cheat code the system allows.",t:"SYSTEM"},
+ {q:"You don't rise to your goals. You fall to your habits — so build better ones.",t:"SYSTEM"},
+ {q:"No one is coming to clear your dungeon. Pick up the sword.",t:"HUNTER"},
+ {q:"Pain is just the system installing a stronger version of you.",t:"LEVEL"},
+ {q:"The hardest boss is the version of you that wanted to sleep in.",t:"SHADOW"},
+ {q:"Level up in silence. Let the results make the noise.",t:"MONARCH"},
+ {q:"Three losses don't end you. Quitting does.",t:"TRADER"},
+ {q:"Protect the streak like it's your last HP bar.",t:"GRIND"},
+ {q:"A funded account is just discipline that finally compounded.",t:"TRADER"},
+ {q:"₹50,00,000 isn't luck. It's 730 disciplined days, stacked.",t:"TRADER"},
+ {q:"The market pays the patient and taxes the impatient.",t:"TRADER"},
+ {q:"Risk like a hunter, not a gambler. Survive to level again.",t:"TRADER"},
+ {q:"You leveled up the day you stopped negotiating with your excuses.",t:"SYSTEM"},
+ {q:"Shadows obey the one who first mastered himself.",t:"SHADOW"},
+ {q:"Wake before the world. The early grind has fewer monsters.",t:"GRIND"},
+ {q:"Your future self is watching this rep. Don't embarrass him.",t:"LEVEL"},
+ {q:"Comfort is a trap disguised as a reward.",t:"SYSTEM"},
+ {q:"The system doesn't care how you feel. Log the win anyway.",t:"SYSTEM"},
+ {q:"Small XP daily beats a heroic grind once a month.",t:"GRIND"},
+ {q:"Become so disciplined that motivation becomes optional.",t:"MONARCH"},
+ {q:"Every skipped day is a debt your goal collects — with interest.",t:"SYSTEM"},
+ {q:"You're not behind. You're one disciplined day from momentum.",t:"ARISE"},
+ {q:"Hunt the habit, not the mood.",t:"HUNTER"},
+ {q:"Your strongest weapon is a routine you don't break.",t:"MONARCH"},
+ {q:"Lose the trade, keep the rules. Rules rebuild the account.",t:"TRADER"},
+ {q:"Don't fear the loss. Fear the third one in a row — then stop.",t:"TRADER"},
+ {q:"Grind quietly. Monarchs don't announce, they arrive.",t:"MONARCH"},
+ {q:"Your streak is a story. Don't end it on a lazy chapter.",t:"GRIND"},
+ {q:"The level cap is a lie. Keep grinding.",t:"LEVEL"},
+ {q:"The dungeon resets daily. So does your discipline — clear it again.",t:"HUNTER"},
+ {q:"You don't need more time. You need fewer excuses.",t:"SYSTEM"},
+ {q:"Master the boring reps and the bosses fall easy.",t:"GRIND"},
+ {q:"Sweat now or stress later. The system always collects.",t:"LEVEL"},
+ {q:"A weak setup skipped is a quiet win the journal still feels.",t:"TRADER"},
+ {q:"Be the hunter who shows up on the days that count.",t:"HUNTER"},
+ {q:"Discipline today buys freedom tomorrow. Pay the price.",t:"MONARCH"},
+ {q:"The system rewards consistency, not intensity.",t:"SYSTEM"},
+ {q:"Your excuses are NPCs. Walk past them.",t:"SHADOW"},
+ {q:"One trade a day keeps the momentum alive.",t:"TRADER"},
+ {q:"Strength isn't given by the system. It's farmed.",t:"GRIND"},
+ {q:"You can rest when the goal is cleared. Not before.",t:"MONARCH"},
+ {q:"Fall seven times, log the eighth rep.",t:"LEVEL"},
+ {q:"The grind is lonely because most players quit at level two.",t:"HUNTER"},
+ {q:"Don't break the chain. The shadows are watching.",t:"SHADOW"},
+ {q:"Win the morning rep and the day kneels.",t:"ARISE"},
+ {q:"Your potential is locked behind a door marked 'consistency'.",t:"SYSTEM"},
+ {q:"Trade the plan. The plan is your weapon — improvising is death.",t:"TRADER"},
+ {q:"Every disciplined day is a stat point you keep forever.",t:"LEVEL"},
+ {q:"The monarch was once the weakest. He just never stopped grinding.",t:"MONARCH"},
+ {q:"Show up tired. Show up bored. Just show up.",t:"GRIND"},
+ {q:"Cut the losers fast, let the discipline run.",t:"TRADER"},
+ {q:"Become the strongest version of you — then go further.",t:"ARISE"}
+];
+let _qIdx=-1,_qTimer=null;
+function showQuote(rand){
+  const box=document.getElementById('quoteTxt');if(!box)return;
+  let i;
+  if(rand){do{i=Math.floor(Math.random()*QUOTES.length);}while(QUOTES.length>1&&i===_qIdx);}
+  else{i=Math.floor(Date.now()/6e5)%QUOTES.length;}
+  _qIdx=i;
+  box.textContent=QUOTES[i].q;
+  const tg=document.getElementById('quoteTag');if(tg)tg.textContent=QUOTES[i].t;
+  const bar=document.getElementById('quoteBar');
+  if(bar){bar.classList.remove('qfade');void bar.offsetWidth;bar.classList.add('qfade');}
+}
+function startQuotes(){showQuote(true);if(_qTimer)clearInterval(_qTimer);_qTimer=setInterval(()=>showQuote(true),6e5);}
+function renderTrading(){
+  const c=S.challenge;if(!c)return;
+  const hero=document.getElementById('chHero');
+  if(hero){
+    const pct=Math.min(100,Math.round(c.success/50*100));
+    const lives=[0,1,2].map(n=>'<i class="'+(n<(3-c.conLoss)?'safe':'')+'"></i>').join('');
+    const wonBanner=c.won?'<div class="tr-badge win" style="font-size:12px;padding:6px 12px">🏆 CLEARED · 25k unlocked</div>':'';
+    hero.innerHTML='<div class="ch-hero"><div class="ch-top"><div class="ch-title">📈 50 Success Challenge</div>'+wonBanner+'</div>'
+      +'<div class="ch-big" style="margin-top:12px">'+c.success+'<small>/50 wins</small></div>'
+      +'<div class="ch-bar"><i style="width:'+pct+'%"></i></div>'
+      +'<div class="muted" style="font-size:12px">'+pct+'% to your 25k funded account</div>'
+      +'<div class="ch-stats">'
+        +'<div class="ch-st"><b style="color:var(--good)">'+c.success+'</b><span>Streak</span></div>'
+        +'<div class="ch-st danger"><b>'+c.conLoss+'/3</b><span>Loss in a row</span><div class="life">'+lives+'</div></div>'
+        +'<div class="ch-st"><b>#'+c.attempt+'</b><span>Attempt · best '+c.best+'</span></div>'
+      +'</div></div>';
+  }
+  const gc=document.getElementById('goalCard');
+  if(gc){
+    let dl;
+    if(S.tradeStart){const d=new Date(S.tradeStart+'T00:00:00');d.setFullYear(d.getFullYear()+2);const left=Math.ceil((d-new Date())/864e5);dl='Deadline: '+d.toDateString()+' · <b style="color:'+(left>60?'var(--muted)':'var(--warn)')+'">'+(left>0?left+' days left':'time up')+'</b>';}
+    else dl='Pehli trade log karte hi 2-saal ka clock start ho jayega.';
+    gc.innerHTML='<div class="goal-card"><div class="muted" style="font-size:11px;letter-spacing:1px">MAIN GOAL · 2 YEARS</div><div class="g-amt">₹50,00,000</div><div class="muted" style="font-size:12px;margin-top:4px">'+dl+'</div><div style="font-size:13px;margin-top:10px;line-height:1.55">Step 1: ye challenge clear kar → <b>25k funded account</b>, phir compound. Ghar, car, sab iske baad aayega. Sab aaj ki ek disciplined trade pe tika hai.</div></div>';
+  }
+  const today=todayKey(),tc=c.log.filter(t=>t.date===today).length;
+  const dp=document.getElementById('tradeDaily');
+  if(dp){dp.textContent='Today: '+tc+'/2'+(tc===0?' · 1 required':'');dp.style.color=tc===0?'var(--warn)':(tc>=2?'var(--faint)':'var(--good)');}
+  const el=document.getElementById('tradeList');
+  if(el){
+    if(!c.log.length){el.innerHTML='<div class="empty">Abhi koi trade nahi. Pehli trade log kar — reason + chart image zaroori.</div>';}
+    else{const nl=s=>esc(s).replace(/\n/g,'<br>');
+      el.innerHTML=c.log.map((t,i)=>{const lbl=t.res==='win'?'WIN':t.res==='loss'?'LOSS':'BE';
+        return '<div class="card tr-card '+t.res+'"><div class="row" style="align-items:flex-start"><div class="tx"><span class="tr-badge '+t.res+'">'+lbl+'</span> '+(t.pair?'<b>'+esc(t.pair)+'</b>':'')+(t.pl?' <span class="meta">'+esc(t.pl)+'</span>':'')+'<span class="meta"> · '+t.date+'</span><div class="learn-sec">'+nl(t.reason)+'</div></div><button class="x" data-act="delTrade" data-i="'+i+'">×</button></div>'+(t.img?'<img src="'+t.img+'" class="tr-img" alt="chart"/>':'')+'</div>';
+      }).join("");}
+  }
+}
 
 document.addEventListener('click',e=>{const nb=e.target.closest('[data-nav]');if(nb){go(nb.dataset.nav);return;}const ae=e.target.closest('[data-act]');if(ae){const fn=ACT[ae.dataset.act];if(fn){const i=ae.dataset.i!==undefined?+ae.dataset.i:undefined;e.stopPropagation();fn(i,ae);}}});
 
@@ -1480,12 +1721,13 @@ function hideLock(){document.getElementById('lock').classList.remove('on');pinBu
 (function init(){
   maybeRollover();                 // score/penalize/archive any past open days BEFORE first paint
   D();persist();updateGreet();tick();go('dashboard');
-  checkProofPending();
+  startQuotes();
+  checkProofPending();checkTradeDaily();
   // pull latest from Drive on every open so all devices stay in sync
   pullFromDrive(true,function(){
     maybeRollover();               // restore replaced S → roll over again on the synced data
     _lastTickDay=todayKey();
-    render();updateGreet();checkProofPending();
+    render();updateGreet();checkProofPending();checkTradeDaily();
     document.getElementById('loader').classList.add('hide');
     if(S.pin)showLockEnter();
   });
